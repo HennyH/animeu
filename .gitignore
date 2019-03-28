@@ -1,3 +1,14 @@
+# vs code
+.vscode
+
+# python
+venv
+*.egg-info
+__pycache__
+
+# webpack artifacts
+build
+
 # Logs
 logs
 *.log
