@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack-dev-server"
+    "build": "webpack -p",
+    "watch": "webpack-dev-server",
+    "lint:ts": "tslint --format stylish animeu/**/*.ts",
+    "lint:py": "pylint animeu",
+    "lint": "run-s -c lint:*"
   },
   "repository": {
     "type": "git",
@@ -22,9 +26,13 @@
     "autoprefixer": "^9.5.0",
     "css-loader": "^1.0.1",
     "mini-css-extract-plugin": "^0.5.0",
+    "npm-run-all": "^4.1.5",
     "postcss-loader": "^3.0.0",
     "style-loader": "^0.23.1",
     "ts-loader": "^5.3.3",
+    "tslint": "^5.14.0",
+    "tslint-webpack-plugin": "^2.0.4",
+    "typescript": "^3.3.4000",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0",
     "webpack-dev-server": "^3.2.1",

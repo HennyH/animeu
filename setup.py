@@ -4,9 +4,7 @@ setup(
     name="animeu",
     verison="0.0.1",
     long_description=__doc__,
-    packages=find_packages(
-        exclude=("build", "node_modules", "static", "templates")
-    ),
+    packages=find_packages("animeu"),
     include_package_data=True,
     zip_safe=False,
     install_requires=[

@@ -1,6 +1,7 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
+const TSLintPlugin = require('tslint-webpack-plugin');
 
 /*
  * SplitChunksPlugin is enabled by default and replaced
@@ -28,8 +29,8 @@ const devMode = process.env.NODE_ENV !== 'production'
 
 module.exports = {
   entry: {
-    scripts: './static/scripts/index.ts',
-    styles: './static/styles/index.css'
+    scripts: './animeu/static/scripts/index.ts',
+    styles: './animeu/static/styles/index.css'
   },
   output: {
     filename: devMode ? '[name].js' : '[name].[chunkhash].js',
@@ -52,6 +53,11 @@ module.exports = {
         }),
         seed
       )
+    }),
+    new TSLintPlugin({
+      files: ['./animeu/static/**/*.ts'],
+      waitForLinting: devMode ? false : true,
+      warningsAsError: devMode ? false : true,
     })
   ],
   devtool: 'inline-source-map',
