@@ -26,4 +26,10 @@ webpack.init_app(app)
 @app.route("/")
 def index():
     """Render an example page."""
-    return render_template('base.html')
+    return render_template('smash-or-pass.html', **{
+        "left": {
+            "img": "http://flask.pocoo.org/docs/1.0/_static/flask.png",
+            "name": "Flask",
+            "description": "A micro framework"
+        }
+    })

@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack -p",
-    "watch": "webpack-dev-server",
+    "wds": "webpack-dev-server",
+    "flask": "cross-env FLASK_APP=animeu flask run",
+    "dev": "cross-env FLASK_ENV=development run-p wds flask",
     "lint:ts": "tslint --format stylish animeu/**/*.ts",
     "lint:py": "pylint animeu",
     "lint": "run-s -c lint:*"
@@ -24,6 +26,7 @@
   "devDependencies": {
     "@types/jquery": "^3.3.29",
     "autoprefixer": "^9.5.0",
+    "cross-env": "^5.2.0",
     "css-loader": "^1.0.1",
     "mini-css-extract-plugin": "^0.5.0",
     "npm-run-all": "^4.1.5",
