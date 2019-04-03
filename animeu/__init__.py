@@ -25,9 +25,10 @@ app.config.update({
 webpack = Webpack()
 webpack.init_app(app)
 
-DATA_FILE = os.environ.get("DATA_FILE")
-with open(DATA_FILE, "r") as data_fileobj:
-    DATA_JSON = json.load(data_fileobj)
+if __name__ == "__main__":
+    DATA_FILE = os.environ.get("DATA_FILE")
+    with open(DATA_FILE, "r") as data_fileobj:
+        DATA_JSON = json.load(data_fileobj)
 
 @app.route("/")
 def index():
