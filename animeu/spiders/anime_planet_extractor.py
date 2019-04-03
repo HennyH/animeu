@@ -18,7 +18,8 @@ from parsel import Selector, SelectorList
 from animeu.spiders.page_downloader import ANIME_PLANET_URL
 from animeu.spiders.json_helpers import JSONListStream
 
-BLACKLISTED_TAG_RES = [r"child(ren)?", r"elementary\s+school", r"underage"]
+BLACKLISTED_TAG_RES = [r"child(ren)?", r"elementary\s+school",
+                       r"middle\s+school", r"underage", r"animals?"]
 
 def optional(func, default=None):
     """Wrap a function which could fail."""

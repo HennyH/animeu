@@ -1,7 +1,8 @@
 pylint
 scrapy
-pypiwin32
 parsel
 requests
 parmap
 tqdm
+Flask
+Flask-Webpack

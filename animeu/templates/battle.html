@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col col-md-7">
+                        <img class="img-fluid" src="{{ left['img'] }}" alt="{{ left['name'] }}">
+                    </div>
+                    <div class="col col-md">
+                        <h5>{{ left['name'] }} <span class="m-l-1 japanese font-weight-bold">百鬼丸</span></h5>
+                        <table class="table table-sm">
+                            <tbody>
+                                {% for name, value in left['info'].items() %}
+                                    <tr>
+                                        <td>{{ name }}</td>
+                                        <td>{{ value }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% for tag in left['tags'] %}
+                            <span class="m-1 p-2 badge badge-light">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <p class="card-text">{{ left['description'] }}</p>
+            <a href="#" class="btn-primary">Smash</a>
+        </div>
+    </div>
+{% endblock body %}

@@ -6,6 +6,8 @@
 """Entrypoint which configures the animeu flask app."""
 
 import os
+import json
+import random
 from flask import Flask, render_template
 from flask_webpack import Webpack
 
@@ -23,13 +25,25 @@ app.config.update({
 webpack = Webpack()
 webpack.init_app(app)
 
+DATA_FILE = os.environ.get("DATA_FILE")
+with open(DATA_FILE, "r") as data_fileobj:
+    DATA_JSON = json.load(data_fileobj)
+
 @app.route("/")
 def index():
     """Render an example page."""
+    character = random.choice(DATA_JSON)
     return render_template('smash-or-pass.html', **{
         "left": {
-            "img": "http://flask.pocoo.org/docs/1.0/_static/flask.png",
-            "name": "Flask",
-            "description": "A micro framework"
+            "img": character["picture"],
+            "name": character["name"],
+            "description": "A micro framework",
+            "tags": character["tags"],
+            "info": {
+                "Hair Color:": character["hair_color"],
+                "Age:": "18",
+                "Birthdate:": "24th June",
+                "Height": "180cm"
+            }
         }
     })
