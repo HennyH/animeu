@@ -1,4 +1,4 @@
-# /animeu/anime_planet/page_extractor.py
+# /animeu/spiders/page_extractor.py
 #
 # Metadata extractor for anime planet pages.
 #
@@ -15,8 +15,8 @@ import base64
 import json
 import parmap
 from parsel import Selector, SelectorList
-from animeu.anime_planet.page_downloader import ANIME_PLANET_URL
-from animeu.anime_planet.json_helpers import JSONListStream
+from animeu.spiders.page_downloader import ANIME_PLANET_URL
+from animeu.spiders.json_helpers import JSONListStream
 
 BLACKLISTED_TAG_RES = [r"child(ren)?", r"elementary\s+school", r"underage"]
 

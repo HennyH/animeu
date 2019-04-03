@@ -1,4 +1,4 @@
-# /animeu/anime_planet/base64_helpers.py
+# /animeu/spiders/base64_helpers.py
 #
 # Helpers for dealing with base 64.
 #

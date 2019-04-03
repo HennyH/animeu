@@ -11,8 +11,8 @@ import scrapy
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.crawler import CrawlerProcess
 from scrapy.linkextractors import LinkExtractor
-from animeu.anime_planet.json_helpers import JSONListStream
-from animeu.anime_planet.base64_helpers import base64_urlencode
+from animeu.spiders.json_helpers import JSONListStream
+from animeu.spiders.base64_helpers import base64_urlencode
 
 ANIME_PLANET_URL = "https://www.anime-planet.com"
 

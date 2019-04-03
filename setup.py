@@ -9,8 +9,9 @@ setup(
     zip_safe=False,
     entry_points={
         "console_scripts": [
-            "download-character-pages=animeu.anime_planet.page_downloader:main",
-            "extract-character-metadata=animeu.anime_planet.page_extractor:main"
+            "anime-planet-downloader=animeu.spiders.anime_planet_downloader:main",
+            "anime-planet-extractor=animeu.anime_planet.anime_planet_extractor:main",
+            "myanimelist-downloader=animeu.spiders.myanimelist_downloader:main"
         ]
     },
     install_requires=[
