@@ -1,4 +1,4 @@
-# animeu
+# animeu [![Build Status](https://travis-ci.com/HennyH/animeu.svg?token=zsZqz8ak9yekVpEX2Qnc&branch=master)](https://travis-ci.com/HennyH/animeu)
 Battle of the anime babes
 
 # Setup
