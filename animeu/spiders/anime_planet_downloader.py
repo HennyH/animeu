@@ -3,7 +3,7 @@
 # Scraper for https://www.anime-planet.com to download female characters.
 #
 # See /LICENCE.md for Copyright information
-"""Scraper for anime-planet.com"""
+"""Scraper for anime-planet.com."""
 import os
 import sys
 import argparse
@@ -18,6 +18,7 @@ ANIME_PLANET_URL = "https://www.anime-planet.com"
 
 class AnimePlanetSpider(CrawlSpider):
     """Scraper for anime-planet."""
+
     name = "animeplanet"
     start_urls = [f"{ANIME_PLANET_URL}/characters/all?gender_id=2&page=1"]
 
@@ -47,6 +48,7 @@ class AnimePlanetSpider(CrawlSpider):
         self.pages_directory = pages_directory
 
     def extract_character(self, response):
+        """Save the character page to a file and write metadata entry."""
         filename = os.path.join(self.pages_directory,
                                 f"{base64_urlencode(response.url)}.html")
         self.manifest_file.write({

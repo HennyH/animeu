@@ -10,7 +10,9 @@
     "flask": "cross-env FLASK_APP=animeu flask run",
     "dev": "cross-env FLASK_ENV=development run-p wds flask",
     "lint:ts": "tslint --format stylish animeu/**/*.ts",
-    "lint:py": "pylint animeu",
+    "lint:py:pylint": "pylint animeu",
+    "lint:py:pydocstyle": "pydocstyle animeu",
+    "lint:py": "run-s -c lint:py:*",
     "lint": "run-s -c lint:*"
   },
   "repository": {

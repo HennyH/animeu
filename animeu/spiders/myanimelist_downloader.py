@@ -3,7 +3,7 @@
 # Scraper for https://myanimelist.net/character.php to download female characters.
 #
 # See /LICENCE.md for Copyright information
-"""Scraper for myanimelist.net"""
+"""Scraper for myanimelist.net."""
 import os
 import sys
 import argparse
@@ -18,6 +18,7 @@ MAL_URL = "https://myanimelist.net"
 
 class MyAnimeListSpider(CrawlSpider):
     """Scraper for myanimelist."""
+
     name = "myanimelist"
     start_urls = [f"{MAL_URL}/character.php"]
 
@@ -40,6 +41,7 @@ class MyAnimeListSpider(CrawlSpider):
 
 
     def extract_pictures(self, response):
+        """Save the pictures page and update manifest entry."""
         filename = response.meta["filename"]
         response.meta["metadata"]["pictures_stats"] = response.status
         if response.status == 200 and not os.path.exists(filename):
@@ -47,6 +49,7 @@ class MyAnimeListSpider(CrawlSpider):
                 html_fileobj.write(response.body)
 
     def extract_character(self, response):
+        """Save the character page and update write a manifest entry."""
         character_filename = os.path.join(
             self.pages_directory,
             f"{base64_urlencode(response.url)}.html"
