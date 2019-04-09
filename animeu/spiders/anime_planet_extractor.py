@@ -143,19 +143,27 @@ def extract_metadata_from_file(filename):
         text = file_obj.read()
     sel = parsel.Selector(text=text)
     return {
-        "filename": os.path.basename(filename),
-        "name": extract_name(sel),
-        "nickname": extract_nickname(sel),
-        "hair_color": extract_hair_color(sel),
-        "top_loved_rank": extract_top_loved_rank(sel),
-        "top_hated_rank": extract_top_hated_rank(sel),
-        "heart_on_number": extract_heart_on_number(sel),
-        "heart_off_number": extract_heart_off_number(sel),
+        "sources": ["anime-planet"],
+        "filenames": [os.path.basename(filename)],
+        "names": {"en": [extract_name(sel)], "jp": []},
+        "descriptions": [extract_description(sel)],
+        "nicknames": {"en": [extract_nickname(sel)], "jp": []},
+        "info_fields": [
+            {"key": "hair color", "value": extract_hair_color(sel)},
+        ],
+        "rankings": [
+            {"name": "top_loved", "value": extract_top_loved_rank(sel)},
+            {"name": "top_hated", "value": extract_top_hated_rank(sel)},
+            {"name": "heart_on", "value": extract_heart_on_number(sel)},
+            {"name": "heart_off", "value": extract_heart_off_number(sel)},
+        ],
         "tags": extract_tags(sel) or [],
         "anime_roles": extract_anime_roles(sel) or [],
         "manga_roles": extract_manga_roles(sel) or [],
-        "picture": extract_display_picture(sel),
-        "description": extract_description(sel)
+        "pictures": {
+            "display": [],
+            "gallery": [extract_display_picture(sel)]
+        }
     }
 
 def is_sensitive_metadata(metadata):
@@ -191,7 +199,7 @@ def main(argv=None):
                                    pm_parallel=not result.no_parallel,
                                    pm_chunksize=10):
             if is_sensitive_metadata(metadata):
-                print(f"Skipping {metadata['filename']} "
+                print(f"Skipping {metadata['filenames']} "
                       f"due to sensitive content.",
                       file=sys.stderr)
                 continue

@@ -6,6 +6,14 @@
 """Helpers for manipulating JSON."""
 
 import json
+import argparse
+import sys
+
+try:
+    import ijson.backends.yajl2_cffi as ijson
+except ImportError:
+    sys.stderr.write("""Falling back to slower pure-python ijson\n""")
+    import ijson
 
 
 class JSONListStream():
@@ -42,4 +50,26 @@ class JSONListStream():
         else:
             self._fileobj.write(",\n")
 
-        self._fileobj.write(json.dumps(entry))
+        self._fileobj.write(json.dumps(entry, ensure_ascii=False))
+
+
+def merge_json_files_cli(argv=None):
+    """Entry point for JSON merger."""
+    parser = argparse.ArgumentParser("""Merge together multiple json files.""")
+    parser.add_argument("files",
+                        nargs="+",
+                        help="""A court case extract file.""",
+                        metavar="EXTRACT",
+                        type=str)
+    parser.add_argument("--output",
+                        metavar="OUTPUT",
+                        type=argparse.FileType("w"),
+                        default=sys.stdout)
+    result = parser.parse_args(argv or sys.argv[1:])
+
+    with JSONListStream(result.output) as json_output_stream:
+        for filename in result.files:
+            with open(filename, "rb") as fileobj:
+                for entry in ijson.items(fileobj, "item"):
+                    json_output_stream.write(entry)
+    result.output.flush()

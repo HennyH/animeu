@@ -4,17 +4,17 @@
         <div class="card-body">
             <div class="container">
                 <div class="row">
-                    <div class="col col-md-7">
-                        <img class="img-fluid" src="{{ left['img'] }}" alt="{{ left['name'] }}">
+                    <div class="col col-md-3">
+                        <img class="img-fluid" src="{{ left['img'] }}" alt="{{ left['name']['en'] }}">
                     </div>
                     <div class="col col-md">
-                        <h5>{{ left['name'] }} <span class="m-l-1 japanese font-weight-bold">百鬼丸</span></h5>
+                        <h5>{{ left['name']['en'] }} &nbsp;<span class="m-l-1 japanese font-weight-bold">{{ left['name']['jp'] }}</span></h5>
                         <table class="table table-sm">
                             <tbody>
-                                {% for name, value in left['info'].items() %}
+                                {% for field in left['info_fields'] %}
                                     <tr>
-                                        <td>{{ name }}</td>
-                                        <td>{{ value }}</td>
+                                        <td>{{ field["key"] }}</td>
+                                        <td>{{ field["value"] }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

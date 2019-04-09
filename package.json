@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack -p",
     "wds": "webpack-dev-server",
-    "flask": "cross-env FLASK_APP=animeu flask run",
+    "flask": "cross-env FLASK_APP=animeu.app flask run",
     "dev": "cross-env FLASK_ENV=development run-p wds flask",
     "lint:ts": "tslint --format stylish animeu/**/*.ts",
     "lint:py:pylint": "pylint animeu",
