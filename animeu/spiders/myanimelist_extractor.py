@@ -222,9 +222,3 @@ def main(argv=None):
             result.output.flush()
 
 
-if __name__ == "__main__":
-    main([
-        "--pages-directory", os.path.expanduser("~/Documents/projects/mal-data/pages"),
-        "--no-parallel",
-        "--output", "debug.json"
-    ])
