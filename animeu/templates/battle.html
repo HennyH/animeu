@@ -1,32 +1,78 @@
 {% extends "base.html" %}
 {% block body %}
-    <div class="card">
-        <div class="card-body">
-            <div class="container">
-                <div class="row">
-                    <div class="col col-md-3">
-                        <img class="img-fluid" src="{{ left['img'] }}" alt="{{ left['name']['en'] }}">
-                    </div>
-                    <div class="col col-md">
-                        <h5>{{ left['name']['en'] }} &nbsp;<span class="m-l-1 japanese font-weight-bold">{{ left['name']['jp'] }}</span></h5>
-                        <table class="table table-sm">
-                            <tbody>
-                                {% for field in left['info_fields'] %}
-                                    <tr>
-                                        <td>{{ field["key"] }}</td>
-                                        <td>{{ field["value"] }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        {% for tag in left['tags'] %}
-                            <span class="m-1 p-2 badge badge-light">{{ tag }}</span>
-                        {% endfor %}
+
+    {% macro character_card(en_name, jp_name, info_fields, tags, description, picture_url, gallery_urls) -%}
+        <div class="card col-md-5 character-box">
+            <h5 class="card-header">{{ en_name }} <br>
+                <small class="m-t-1 japanese font-weight-bold">{{ jp_name }}</small>
+            </h5>
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col col-md-3">
+                            <img class="img-fluid" src="{{ picture_url }}" alt="{{ en_name }}">
+                        </div>
+                        <div class="col col-md">
+                            
+                            <table class="table table-sm">
+                                <tbody>
+                                    {% for field in info_fields %}
+                                        <tr>
+                                            <td>{{ field["key"] }}</td>
+                                            <td>{{ field["value"] }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% for tag in tags %}
+                                <span class="m-1 p-2 badge badge-light">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
+                <p class="card-text">{{ description }}</p>
+                
             </div>
-            <p class="card-text">{{ left['description'] }}</p>
-            <a href="#" class="btn-primary">Smash</a>
+            <div class="card-footer">
+                <button type="button" class="btn btn-outline-primary">
+                        Smash
+                </button> 
+            </div>
         </div>
-    </div>
+    {%- endmacro %}
+
+    <style>
+        .card-header{
+            margin: 0px;
+        }
+        small{
+            font-size: 0.8em;
+        }
+        .battle-container{
+            width: 100%;
+            margin : 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .character-box{
+            padding: 0px;
+            margin: 20px;
+            align-items: stretch;
+        }
+    </style>
+
+    <section>
+        <div class="row battle-container">
+            {{ character_card(en_name=left["names"]["en"][0], jp_name=left["names"]["jp"][0], info_fields=left["info_fields"],
+                        tags=left["tags"], description=left["description"], picture_url=left["pictures"]["display"][0],
+                        gallery_urls=left["pictures"]["gallery"]) }}
+
+            {{ character_card(en_name=right["names"]["en"][0], jp_name=right["names"]["jp"][0], info_fields=right["info_fields"],
+                        tags=right["tags"], description=right["description"], picture_url=right["pictures"]["display"][0],
+                        gallery_urls=right["pictures"]["gallery"]) }}
+        </div>
+    </section>
+    
+     
+     
 {% endblock body %}

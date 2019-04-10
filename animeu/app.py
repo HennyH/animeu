@@ -42,18 +42,8 @@ def maybe_first(indexable, default=None):
 
 @app.route("/")
 def index():
-    """Render an example page."""
-    character = random.choice(DATA_JSON)
-    print(character)
+    """Render an example page."""   
     return render_template('battle.html', **{
-        "left": {
-            "img": maybe_first(character["pictures"]["display"]),
-            "name": {
-                "en": maybe_first(character["names"]["en"]),
-                "jp": maybe_first(character["names"]["jp"])
-            },
-            "description": maybe_first(character["descriptions"]),
-            "tags": character["tags"],
-            "info_fields": character["info_fields"]
-        }
+        "left": random.choice(DATA_JSON),
+        "right": random.choice(DATA_JSON)
     })
