@@ -14,25 +14,15 @@ import requests
 import base64
 import json
 import parmap
+from functools import partial, wraps
 from parsel import Selector, SelectorList
+from animeu.common.funchelpers import compose, call
 from animeu.spiders.anime_planet_downloader import ANIME_PLANET_URL
 from animeu.spiders.json_helpers import JSONListStream
 from animeu.spiders.xpath_helpers import get_all_text
 
 BLACKLISTED_TAG_RES = [r"child(ren)?", r"elementary\s+school",
                        r"middle\s+school", r"underage", r"animals?"]
-
-def optional(func, default=None):
-    """Wrap a function which could fail."""
-    def wrapped(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as error:
-            print(f"{func}(args={args}, kwargs={kwargs}) encountered error: "
-                  f"{error}",
-                  file=sys.stderr)
-            return default
-    return wrapped
 
 def strip_field_name(text):
     """Strip the field name section from a piece of text.
@@ -47,25 +37,23 @@ def select_basic_stats_section(sel):
     """Select the section which contains basic stats such as hair color."""
     return sel.xpath("//section[contains(@class, 'entryBar')]")
 
-@optional
-def extract_name(sel):
+def extract_names(sel):
     """Extract the character's full name."""
-    return get_all_text(sel.xpath("//h1[@itemprop = 'name']"))
+    return [get_all_text(sel.xpath("//h1[@itemprop = 'name']"))]
 
-@optional
-def extract_nickname(sel):
+def extract_nicknames(sel):
     """Extract the character's nickname."""
-    return strip_field_name(get_all_text(sel.xpath("//h2[@class = 'aka']")))
+    return [strip_field_name(get_all_text(sel.xpath("//h2[@class = 'aka']")))]
 
-@optional
-def extract_hair_color(sel):
+def extract_info_fields(sel):
     """Extract the character's hair color."""
     stats_sel = select_basic_stats_section(sel)
-    return strip_field_name(
-        get_all_text(stats_sel.xpath("div[re:test(., 'hair color', 'i')]"))
-    )
+    return [
+        {"key": "Hair Color", "value": strip_field_name(
+            get_all_text(stats_sel.xpath("div[re:test(., 'hair color', 'i')]"))
+         )}
+    ]
 
-@optional
 def extract_top_loved_rank(sel):
     """Extract the character's top loved rank."""
     stats_sel = select_basic_stats_section(sel)
@@ -75,7 +63,6 @@ def extract_top_loved_rank(sel):
         get_all_text(stats_sel.xpath("div/a[re:test(@href, 'top-loved')]"))
     )
 
-@optional
 def extract_top_hated_rank(sel):
     """Extract the character's top loved rank."""
     stats_sel = select_basic_stats_section(sel)
@@ -85,26 +72,22 @@ def extract_top_hated_rank(sel):
         get_all_text(stats_sel.xpath("div/a[re:test(@href, 'top-hated')]"))
     )
 
-@optional
 def extract_heart_on_number(sel):
     """Extract the number of heart on emojis the character has recieved."""
     return re.sub(r"[^\d]|#",
                   "",
                   get_all_text(sel.xpath("//h3[./span[@class = 'heartOn']]")))
 
-@optional
 def extract_heart_off_number(sel):
     """Extract the number of heart off emojis the character has recieved."""
     return re.sub(r"[^\d]|#",
                   "",
                   get_all_text(sel.xpath("//h3[./span[@class = 'heartOff']]")))
 
-@optional
 def extract_tags(sel):
     """Extract the tags associated with the character."""
     return list(map(get_all_text, sel.xpath("//div[@class = 'tags']/ul/li/a")))
 
-@optional
 def extract_anime_roles(sel):
     """Extract the anime roles the character has appeared in."""
     anime_roles_table_sel = \
@@ -115,7 +98,6 @@ def extract_anime_roles(sel):
         anime_roles.append({"name": anime, "role": role})
     return anime_roles
 
-@optional
 def extract_manga_roles(sel):
     """Extract the manga roles the character has appeared in."""
     manga_roles_table_sel = \
@@ -126,43 +108,61 @@ def extract_manga_roles(sel):
         manga_roles.append({"name": manga, "role": role})
     return manga_roles
 
-@optional
-def extract_display_picture(sel):
+def extract_display_pictures(sel):
     """Extract the display picture for the character."""
     relative_src = sel.xpath("//img[@itemprop = 'image']").attrib["src"]
-    return urllib.parse.urljoin(ANIME_PLANET_URL, relative_src)
+    return [urllib.parse.urljoin(ANIME_PLANET_URL, relative_src)]
 
-@optional
-def extract_description(sel):
+def extract_descriptions(sel):
     """Extract the description of the character."""
-    return get_all_text(sel.xpath("//div[@itemprop = 'description']"))
+    return [get_all_text(sel.xpath("//div[@itemprop = 'description']"))]
+
+def optional(func, filename=None, default=None):
+    """Wrap a function which could fail."""
+    def wrapped(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as error:
+            print(f"file={filename} {func}(args={args}, kwargs={kwargs}) "
+                  f"encountered error: {error}",
+                  file=sys.stderr)
+            return default
+    return wrapped
+
 
 def extract_metadata_from_file(filename):
     """Extract the metadata from a file."""
     with open(filename, "r", errors="ignore") as file_obj:
         text = file_obj.read()
     sel = parsel.Selector(text=text)
+    def list_optional(func, sel):
+        return list(filter(bool,
+                           optional(func, filename=filename, default=[])(sel)))
     return {
         "sources": ["anime-planet"],
         "filenames": [os.path.basename(filename)],
-        "names": {"en": [extract_name(sel)], "jp": []},
-        "descriptions": [extract_description(sel)],
-        "nicknames": {"en": [extract_nickname(sel)], "jp": []},
-        "info_fields": [
-            {"key": "hair color", "value": extract_hair_color(sel)},
-        ],
+        "names": {
+            "en": list_optional(extract_names, sel),
+            "jp": []
+        },
+        "descriptions": list_optional(extract_descriptions, sel),
+        "nicknames": {
+            "en": list_optional(extract_nicknames, sel),
+            "jp": []
+        },
+        "info_fields": list_optional(extract_info_fields, sel),
         "rankings": [
             {"name": "top_loved", "value": extract_top_loved_rank(sel)},
             {"name": "top_hated", "value": extract_top_hated_rank(sel)},
             {"name": "heart_on", "value": extract_heart_on_number(sel)},
             {"name": "heart_off", "value": extract_heart_off_number(sel)},
         ],
-        "tags": extract_tags(sel) or [],
-        "anime_roles": extract_anime_roles(sel) or [],
-        "manga_roles": extract_manga_roles(sel) or [],
+        "tags": list_optional(extract_tags, sel),
+        "anime_roles": list_optional(extract_anime_roles, sel),
+        "manga_roles": list_optional(extract_manga_roles, sel),
         "pictures": {
             "display": [],
-            "gallery": [extract_display_picture(sel)]
+            "gallery": list_optional(extract_display_pictures, sel)
         }
     }
 
@@ -178,20 +178,28 @@ def main(argv=None):
     """Entry point to the anime planet page extractor."""
     argv = argv or sys.argv[1:]
     parser = argparse.ArgumentParser("""Extract content from anime pages.""")
+    parser.add_argument("--manifest",
+                        metavar="MANIFEST",
+                        type=str,
+                        required=True)
     parser.add_argument("--pages-directory",
                         metavar="PAGES",
                         type=str,
                         required=False)
     parser.add_argument("--output",
-                        metavar="OUTPUT",
+                        metavar="MANIFEST",
                         type=argparse.FileType("w"),
                         default=sys.stdout)
     parser.add_argument("--no-parallel",
                         action="store_true",
                         help="""Disable parallel processing.""")
     result = parser.parse_args(argv)
-    filenames = [os.path.join(result.pages_directory, name)
-                 for name in os.listdir(result.pages_directory)]
+    with open(result.manifest, "r") as manifest_fileobj:
+        manifest = json.load(manifest_fileobj)
+    basenames = [os.path.basename(i["name"]) for i in manifest]
+    filenames = \
+        list(map(partial(os.path.join, result.pages_directory), basenames))
+    print(filenames)
     with JSONListStream(result.output) as extract_file:
         for metadata in parmap.map(extract_metadata_from_file,
                                    filenames,

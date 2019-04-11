@@ -178,19 +178,14 @@ def test_is_male_character(metadata):
     return False
 
 
-TEST_FILES = [
-    "aHR0cHM6Ly9teWFuaW1lbGlzdC5uZXQvY2hhcmFjdGVyLzM4NTM4L0V1Y2xpd29vZF9IZWxsc2N5dGhl.html",
-    "aHR0cHM6Ly9teWFuaW1lbGlzdC5uZXQvY2hhcmFjdGVyLzUwMy9JbGx5YXN2aWVsX3Zvbl9FaW56YmVybg==.html",
-    "aHR0cHM6Ly9teWFuaW1lbGlzdC5uZXQvY2hhcmFjdGVyLzgyNTI1L1NoaXJv.html",
-    "aHR0cHM6Ly9teWFuaW1lbGlzdC5uZXQvY2hhcmFjdGVyLzYzL1dpbnJ5X1JvY2tiZWxs.html",
-
-    #"aHR0cHM6Ly9teWFuaW1lbGlzdC5uZXQvY2hhcmFjdGVyLzUwMy9JbGx5YXN2aWVsX3Zvbl9FaW56YmVybg==.html"
-]
-
 def main(argv=None):
     """Entry point to the myanimelist extractor."""
     argv = argv or sys.argv[1:]
     parser = argparse.ArgumentParser("""Extract content from anime pages.""")
+    parser.add_argument("--manifest",
+                        metavar="MANIFEST",
+                        type=str,
+                        required=True)
     parser.add_argument("--pages-directory",
                         metavar="PAGES",
                         type=str,
@@ -203,10 +198,11 @@ def main(argv=None):
                         action="store_true",
                         help="""Disable parallel processing.""")
     result = parser.parse_args(argv)
-    filenames = [os.path.join(result.pages_directory, name)
-                 for name in os.listdir(result.pages_directory)
-                 if not name.endswith(".pictures.html")
-                    and name in TEST_FILES]
+    with open(result.manifest, "r") as manifest_fileobj:
+        manifest = json.load(manifest_fileobj)
+    basenames = [os.path.basename(i["character_filename"]) for i in manifest]
+    filenames = \
+        list(map(partial(os.path.join, result.pages_directory), basenames))
     with JSONListStream(result.output) as extract_file:
         for metadata in parmap.map(extract_metadata_from_file,
                                    filenames,
