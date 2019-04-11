@@ -12,6 +12,7 @@ def normalize_whitespace(text):
     text = text.replace(u"\xa0", u" ")
     text = text.replace(u"\u2019", u"'")
     text = text.replace(u"\u00c2", u" ")
+    text = text.replace(u"\x96", u"\u0096")
     text = re.sub(r"[^\S\n]+", " ", text)
     text = text.strip()
     return text

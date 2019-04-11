@@ -3,7 +3,7 @@
 # Script to generate the character database
 #
 # See /LICENCE.md for Copyright information
-"""Script to generate the character database"""
+"""Script to generate the character database."""
 import os
 import sys
 import argparse
@@ -89,6 +89,7 @@ def merge_character_metadata(left, right):
 
 
 def maybe_match_mal_character(mal_character, ap_characters):
+    """Try match a MAL character to an AP character."""
     # we only support anime girls!
     if not mal_character["anime_roles"]:
         return None

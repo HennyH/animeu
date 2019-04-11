@@ -11,7 +11,7 @@ from functools import reduce
 def compose(*functions):
     """Compose a series of functions left to right.
 
-    f, g, k, ... => f(g(k(...(x))))
+    f, g, k, ... => x -> f(g(k(...(x))))
     """
     # pylint: disable=undefined-variable
     return reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
