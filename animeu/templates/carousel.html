@@ -1,0 +1,48 @@
+{% macro carousel(name, gallery_urls) %}
+    <div id="{{ name }}" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            {% for indicator_id in range(gallery_urls | length) %}            
+                <li data-target="#{{ name }}" data-slide-to="{{ indicator_id }}" class="{{ 'active' if loop.first else ''}}"></li>
+            {% endfor %}
+        </ol>
+        <div class="carousel-inner">
+            {% for gallery_url in gallery_urls %}
+                <div class="carousel-item {{ 'active' if loop.first else ''}}">
+                    <img class="d-block" src="{{ gallery_url }}" />
+                </div>
+            {% endfor %}
+        </div>
+        <a class="carousel-control-prev" href="#{{ name }}" role="button" data-slide="prev">
+            <i class="fas fa-angle-left fa-2x" style="color: black"></i>
+        </a>
+        <a class="carousel-control-next" href="#{{ name }}" role="button" data-slide="next">
+            <i class="fas fa-angle-right fa-2x" style="color: black"></i>
+        </a>
+    </div>
+    <style>
+        .carousel {
+            width: 255px;
+            height: 350px;
+        }
+        .carousel-item img {
+            width: 255px;
+            height: 350px;
+        }
+        .carousel-control-prev {
+            padding-left: 20px;
+            transition: 0.5s ease-in-out;
+        }
+        .carousel-control-prev:hover {
+            padding-left: 0px;
+            transition: 0.5s ease-in-out;
+        }
+        .carousel-control-next  {
+            padding-right: 20px;
+            transition: 0.5s ease-in-out;
+        }
+        .carousel-control-next:hover {
+            padding-right: 0px;
+            transition: 0.5s ease-in-out;
+        }
+    </style>
+{%- endmacro %}

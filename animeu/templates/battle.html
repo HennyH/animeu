@@ -1,7 +1,15 @@
 {% extends "base.html" %}
+{% from "carousel.html" import carousel with context %}
 {% block body %}
 
-    {% macro character_card(en_name, jp_name, info_fields, tags, description, picture_url, gallery_urls) -%}
+    <script>
+        function expandGallery(){
+            $(".attributes-column").toggleClass('hidden');
+            $(".gallery-picture:not(:first-child)").toggleClass('hidden')
+        }
+    </script>
+
+    {% macro character_card(id, en_name, jp_name, info_fields, tags, description, picture_url, gallery_urls) -%}
         <div class="card col-md-5 character-box">
             <h5 class="card-header">{{ en_name }} <br>
                 <small class="m-t-1 japanese font-weight-bold">{{ jp_name }}</small>
@@ -9,12 +17,11 @@
             <div class="card-body">
                 <div class="container">
                     <div class="row">
-                        <div class="col col-md-3">
-                            <img class="img-fluid" src="{{ picture_url }}" alt="{{ en_name }}">
+                        <div class="col-lg-6 gallery-column">
+                            {{ carousel(id + "_carousel", gallery_urls) }}
                         </div>
-                        <div class="col col-md">
-                            
-                            <table class="table table-sm">
+                        <div class="col-lg attributes-column">
+                            <table class="table attributes-table table-sm">
                                 <tbody>
                                     {% for field in info_fields %}
                                         <tr>
@@ -42,6 +49,16 @@
     {%- endmacro %}
 
     <style>
+        .hidden {
+            display: none;
+        }
+
+        body{
+            overflow-x: hidden;
+        }
+        section{
+            max-width: 99vw;
+        }
         .card-header{
             margin: 0px;
         }
@@ -59,15 +76,39 @@
             margin: 20px;
             align-items: stretch;
         }
+        .mainPic{
+            /* min-width: 100%;
+            width: 100%;
+            max-width: 100%; 
+            max-height: 70vh; */
+        }
+        .mainPic-container{
+            position: relative;
+            min-width: 150px;
+            max-height: 70vh;
+        }
+        .gallery-expand{
+            position: absolute;
+            visibility: hidden; 
+            max-width: 25vw;
+            top: 0;
+            right: -500px;
+            z-index: 10;
+        }
+        .galleryPics{
+            max-width: 150px;
+            min-width: 150px;
+            position: relative;
+        }
     </style>
 
     <section>
         <div class="row battle-container">
-            {{ character_card(en_name=left["names"]["en"][0], jp_name=left["names"]["jp"][0], info_fields=left["info_fields"],
+            {{ character_card("left", en_name=left["names"]["en"][0], jp_name=left["names"]["jp"][0], info_fields=left["info_fields"],
                         tags=left["tags"], description=left["description"], picture_url=left["pictures"]["display"][0],
                         gallery_urls=left["pictures"]["gallery"]) }}
 
-            {{ character_card(en_name=right["names"]["en"][0], jp_name=right["names"]["jp"][0], info_fields=right["info_fields"],
+            {{ character_card("right", en_name=right["names"]["en"][0], jp_name=right["names"]["jp"][0], info_fields=right["info_fields"],
                         tags=right["tags"], description=right["description"], picture_url=right["pictures"]["display"][0],
                         gallery_urls=right["pictures"]["gallery"]) }}
         </div>
