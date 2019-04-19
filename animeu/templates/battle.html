@@ -3,117 +3,237 @@
 {% block body %}
 
     <script>
-        function expandGallery(){
-            $(".attributes-column").toggleClass('hidden');
-            $(".gallery-picture:not(:first-child)").toggleClass('hidden')
-        }
+        $(document).ready(() => {
+            $(".toggle-image-view").click(e => {
+                const clickedButton = $(e.target);
+                const $allCards = $(".character-card");
+                /* We may have entered a single-card view and then shift-clicked
+                 * and enabled the multi-display view. Because a potentially
+                 * hidden card should (maybe) now be shown we set them all to
+                 * be visible and then let the normal logic decide which ones
+                 * are not visible.
+                 */
+                $allCards.removeClass("hidden");
+                const $selectedCards = e.ctrlKey
+                    ? $allCards
+                    : clickedButton.closest(".character-card");
+                const selectedCards = $selectedCards.toArray();
+                const areAllCardsInPictureView = selectedCards.every(sc => $(sc).hasClass("picture-view"));
+                for (const card of $allCards) {
+                    const $card = $(card)
+                    if (selectedCards.some(sc => sc.id === $card.prop("id"))) {
+                        $card.removeClass("hidden");
+                    } else if (!areAllCardsInPictureView) {
+                        $card.addClass("hidden");
+                    }
+                }
+
+                $(".battle-grid").removeClass("expand-single");
+                if (areAllCardsInPictureView && e.ctrlKey) {
+                    $allCards.removeClass("picture-view");
+                    $allCards.addClass("info-view");
+                } else if (areAllCardsInPictureView && !e.ctrlKey) {
+                    $selectedCards.removeClass("picture-view");
+                    $selectedCards.addClass("info-view");
+                } else if (e.ctrlKey) {
+                    $allCards.removeClass("info-view");
+                    $allCards.addClass("picture-view")
+                } else {
+                    $selectedCards.removeClass("info-view");
+                    $selectedCards.addClass("picture-view");
+                    $selectedCards
+                    $(".battle-grid").addClass("expand-single");
+                }
+
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
     </script>
 
     {% macro character_card(id, en_name, jp_name, info_fields, tags, description, picture_url, gallery_urls) -%}
-        <div class="card col-md-5 character-box">
-            <h5 class="card-header">{{ en_name }} <br>
-                <small class="m-t-1 japanese font-weight-bold">{{ jp_name }}</small>
+        <div class="card character-card info-view" id="{{ id }}">
+            <h5 class="card-header">
+                <div class="primary-name">
+                    <span>{{ en_name }}</span>
+                    <button type="button" class="toggle-image-view btn btn-outline-secondary">
+                        <i class="fas fa-images"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary">
+                        <i class="far fa-heart" style="color: red;"></i>
+                    </button>
+                </div>
+                <small class="jp-name font-weight-bold">{{ jp_name }}</small>
             </h5>
             <div class="card-body">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-6 gallery-column">
-                            {{ carousel(id + "_carousel", gallery_urls) }}
-                        </div>
-                        <div class="col-lg attributes-column">
-                            <table class="table attributes-table table-sm">
-                                <tbody>
-                                    {% for field in info_fields %}
-                                        <tr>
-                                            <td>{{ field["key"] }}</td>
-                                            <td>{{ field["value"] }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                            {% for tag in tags %}
-                                <span class="m-1 p-2 badge badge-light">{{ tag }}</span>
-                            {% endfor %}
-                        </div>
-                    </div>
+                <div class="pictures-grid picture-view-visible">
+                    {% for url in gallery_urls %}
+                        <img src="{{ url }}" />
+                    {% endfor %}
                 </div>
-                <p class="card-text">{{ description }}</p>
-                
+                <div class="character-picture-carousel info-view-visible">
+                    {{ carousel(id + "_carousel", gallery_urls) }}
+                </div>
+                <div class="character-attributes-column info-view-visible">
+                    <table class="table attributes-table table-sm">
+                        <tbody>
+                            {% for field in info_fields %}
+                                <tr>
+                                    <td>{{ field["key"] }}</td>
+                                    <td>{{ field["value"] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% for tag in tags %}
+                        <span class="m-1 p-2 badge badge-light">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+                <p class="card-text info-view-visible">{{ description }}</p>
             </div>
             <div class="card-footer">
                 <button type="button" class="btn btn-outline-primary">
-                        Smash
-                </button> 
+                        Waifu
+                </button>
             </div>
         </div>
     {%- endmacro %}
 
     <style>
-        .hidden {
+       .hidden {
+           display: none;
+       }
+
+       /* Layout the information in the character cards and adapt to sceen
+        * sizes.
+        */
+
+        .primary-name button {
+            float: right;
+        }
+
+        .primary-name button:not(:first-child) {
+            margin-right: 0.5em;
+        }
+
+        .character-card .card-body {
+            display: grid;
+            grid-row-gap: 1em;
+        }
+
+        /* Toggle the visibility of different sections of the card depending
+         * on the 'view' stype class that is currently applied to the
+         * character card.
+         */
+        .info-view .info-view-visible {
+            display: initial;
+        }
+
+        .info-view .picture-view-visible {
             display: none;
         }
 
-        body{
-            overflow-x: hidden;
+        .picture-view .info-view-visible {
+            display: none;
         }
-        section{
-            max-width: 99vw;
+
+        .picture-view .picture-view-visible {
+            display: initial;
         }
-        .card-header{
-            margin: 0px;
+
+        .picture-view .picture-view-visible.pictures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+            grid-auto-rows: 350px;
+            gap: 2em 2em;
+            padding: 2em;
         }
-        small{
-            font-size: 0.8em;
+
+        .pictures-grid img {
+            justify-self: center;
+            align-self: center;
+            max-width: 225px;
+            max-height: 350px;
         }
-        .battle-container{
-            width: 100%;
-            margin : 20px;
-            display: flex;
-            justify-content: center;
+
+        .character-card.info-view .card-body {
+            grid-template-rows: minmax(350px, min-content) repeat(auto-fit, minmax(0, min-content));
         }
-        .character-box{
-            padding: 0px;
-            margin: 20px;
-            align-items: stretch;
+
+        @media screen and (min-width: 992px) {
+            .character-card.info-view .card-body {
+                grid-template-columns: 255px 1fr;
+                grid-column-gap: 1em;
+            }
+            .character-card.picture-view .card-body {
+                grid-template-columns: 1fr;
+                grid-template-rows: initial;
+                grid-column-gap: 1em;
+            }
         }
-        .mainPic{
-            /* min-width: 100%;
-            width: 100%;
-            max-width: 100%; 
-            max-height: 70vh; */
+
+        /* On smaller screens we can't fit both the picture gallery and
+         * the 'info fields' on a single row.
+         */
+        @media screen and (max-width: 992px) {
+            .character-card .card-body {
+                grid-template-columns: 1fr;
+            }
+
+            /* When displaying the picture gallery in it's own row we
+             * need to make sure we center it.
+             */
+            .character-picture-carousel {
+                justify-self: center;
+            }
         }
-        .mainPic-container{
-            position: relative;
-            min-width: 150px;
-            max-height: 70vh;
+
+
+       /* Layout the character cards themselves and the rating controls
+        * at a high level.
+        */
+
+        .battle-grid {
+            display: grid;
+            padding: 1em;
+            grid-template-columns: repeat(2, 1fr);
+            grid-column-gap: 1em;
         }
-        .gallery-expand{
-            position: absolute;
-            visibility: hidden; 
-            max-width: 25vw;
-            top: 0;
-            right: -500px;
-            z-index: 10;
+
+        .battle-grid.expand-single {
+            padding-left: 10%;
+            padding-right: 10%;
+            grid-template-columns: 1fr;
+            grid-column-gap: initial;
+            transition: grid-template-columns 20000ms ease-in-out;
         }
-        .galleryPics{
-            max-width: 150px;
-            min-width: 150px;
-            position: relative;
+
+        @media screen and (max-width: 1920px) {
+            .battle-grid.expand-single {
+                padding-left: 1em;
+                padding-right: 1em;
+            }
         }
+
+        @media screen and (max-width: 640px) {
+            .battle-grid {
+                grid-template-columns: 1fr;
+                grid-row-gap: 1em;
+            }
+        }
+
     </style>
 
-    <section>
-        <div class="row battle-container">
-            {{ character_card("left", en_name=left["names"]["en"][0], jp_name=left["names"]["jp"][0], info_fields=left["info_fields"],
-                        tags=left["tags"], description=left["description"], picture_url=left["pictures"]["display"][0],
-                        gallery_urls=left["pictures"]["gallery"]) }}
+    <section class="battle-grid">
+        {{ character_card("left", en_name=left["names"]["en"][0], jp_name=left["names"]["jp"][0], info_fields=left["info_fields"],
+                    tags=left["tags"], description=left["description"], picture_url=left["pictures"]["display"][0],
+                    gallery_urls=left["pictures"]["gallery"]) }}
 
-            {{ character_card("right", en_name=right["names"]["en"][0], jp_name=right["names"]["jp"][0], info_fields=right["info_fields"],
-                        tags=right["tags"], description=right["description"], picture_url=right["pictures"]["display"][0],
-                        gallery_urls=right["pictures"]["gallery"]) }}
-        </div>
+        {{ character_card("right", en_name=right["names"]["en"][0], jp_name=right["names"]["jp"][0], info_fields=right["info_fields"],
+                    tags=right["tags"], description=right["description"], picture_url=right["pictures"]["display"][0],
+                    gallery_urls=right["pictures"]["gallery"]) }}
     </section>
-    
-     
-     
+
+
+
 {% endblock body %}
