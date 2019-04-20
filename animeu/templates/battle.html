@@ -4,9 +4,9 @@
 
     <script>
         $(document).ready(() => {
-            $(".toggle-image-view").click(e => {
-                const clickedButton = $(e.target);
-                const $allCards = $(".character-card");
+            const VIEWS = ["picture-view", "info-view", "description-view"];
+
+            function toggleCardView(viewToToggle, $allCards, $selectedCards, singleExpand) {
                 /* We may have entered a single-card view and then shift-clicked
                  * and enabled the multi-display view. Because a potentially
                  * hidden card should (maybe) now be shown we set them all to
@@ -14,50 +14,78 @@
                  * are not visible.
                  */
                 $allCards.removeClass("hidden");
-                const $selectedCards = e.ctrlKey
-                    ? $allCards
-                    : clickedButton.closest(".character-card");
                 const selectedCards = $selectedCards.toArray();
-                const areAllCardsInPictureView = selectedCards.every(sc => $(sc).hasClass("picture-view"));
+                const allSelectedCardsAreInToggleView = selectedCards.every(sc => $(sc).hasClass(viewToToggle));
+
                 for (const card of $allCards) {
                     const $card = $(card)
                     if (selectedCards.some(sc => sc.id === $card.prop("id"))) {
+                        for (const view of VIEWS) {
+                            $card.removeClass(view);
+                        }
                         $card.removeClass("hidden");
-                    } else if (!areAllCardsInPictureView) {
+                    } else if (! allSelectedCardsAreInToggleView) {
                         $card.addClass("hidden");
                     }
                 }
 
                 $(".battle-grid").removeClass("expand-single");
-                if (areAllCardsInPictureView && e.ctrlKey) {
-                    $allCards.removeClass("picture-view");
-                    $allCards.addClass("info-view");
-                } else if (areAllCardsInPictureView && !e.ctrlKey) {
-                    $selectedCards.removeClass("picture-view");
-                    $selectedCards.addClass("info-view");
-                } else if (e.ctrlKey) {
-                    $allCards.removeClass("info-view");
-                    $allCards.addClass("picture-view")
-                } else {
-                    $selectedCards.removeClass("info-view");
-                    $selectedCards.addClass("picture-view");
-                    $selectedCards
-                    $(".battle-grid").addClass("expand-single");
+                for (const view of VIEWS) {
+                    $allCards.find(`.toggle-${view}`).removeClass("active");
                 }
+                if (allSelectedCardsAreInToggleView) {
+                    $selectedCards.removeClass(viewToToggle);
+                    $selectedCards.addClass("info-view");
+                } else {
+                    $selectedCards.addClass(viewToToggle);
+                    $selectedCards.find(`.toggle-${viewToToggle}`).addClass("active");
+                    if (selectedCards.length === 1) {
+                        $(".battle-grid").addClass("expand-single");
+                    }
+                }
+            }
 
+            $(".toggle-image-view").click(e => {
+                const $allCards = $(".character-card");
+                const clickedButton = $(e.target);
+                const $selectedCards = e.ctrlKey
+                    ? $allCards
+                    : clickedButton.closest(".character-card");
+                toggleCardView("picture-view", $allCards, $selectedCards);
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
+            $(".toggle-description-view").click(e => {
+                const $allCards = $(".character-card");
+                const clickedButton = $(e.target);
+                const $selectedCards = e.ctrlKey
+                    ? $allCards
+                    : clickedButton.closest(".character-card");
+                toggleCardView("description-view", $allCards, $selectedCards);
                 e.preventDefault();
                 e.stopPropagation();
             });
         });
     </script>
 
-    {% macro character_card(id, en_name, jp_name, info_fields, tags, description, picture_url, gallery_urls) -%}
+    {% macro character_card(id, character) -%}
+        {% set en_name = character["names"]["en"][0] %}
+        {% set jp_name = character["names"]["jp"][0] %}
+        {% set info_fields = character["info_fields"] %}
+        {% set tags = character["tags"] %}
+        {% set description = character["descriptions"][0] %}
+        {% set gallery_urls = character["pictures"]["gallery"] %}
+        {% set anime_roles = character["anime_roles"] %}
         <div class="card character-card info-view" id="{{ id }}">
             <h5 class="card-header">
                 <div class="primary-name">
                     <span>{{ en_name }}</span>
                     <button type="button" class="toggle-image-view btn btn-outline-secondary">
                         <i class="fas fa-images"></i>
+                    </button>
+                    <button type="button" class="toggle-description-view btn btn-outline-secondary">
+                        <i class="fas fa-info-circle"></i>
                     </button>
                     <button type="button" class="btn btn-outline-secondary">
                         <i class="far fa-heart" style="color: red;"></i>
@@ -71,10 +99,33 @@
                         <img src="{{ url }}" />
                     {% endfor %}
                 </div>
-                <div class="character-picture-carousel info-view-visible">
+                <div class="character-picture-carousel description-view-visible info-view-visible">
                     {{ carousel(id + "_carousel", gallery_urls) }}
                 </div>
-                <div class="character-attributes-column info-view-visible">
+                <div class="character-brief-metadata-flex info-view-visible">
+                    <div class="anime-roles-grid">
+                        {% for anime_role in anime_roles[:7] | sort(attribute="role") %}
+                            {% if "picture" in anime_role %}
+                                <div class="anime-role">
+                                    <img src="{{ anime_role['picture'] }}" />
+                                    <div>
+                                        <a href="#" class="anime-name">{{ anime_role["name" ]}}</a>
+                                        <small class="anime-role-type">{{ anime_role["role"] }}</small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% if anime_roles | length > 7 %}
+                            <a href="#">View All Animes</a>
+                        {% endif %}
+                    </div>
+                    <div class="tags-list">
+                        {% for tag in tags %}
+                            <span class="m-1 p-2 badge badge-light">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="character-description description-view-visible">
                     <table class="table attributes-table table-sm">
                         <tbody>
                             {% for field in info_fields %}
@@ -85,11 +136,10 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    {% for tag in tags %}
-                        <span class="m-1 p-2 badge badge-light">{{ tag }}</span>
-                    {% endfor %}
+                    {% if description %}
+                        <p>{{ description }}</p>
+                    {% endif %}
                 </div>
-                <p class="card-text info-view-visible">{{ description }}</p>
             </div>
             <div class="card-footer">
                 <button type="button" class="btn btn-outline-primary">
@@ -124,7 +174,7 @@
         /* Toggle the visibility of different sections of the card depending
          * on the 'view' stype class that is currently applied to the
          * character card.
-         */
+
         .info-view .info-view-visible {
             display: initial;
         }
@@ -140,13 +190,41 @@
         .picture-view .picture-view-visible {
             display: initial;
         }
+        */
+
+        .character-card.info-view .info-view-visible {
+            display: initial !important;
+        }
+
+        .character-card.pictures-view .picture-view-visible {
+            display: initial !important;
+        }
+
+        .character-card.description-view .description-view-visible {
+            display: initial !important;
+        }
+
+        .character-card:not(.info-view) .info-view-visible {
+            display: none;
+        }
+
+        .character-card:not(.pictures-view) .picture-view-visible {
+            display: none;
+        }
+
+        .character-card:not(.description-view) .description-view-visible {
+            display: none;
+        }
+
+        .description-view .character-picture-carousel {
+            justify-self: center;
+        }
 
         .picture-view .picture-view-visible.pictures-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
             grid-auto-rows: 350px;
             gap: 2em 2em;
-            padding: 2em;
         }
 
         .pictures-grid img {
@@ -157,7 +235,7 @@
         }
 
         .character-card.info-view .card-body {
-            grid-template-rows: minmax(350px, min-content) repeat(auto-fit, minmax(0, min-content));
+            grid-template-rows: minmax(350px, min-content) repeat(auto-fit, minmax(min-content, min-content));
         }
 
         @media screen and (min-width: 992px) {
@@ -170,6 +248,54 @@
                 grid-template-rows: initial;
                 grid-column-gap: 1em;
             }
+        }
+
+        .character-card.info-view .anime-roles-grid {
+            display: grid;
+            grid-column: 1 / -1;
+            grid-template-columns: repeat(auto-fit, 190px);
+            grid-auto-rows: 32px;
+            grid-row-gap: 1em;
+            grid-column-gap: 1em;
+        }
+
+        .character-card.info-view .character-brief-metadata-flex {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .character-card.info-view .character-brief-metadata-flex > *:not(:first-child) {
+            margin-top: 1em;
+        }
+
+        .anime-role {
+            width: 190px;
+            display: grid;
+            font-size: 11px;
+            line-height: 1.5em;
+            grid-template-columns: 23px 1fr;
+            grid-column-gap: 1em;
+        }
+
+        .anime-name {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            display: block;
+            overflow: hidden;
+            width: 150px;
+        }
+
+        .anime-role .anime-role-type {
+            grid-column: 2 / -1;
+        }
+
+        .anime-role img {
+            border: 1px solid lightgray;
+            padding: 1px;
+        }
+
+        .character-description {
+            font-size: 12px;
         }
 
         /* On smaller screens we can't fit both the picture gallery and
@@ -200,12 +326,18 @@
             grid-column-gap: 1em;
         }
 
+        @media screen and (max-width: 640px) {
+            .battle-grid {
+                grid-template-columns: 1fr;
+                grid-row-gap: 1em;
+            }
+        }
+
         .battle-grid.expand-single {
             padding-left: 10%;
             padding-right: 10%;
             grid-template-columns: 1fr;
             grid-column-gap: initial;
-            transition: grid-template-columns 20000ms ease-in-out;
         }
 
         @media screen and (max-width: 1920px) {
@@ -214,24 +346,11 @@
                 padding-right: 1em;
             }
         }
-
-        @media screen and (max-width: 640px) {
-            .battle-grid {
-                grid-template-columns: 1fr;
-                grid-row-gap: 1em;
-            }
-        }
-
     </style>
 
     <section class="battle-grid">
-        {{ character_card("left", en_name=left["names"]["en"][0], jp_name=left["names"]["jp"][0], info_fields=left["info_fields"],
-                    tags=left["tags"], description=left["description"], picture_url=left["pictures"]["display"][0],
-                    gallery_urls=left["pictures"]["gallery"]) }}
-
-        {{ character_card("right", en_name=right["names"]["en"][0], jp_name=right["names"]["jp"][0], info_fields=right["info_fields"],
-                    tags=right["tags"], description=right["description"], picture_url=right["pictures"]["display"][0],
-                    gallery_urls=right["pictures"]["gallery"]) }}
+        {{ character_card("left", left) }}
+        {{ character_card("right", right) }}
     </section>
 
 
