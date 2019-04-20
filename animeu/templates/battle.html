@@ -104,7 +104,7 @@
                 </div>
                 <div class="character-brief-metadata-flex info-view-visible">
                     <div class="anime-roles-grid">
-                        {% for anime_role in anime_roles[:7] | sort(attribute="role") %}
+                        {% for anime_role in anime_roles[:5] | sort(attribute="role") %}
                             {% if "picture" in anime_role %}
                                 <div class="anime-role">
                                     <img src="{{ anime_role['picture'] }}" />
@@ -115,7 +115,7 @@
                                 </div>
                             {% endif %}
                         {% endfor %}
-                        {% if anime_roles | length > 7 %}
+                        {% if anime_roles | length > 5 %}
                             <a href="#">View All Animes</a>
                         {% endif %}
                     </div>
@@ -143,7 +143,7 @@
             </div>
             <div class="card-footer">
                 <button type="button" class="btn btn-outline-primary">
-                        Waifu
+                    Choose <b>{{ en_name }}</b> as your waifu!
                 </button>
             </div>
         </div>
@@ -174,23 +174,7 @@
         /* Toggle the visibility of different sections of the card depending
          * on the 'view' stype class that is currently applied to the
          * character card.
-
-        .info-view .info-view-visible {
-            display: initial;
-        }
-
-        .info-view .picture-view-visible {
-            display: none;
-        }
-
-        .picture-view .info-view-visible {
-            display: none;
-        }
-
-        .picture-view .picture-view-visible {
-            display: initial;
-        }
-        */
+         */
 
         .character-card.info-view .info-view-visible {
             display: initial !important;
