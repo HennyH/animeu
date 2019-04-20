@@ -1,11 +1,9 @@
 language: python
-node_js:
-- "node"
 python:
 - "3.6"
 compiler: clang
 script:
-- npm install
 - pip install -r requirements.linux.txt
-- python setup.py install
-- npm run lint
+- pip install -e .
+- pylint animeu
+- pydocstyle animeu

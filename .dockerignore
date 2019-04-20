@@ -1,0 +1,10 @@
+node_modules
+*.egg-info
+__pycache__
+.vscode
+build
+dist
+env
+venv
+.git
+Dockerfile

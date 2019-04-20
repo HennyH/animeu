@@ -16,8 +16,5 @@ setup(
             "merge-json=animeu.spiders.json_helpers:merge_json_files_cli"
         ]
     },
-    install_requires=[
-        "Flask",
-        "Flask-Webpack"
-    ]
+    install_requires=["Flask"]
 )
