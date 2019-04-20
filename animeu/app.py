@@ -7,13 +7,35 @@
 import os
 import json
 import random
+import urllib.request
+import subprocess
+import tempfile
 from flask import Flask, render_template
 
 # pylint: disable=invalid-name
 app = Flask(__name__)
 
 DATA_FILE = os.environ.get("DATA_FILE")
-DATA_JSON = json.loads(open(DATA_FILE, "rb").read(), encoding="utf8")
+DATA_GOOGLE_DRIVE_ID = os.environ.get("DATA_GOOGLE_DRIVE_ID")
+if DATA_FILE:
+    with open(DATA_FILE, "rb") as fileobj:
+        json_bytes = fileobj.read()
+elif DATA_GOOGLE_DRIVE_ID:
+    data_filename = os.path.join(tempfile.gettempdir(), "characters.json")
+    subprocess.run(
+        [
+            "youtube-dl",
+            f"https://drive.google.com/open?id={DATA_GOOGLE_DRIVE_ID}",
+            "--output",
+            data_filename
+        ],
+        check=True
+    )
+    with open(data_filename, "rb") as fileobj:
+        json_bytes = fileobj.read()
+else:
+    raise Exception("Either DATA_FILE or DATA_URL have not been set.")
+DATA_JSON = json.loads(json_bytes, encoding="utf8")
 
 @app.route("/")
 def index():

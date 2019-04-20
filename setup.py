@@ -16,5 +16,5 @@ setup(
             "merge-json=animeu.spiders.json_helpers:merge_json_files_cli"
         ]
     },
-    install_requires=["Flask"]
+    install_requires=["Flask", "youtube-dl"]
 )

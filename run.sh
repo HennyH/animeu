@@ -1,6 +1,4 @@
 #!/bin/bash
 
-pushd /home
-    source virtualenv/bin/activate
-    flask run --host 0.0.0.0
-popd
+source /home/virtualenv/bin/activate
+flask run --host 0.0.0.0 --port "${PORT:-5000}"
