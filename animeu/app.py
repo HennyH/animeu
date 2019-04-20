@@ -34,7 +34,8 @@ elif DATA_GOOGLE_DRIVE_ID:
     with open(data_filename, "rb") as fileobj:
         json_bytes = fileobj.read()
 else:
-    raise Exception("Either DATA_FILE or DATA_URL have not been set.")
+    raise Exception("Either DATA_FILE or DATA_GOOGLE_DRIVE_ID "
+                    "have not been set.")
 DATA_JSON = json.loads(json_bytes, encoding="utf8")
 
 @app.route("/")
