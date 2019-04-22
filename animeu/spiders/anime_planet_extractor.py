@@ -22,7 +22,8 @@ from animeu.spiders.json_helpers import JSONListStream
 from animeu.spiders.xpath_helpers import get_all_text
 
 BLACKLISTED_TAG_RES = [r"child(ren)?", r"elementary\s+school",
-                       r"middle\s+school", r"underage", r"animals?"]
+                       r"middle\s+school", r"underage", r"^animals?$",
+                       r"^bab(y|ies)$"]
 
 def strip_field_name(text):
     """Strip the field name section from a piece of text.
