@@ -8,7 +8,7 @@ import os
 import json
 import subprocess
 import tempfile
-from flask import Flask
+from flask import Flask, redirect
 
 DATA_FILE = os.environ.get("DATA_FILE")
 DATA_GOOGLE_DRIVE_ID = os.environ.get("DATA_GOOGLE_DRIVE_ID")
@@ -46,3 +46,7 @@ from animeu.auth import auth_bp
 
 app.register_blueprint(battle_bp)
 app.register_blueprint(auth_bp)
+
+@app.route("/")
+def home():
+    return redirect("/battle")
