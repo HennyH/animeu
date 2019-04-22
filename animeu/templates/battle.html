@@ -4,48 +4,42 @@
 
     <script>
         $(document).ready(() => {
-            const VIEWS = ["picture-view", "info-view", "description-view"];
+            const VIEWS = [
+                "picture-view",
+                "info-view",
+                "description-view",
+                "overlay-view"
+            ];
 
             function toggleCardView(viewToToggle, $allCards, $selectedCards, singleExpand) {
-                /* We may have entered a single-card view and then shift-clicked
-                 * and enabled the multi-display view. Because a potentially
-                 * hidden card should (maybe) now be shown we set them all to
-                 * be visible and then let the normal logic decide which ones
-                 * are not visible.
-                 */
                 $allCards.removeClass("hidden");
-                const selectedCards = $selectedCards.toArray();
-                const allSelectedCardsAreInToggleView = selectedCards.every(sc => $(sc).hasClass(viewToToggle));
 
+                const selectedCards = $selectedCards.toArray();
                 for (const card of $allCards) {
                     const $card = $(card)
                     if (selectedCards.some(sc => sc.id === $card.prop("id"))) {
-                        for (const view of VIEWS) {
-                            $card.removeClass(view);
+                        if ($card.hasClass(viewToToggle)) {
+                            for (const view of VIEWS) {
+                                $card.removeClass(view);
+                                $card.find(`.toggle-${view}`).removeClass("active");
+                            }
+                            $card.addClass("info-view");
+                        } else {
+                            for (const view of VIEWS) {
+                                if (view === viewToToggle) {
+                                    continue;
+                                }
+                                $card.removeClass(view);
+                                $card.find(`.toggle-${view}`).removeClass("active");
+                            }
+                            $card.addClass(viewToToggle);
+                            $card.find(`.toggle-${viewToToggle}`).addClass("active");
                         }
-                        $card.removeClass("hidden");
-                    } else if (! allSelectedCardsAreInToggleView) {
-                        $card.addClass("hidden");
-                    }
-                }
-
-                $(".battle-grid").removeClass("expand-single");
-                for (const view of VIEWS) {
-                    $allCards.find(`.toggle-${view}`).removeClass("active");
-                }
-                if (allSelectedCardsAreInToggleView) {
-                    $selectedCards.removeClass(viewToToggle);
-                    $selectedCards.addClass("info-view");
-                } else {
-                    $selectedCards.addClass(viewToToggle);
-                    $selectedCards.find(`.toggle-${viewToToggle}`).addClass("active");
-                    if (selectedCards.length === 1) {
-                        $(".battle-grid").addClass("expand-single");
                     }
                 }
             }
 
-            $(".toggle-image-view").click(e => {
+            $(".toggle-picture-view").click(e => {
                 const $allCards = $(".character-card");
                 const clickedButton = $(e.target);
                 const $selectedCards = e.ctrlKey
@@ -81,7 +75,7 @@
             <h5 class="card-header">
                 <div class="primary-name">
                     <span>{{ en_name }}</span>
-                    <button type="button" class="toggle-image-view btn btn-outline-secondary">
+                    <button type="button" class="toggle-picture-view btn btn-outline-secondary">
                         <i class="fas fa-images"></i>
                     </button>
                     <button type="button" class="toggle-description-view btn btn-outline-secondary">
@@ -169,6 +163,7 @@
         .character-card .card-body {
             display: grid;
             grid-row-gap: 1em;
+            grid-template-rows: repeat(auto-fit, minmax(0, max-content));
         }
 
         /* Toggle the visibility of different sections of the card depending
@@ -216,6 +211,18 @@
             align-self: center;
             max-width: 225px;
             max-height: 350px;
+        }
+
+        @media screen and (max-width: 1024px) {
+            .picture-view .picture-view-visible.pictures-grid {
+                grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+                grid-auto-rows: 195px;
+            }
+
+            .pictures-grid img {
+                max-width: 125px;
+                max-height: 195px;
+            }
         }
 
         .character-card.info-view .card-body {
@@ -314,20 +321,6 @@
             .battle-grid {
                 grid-template-columns: 1fr;
                 grid-row-gap: 1em;
-            }
-        }
-
-        .battle-grid.expand-single {
-            padding-left: 10%;
-            padding-right: 10%;
-            grid-template-columns: 1fr;
-            grid-column-gap: initial;
-        }
-
-        @media screen and (max-width: 1920px) {
-            .battle-grid.expand-single {
-                padding-left: 1em;
-                padding-right: 1em;
             }
         }
     </style>

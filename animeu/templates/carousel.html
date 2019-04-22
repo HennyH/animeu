@@ -1,14 +1,16 @@
 {% macro carousel(name, gallery_urls) %}
     <div id="{{ name }}" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
-            {% for indicator_id in range(gallery_urls | length) %}            
+            {% for indicator_id in range(gallery_urls | length) %}
                 <li data-target="#{{ name }}" data-slide-to="{{ indicator_id }}" class="{{ 'active' if loop.first else ''}}"></li>
             {% endfor %}
         </ol>
         <div class="carousel-inner">
             {% for gallery_url in gallery_urls %}
                 <div class="carousel-item {{ 'active' if loop.first else ''}}">
-                    <img class="d-block" src="{{ gallery_url }}" />
+                    <div class="carousel-img-container">
+                        <img class="d-block" src="{{ gallery_url }}" />
+                    </div>
                 </div>
             {% endfor %}
         </div>
@@ -24,9 +26,20 @@
             width: 255px;
             height: 350px;
         }
-        .carousel-item img {
+        .carousel-item {
             width: 255px;
             height: 350px;
+        }
+        .carousel-img-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+        .carousel-img-container img {
+            width: min-content;
+            height: min-content;
         }
         .carousel-control-prev {
             padding-left: 20px;
