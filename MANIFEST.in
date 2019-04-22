@@ -1,1 +1,1 @@
-recursive-include animeu/templates *
+recursive-include animeu *.html
