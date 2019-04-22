@@ -4,7 +4,7 @@ setup(
     name="animeu",
     verison="0.0.1",
     long_description=__doc__,
-    packages=find_packages("animeu"),
+    packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     entry_points={
@@ -16,5 +16,5 @@ setup(
             "merge-json=animeu.spiders.json_helpers:merge_json_files_cli"
         ]
     },
-    install_requires=["Flask", "Fask-SQLAlchemy" "youtube-dl"]
+    install_requires=["Flask", "Flask-SQLAlchemy", "youtube-dl"]
 )
