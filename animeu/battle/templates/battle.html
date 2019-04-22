@@ -11,6 +11,18 @@
                 "overlay-view"
             ];
 
+            function resetCardView({ $card, deactivateButtons = false, keepViews = [] }) {
+                for (const view of VIEWS) {
+                    if (keepViews.some(v => view === v)) {
+                        continue;
+                    }
+                    $card.removeClass(view);
+                    if (deactivateButtons) {
+                        $card.find(`.toggle-${view}`).removeClass("active");
+                    }
+                }
+            }
+
             function toggleCardView(viewToToggle, $allCards, $selectedCards, singleExpand) {
                 $allCards.removeClass("hidden");
 
@@ -19,19 +31,10 @@
                     const $card = $(card)
                     if (selectedCards.some(sc => sc.id === $card.prop("id"))) {
                         if ($card.hasClass(viewToToggle)) {
-                            for (const view of VIEWS) {
-                                $card.removeClass(view);
-                                $card.find(`.toggle-${view}`).removeClass("active");
-                            }
+                            resetCardView({ $card, deactivateButtons: true });
                             $card.addClass("info-view");
                         } else {
-                            for (const view of VIEWS) {
-                                if (view === viewToToggle) {
-                                    continue;
-                                }
-                                $card.removeClass(view);
-                                $card.find(`.toggle-${view}`).removeClass("active");
-                            }
+                            resetCardView({ $card,deactivateButtons: true,  keepViews: [viewToToggle] });
                             $card.addClass(viewToToggle);
                             $card.find(`.toggle-${viewToToggle}`).addClass("active");
                         }
@@ -60,6 +63,28 @@
                 e.preventDefault();
                 e.stopPropagation();
             });
+
+            $(".pictures-grid > img").click(e => {
+                $clickedImage = $(e.target);
+                $card = $clickedImage.closest(".character-card");
+                const $allCards = $(".character-card");
+                resetCardView({ $card, deactivateButtons: false });
+                $card.addClass("overlay-view");
+                $(".overlay").empty()
+                $(".overlay").append($clickedImage.clone());
+                $(".overlay").click(() => {
+                    $card.removeClass("overlay-view");
+                    $card.addClass("picture-view");
+                })
+            });
+
+            $(".jump-to-top").click(e => {
+                const yOffset = Math.max(0, $(e.target).closest(".character-card").offset().top - 20);
+                window.scroll({ top: yOffset });
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
         });
     </script>
 
@@ -88,6 +113,9 @@
                 <small class="jp-name font-weight-bold">{{ jp_name }}</small>
             </h5>
             <div class="card-body">
+                <div class="overlay overlay-view-visible">
+                    <!-- content here -->
+                </div>
                 <div class="pictures-grid picture-view-visible">
                     {% for url in gallery_urls %}
                         <img src="{{ url }}" />
@@ -136,8 +164,11 @@
                 </div>
             </div>
             <div class="card-footer">
-                <button type="button" class="btn btn-outline-primary">
-                    Choose <b>{{ en_name }}</b> as your waifu!
+                <button type="button" class="btn btn-outline-secondary jump-to-top">
+                    <i class="fas fa-arrow-up"></i>
+                </button>
+                <button type="button" class="btn btn-outline-primary proposal-button">
+                    Make <b class="proposal-name">{{ en_name.split() | first }}</b> your waifu!
                 </button>
             </div>
         </div>
@@ -147,6 +178,16 @@
        .hidden {
            display: none;
        }
+
+       .card-footer {
+           display: flex;
+           gap: 1em;
+       }
+
+       .proposal-button {
+           flex-grow: 1;
+       }
+
 
        /* Layout the information in the character cards and adapt to sceen
         * sizes.
@@ -183,6 +224,10 @@
             display: initial !important;
         }
 
+        .character-card.overlay-view .overlay-view-visible {
+            display: initial !important;
+        }
+
         .character-card:not(.info-view) .info-view-visible {
             display: none;
         }
@@ -192,6 +237,10 @@
         }
 
         .character-card:not(.description-view) .description-view-visible {
+            display: none;
+        }
+
+        .character-card:not(.overlay-view) .overlay-view-visible {
             display: none;
         }
 
@@ -213,9 +262,21 @@
             max-height: 350px;
         }
 
-        @media screen and (max-width: 1024px) {
+        @media screen and (max-width: 1919px) {
             .picture-view .picture-view-visible.pictures-grid {
-                grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+                grid-auto-rows: 195px;
+            }
+
+            .pictures-grid img {
+                max-width: 125px;
+                max-height: 195px;
+            }
+        }
+
+        @media screen and (max-width: 1100px) {
+            .picture-view .picture-view-visible.pictures-grid {
+                grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
                 grid-auto-rows: 195px;
             }
 
@@ -311,16 +372,25 @@
         */
 
         .battle-grid {
-            display: grid;
+            display: flex;
+            flex-direction: row;
             padding: 1em;
-            grid-template-columns: repeat(2, 1fr);
-            grid-column-gap: 1em;
+            gap: 0 2em;
+        }
+
+        .character-card {
+            height: 100%;
+            width: 50%;
         }
 
         @media screen and (max-width: 640px) {
             .battle-grid {
-                grid-template-columns: 1fr;
-                grid-row-gap: 1em;
+                flex-direction: column;
+                gap: 2em 0;
+            }
+
+            .character-card {
+                width: 100%;
             }
         }
     </style>

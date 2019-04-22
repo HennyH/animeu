@@ -5,7 +5,7 @@ requests
 parmap
 tqdm
 Flask
-Flask-Webpack
+Flask-SQLAlchemy
 pydocstyle
 ijson
 fuzzywuzzy[speedup]
