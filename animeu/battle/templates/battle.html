@@ -7,8 +7,7 @@
             const VIEWS = [
                 "picture-view",
                 "info-view",
-                "description-view",
-                "overlay-view"
+                "description-view"
             ];
 
             function resetCardView({ $card, deactivateButtons = false, keepViews = [] }) {
@@ -65,17 +64,11 @@
             });
 
             $(".pictures-grid > img").click(e => {
-                $clickedImage = $(e.target);
-                $card = $clickedImage.closest(".character-card");
-                const $allCards = $(".character-card");
-                resetCardView({ $card, deactivateButtons: false });
-                $card.addClass("overlay-view");
-                $(".overlay").empty()
-                $(".overlay").append($clickedImage.clone());
-                $(".overlay").click(() => {
-                    $card.removeClass("overlay-view");
-                    $card.addClass("picture-view");
-                })
+                $("#fullscreen-modal .modal-dialog").empty()
+                var picFull = e.target;
+                picFull = picFull.cloneNode(true);
+                $("#fullscreen-modal .modal-dialog").append(picFull);
+                $("#fullscreen-modal").modal("show")
             });
 
             $(".jump-to-top").click(e => {
@@ -84,6 +77,8 @@
                 e.preventDefault();
                 e.stopPropagation();
             });
+
+            $(".")
 
         });
     </script>
@@ -99,7 +94,10 @@
         <div class="card character-card info-view" id="{{ id }}">
             <h5 class="card-header">
                 <div class="primary-name">
-                    <span>{{ en_name }}</span>
+                    <div class="english-name">
+                        {{ en_name }}
+                    </div>
+                    <small class="jp-name font-weight-bold">{{ jp_name }}</small>
                     <button type="button" class="toggle-picture-view btn btn-outline-secondary">
                         <i class="fas fa-images"></i>
                     </button>
@@ -110,7 +108,7 @@
                         <i class="far fa-heart" style="color: red;"></i>
                     </button>
                 </div>
-                <small class="jp-name font-weight-bold">{{ jp_name }}</small>
+                
             </h5>
             <div class="card-body">
                 <div class="overlay overlay-view-visible">
@@ -195,16 +193,21 @@
 
         .primary-name button {
             float: right;
+            grid-row: 3;
         }
 
         .primary-name button:not(:first-child) {
             margin-right: 0.5em;
         }
 
+        .primary-name .english-name{
+            grid-row: 1;
+        }
+
         .character-card .card-body {
             display: grid;
             grid-row-gap: 1em;
-            grid-template-rows: repeat(auto-fit, minmax(0, max-content));
+            grid-template-rows: repeat(auto-fit, minmax(0, 3));
         }
 
         /* Toggle the visibility of different sections of the card depending
@@ -407,6 +410,25 @@
         {{ character_card("right", right) }}
     </section>
 
+    <!-- Modal here -->
+    <div class="modal fade" id="fullscreen-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <!-- Content appended here by javascript -->
+            </div>
+        </div>
+    </div>
 
+    <style>
+        .modal-dialog{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-dialog img{
+            width: 60vw;
+        }
+    </style>
 
 {% endblock body %}
