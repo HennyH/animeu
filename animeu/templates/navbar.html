@@ -22,8 +22,11 @@
           <a class="nav-link" href="#">Profile</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Sign in <i class="fas fa-lock"></i></a>
-          </li>
+            <a class="nav-link" href="{{ url_for('auth_bp.logout') if current_user.is_authenticated else url_for('auth_bp.login') }}">
+              <i class="fas {{ 'fa-sign-out-alt' if current_user.is_authenticated else 'fa-sign-in-alt' }}"></i>
+              <span>{{ 'Sign Out' if current_user.is_authenticated else 'Sign In' }}</span>
+            </a>
+        </li>
       </ul>
     </div>
 </nav>

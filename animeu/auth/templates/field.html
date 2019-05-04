@@ -1,0 +1,9 @@
+{% macro render_field(field, tabindex) %}
+    <label for="{{ field.name }}">{{ field.label }}</label>
+    {{ caller() if caller else "" }}
+    {% set validation_class = "is-invalid" if field.errors else "" %}
+    {{ field(tabindex=tabindex, class="form-control " + validation_class) }}
+    {% for error in field.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+    {% endfor %}
+{% endmacro %}

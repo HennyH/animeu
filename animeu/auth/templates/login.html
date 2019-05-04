@@ -1,90 +1,35 @@
 {% extends "base.html" %}
 {% block body %}
+    {% include "form.css" without context %}
+    {% from "field.html" import render_field %}
+    <style>
+        /* Place the 'forgot password?' link at the end of its grid cell. */
+        .forgot-password-link {
+            justify-self: flex-end;
+        }
+
+        .register-link {
+            grid-column: 1 / -1;
+            margin-bottom: 1em;
+        }
+    </style>
+
     <section class="login-container">
-        <form class="login-form">
-            <h6 class="header">Sign in to Animeu!</h6>
-            <label for="email">Email</label>
-            <input tabindex="1" type="email" name="email" />
-            <label for="password">Password</label>
-            <a tabindex="4" href="auth/forgot" class="forgot-password">Forgot password?</a>
-            <input tabindex="2" type="password" name="password" />
+        <form class="login-form" method="POST" action="{{ url_for('auth_bp.login') }}">
+            {{ form.hidden_tag() }}
+            <h6 class="header">Login to Animeu!</h6>
+            {{ render_field(form.email, 1) }}
+            {% call render_field(form.password, 2) %}
+                <a tabindex="5" href="auth/forgot" class="forgot-password-link">Forgot password?</a>
+            {% endcall %}
             <input tabindex="3" type="submit" name="submit" value="Sign In" class="btn btn-success" />
+            <a tabindex="4" href="register" class="register-link">No Account? Register!</a>
         </form>
     </section>
 
     <script>
         $(document).ready(() => {
             $("input[name='email']").focus();
-        })
+        });
     </script>
-
-    <style>
-        .login-container {
-            display: flex;
-            justify-content: center;
-        }
-
-        .login-form {
-            display: grid;
-            width: 340px;
-            margin-top: 1em;
-            border: 1px solid #d8dee2;
-            border-radius: 5px;
-            font-size: 14px;
-            /* Use a two column layout to easily place the 'forgot password?' element */
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .login-form > * {
-            margin-left: 20px;
-            margin-right: 20px;
-        }
-
-        .header {
-            grid-column: 1 / -1;
-            /* give the appearence of a 'header' by extending the element
-             * to take up the whole container - this makes it look like a
-             * normal card header.
-             */
-            margin: 0;
-            background-color: rgba(0, 0, 0, 0.03);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-            text-align: center;
-            padding: 0.5em 0;
-            /* Add a bit of an offset so that the first label/input pair
-             * are positioned nicely.
-             */
-            margin-bottom: 0.5em;
-        }
-
-        label {
-            grid-column: 1 / -1;
-            font-weight: 600;
-        }
-
-        label[for="password"] {
-            grid-column: 1 / 2;
-        }
-
-        input {
-            margin-bottom: 1em;
-        }
-
-        input[type="email"], input[type="password"] {
-            grid-column: 1 / -1;
-            border-radius: 3px;
-            border: 1px solid #d1d5da;
-            box-shadow: inset 0 1px 2px rgba(27,31,35,.075);
-            padding: 6px 8px;
-        }
-
-        input[type="submit"] {
-            grid-column: 1 / -1;
-        }
-
-        /* Place the 'forgot password?' link at the end of its grid cell. */
-        label[for="password"] ~ a {
-            justify-self: flex-end;
-        }
-    </style>
 {% endblock body %}
