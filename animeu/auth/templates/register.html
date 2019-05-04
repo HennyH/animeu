@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block body %}
+    {% include "form.css" without context %}
+    {% from "field.html" import render_field %}
+    <style>
+        .login-link {
+            grid-column: 1 / -1;
+            margin-bottom: 1em;
+        }
+
+        .g-recaptcha {
+            display: none;
+            margin: 0 0 1em 0;
+            height: 78px;
+            grid-column: 1 / -1;
+            justify-self: center;
+        }
+
+        .g-recaptcha:not(.loading) {
+            display: initial;
+        }
+
+        #recaptcha-loader {
+            margin: 0 0 1em 0;
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template: 1fr / 1fr;
+            height: 78px;
+            margin: 0 0 1em 0;
+        }
+
+        #recaptcha-loader > .spinner-border {
+            justify-self: center;
+            align-self: center;
+        }
+    </style>
+
+    <section class="login-container">
+        <form class="login-form" method="POST" action="{{ url_for('auth_bp.register') }}">
+            {{ form.hidden_tag() }}
+            <h6 class="header">Sign up Animeu!</h6>
+            {{ render_field(form.email, 1 )}}
+            {{ render_field(form.username, 2 )}}
+            {{ render_field(form.password, 3 )}}
+            <div id="recaptcha-loader">
+                <div class="spinner-border"></div>
+            </div>
+            {{ form.recaptcha }}
+            <input tabindex="4" type="submit" name="submit" value="Sign Up" class="btn btn-success disabled" />
+            <a tabindex="5" href="login" class="login-link">Already registered? Login!</a>
+        </form>
+    </section>
+
+    <script>
+        $(document).ready(() => {
+            $("input[name='username']").focus();
+        });
+
+        const gRecaptcha = document.querySelector('.g-recaptcha');
+        $(gRecaptcha).addClass("loading");
+        const observer = new MutationObserver((mutations, observer) => {
+            if (mutations.length > 0) {
+                observer.disconnect();
+                $(gRecaptcha).removeClass("loading");
+                $("#recaptcha-loader").remove();
+            }
+        });
+        observer.observe(gRecaptcha, { childList: true });
+
+        function recaptchaOk() {
+            $("input[type='submit']").removeClass("disabled");
+        }
+    </script>
+{% endblock body %}
