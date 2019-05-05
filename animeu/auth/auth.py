@@ -4,18 +4,14 @@
 #
 # See /LICENCE.md for Copyright information
 """Route definitions for the authentication module."""
-from flask import Blueprint, render_template, request, url_for, redirect
+from flask import Blueprint, render_template, request
 from flask_login import login_user, logout_user, current_user
-from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import BooleanField, StringField, PasswordField, validators
-from wtforms.fields.html5 import EmailField
-from werkzeug.security import generate_password_hash, check_password_hash
 
 from animeu.models import User
 from animeu.app import db
 from animeu.common.request_helpers import arg_redirect
 from .forms import LoginForm, RegisterForm
-from .logic import hash_password, check_password, maybe_find_user
+from .logic import hash_password, maybe_find_user
 
 # pylint: disable=invalid-name
 auth_bp = Blueprint("auth_bp", __name__, template_folder="templates")
