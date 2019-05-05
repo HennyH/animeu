@@ -8,7 +8,7 @@ import os
 import sys
 from functools import partial
 
-from flask import Flask, redirect
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -48,9 +48,12 @@ from animeu.models import *
 from animeu.battle import battle_bp
 # pylint: disable=wrong-import-position
 from animeu.auth import auth_bp
+# pylint: disable=wrong-import-position
+from animeu.feed import feed_bp
 
 app.register_blueprint(battle_bp)
 app.register_blueprint(auth_bp)
+app.register_blueprint(feed_bp)
 
 @app.context_processor
 def jinja_utilities():
@@ -60,4 +63,4 @@ def jinja_utilities():
 @app.route("/")
 def index():
     """Root of the site."""
-    return redirect("battle_bp.battle")
+    return redirect(url_for("battle_bp.battle"))

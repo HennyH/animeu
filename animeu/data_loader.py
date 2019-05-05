@@ -36,3 +36,18 @@ def load_character_data():
         with open(temp_filename, "rb") as fileobj:
             json_bytes = fileobj.read()
     return json.loads(json_bytes, encoding="utf8")
+
+@lru_cache(maxsize=1)
+def load_name_to_character_map():
+    """Load a map from name to character."""
+    name_to_character = {}
+    for character in load_character_data():
+        for name in character["names"]["en"]:
+            name_to_character[name] = character
+        for name in character["names"]["jp"]:
+            name_to_character[name] = character
+    return name_to_character
+
+def get_character_by_name(en_name):
+    """Get a character by their name."""
+    return load_name_to_character_map()[en_name]
