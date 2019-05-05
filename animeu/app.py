@@ -33,7 +33,7 @@ app.config["RECAPTCHA_DATA_ATTRS"] = {"callback": "recaptchaOk"}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     os.environ.get("DATABASE",
-                   os.environ.get("DATABASE_URL", "sqlite:///app.db"))
+                   os.environ.get("DATABASE_URL", "sqlite:///../app.db"))
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -60,4 +60,4 @@ def jinja_utilities():
 @app.route("/")
 def index():
     """Root of the site."""
-    return redirect("/battle")
+    return redirect("battle_bp.battle")

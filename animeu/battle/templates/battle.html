@@ -80,7 +80,7 @@
         });
     </script>
 
-    {% macro character_card(id, character) -%}
+    {% macro character_card(id, character, form) -%}
         {% set en_name = character["names"]["en"][0] %}
         {% set jp_name = character["names"]["jp"][0] %}
         {% set info_fields = character["info_fields"] %}
@@ -162,9 +162,15 @@
                 <button type="button" class="btn btn-outline-secondary jump-to-top">
                     <i class="fas fa-arrow-up"></i>
                 </button>
-                <button type="button" class="btn btn-outline-primary proposal-button">
-                    Make <b class="proposal-name">{{ en_name.split() | first }}</b> your waifu!
-                </button>
+                <form method="POST" action="{{ url_for('battle_bp.submit_battle') }}">
+                    {{ form.hidden_tag() }}
+                    {{ form.winner_name() }}
+                    {{ form.loser_name() }}
+                    <button class="btn btn-outline-primary proposal-button">
+                        Make <b class="proposal-name">{{ en_name.split() | first }}</b> your waifu!
+                    </input>
+                </form>
+
             </div>
         </div>
     {%- endmacro %}
@@ -403,8 +409,8 @@
     </style>
 
     <section class="battle-grid">
-        {{ character_card("left", left) }}
-        {{ character_card("right", right) }}
+        {{ character_card("left", left, left_form) }}
+        {{ character_card("right", right, right_form) }}
     </section>
 
     <!-- Modal here -->
