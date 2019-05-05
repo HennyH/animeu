@@ -27,8 +27,8 @@ from parsel import Selector, SelectorList
 from lxml import etree
 from animeu.spiders.myanimelist_downloader import MAL_URL
 from animeu.spiders.json_helpers import JSONListStream
-from animeu.common.funchelpers import compose
-from animeu.common.filehelpers import open_transcoded
+from animeu.common.func_helpers import compose
+from animeu.common.file_helpers import open_transcoded
 from animeu.spiders.xpath_helpers import get_all_text
 
 MALE_PATTERNS = [r"\bhe\b", r"\bhis\b"]

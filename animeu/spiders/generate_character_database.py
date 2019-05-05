@@ -18,7 +18,7 @@ import apsw
 from tqdm import tqdm
 from fuzzywuzzy import process
 
-from animeu.common.funchelpers import compose
+from animeu.common.func_helpers import compose
 from animeu.spiders.json_helpers import JSONListStream
 
 

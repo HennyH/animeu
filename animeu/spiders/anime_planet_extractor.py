@@ -16,7 +16,7 @@ import json
 import parmap
 from functools import partial, wraps
 from parsel import Selector, SelectorList
-from animeu.common.funchelpers import compose, call
+from animeu.common.func_helpers import compose, call
 from animeu.spiders.anime_planet_downloader import ANIME_PLANET_URL
 from animeu.spiders.json_helpers import JSONListStream
 from animeu.spiders.xpath_helpers import get_all_text

@@ -1,4 +1,4 @@
-# /animeu/common/filehelpers.py
+# /animeu/common/file_helpers.py
 #
 # Helpers for dealing with files.
 #

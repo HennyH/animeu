@@ -15,7 +15,7 @@ from operator import itemgetter
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.crawler import CrawlerProcess
 from scrapy.linkextractors import LinkExtractor
-from animeu.common.funchelpers import compose
+from animeu.common.func_helpers import compose
 from animeu.spiders.json_helpers import JSONListStream
 from animeu.spiders.base64_helpers import base64_urlencode, base64_urldecode
 
