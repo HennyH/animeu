@@ -27,6 +27,7 @@ class RegisterForm(FlaskForm):
 
     email = _EMAIL_FIELD
     username = StringField("Username",
-                           validators=[validators.DataRequired()])
+                           validators=[validators.DataRequired(),
+                                       validators.Length(min=4, max=20)])
     password = _PASSWORD_FIELD
     recaptcha = RecaptchaField()
