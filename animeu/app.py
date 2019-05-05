@@ -32,7 +32,8 @@ app.config["RECAPTCHA_DATA_ATTRS"] = {"callback": "recaptchaOk"}
 # see https://stackoverflow.com/a/33790196 for more information
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = \
-    os.environ.get("DATABASE", "sqlite:///app.db")
+    os.environ.get("DATABASE",
+                   os.environ.get("DATABASE_URL", "sqlite:///app.db"))
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
