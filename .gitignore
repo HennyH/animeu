@@ -1,5 +1,5 @@
 characters.json
-app.db
+*.db
 
 # vs code
 .vscode

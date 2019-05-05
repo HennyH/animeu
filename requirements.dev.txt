@@ -1,0 +1,11 @@
+pylint
+scrapy
+parsel
+requests
+parmap
+tqdm
+pydocstyle
+ijson
+fuzzywuzzy[speedup]
+cchardet
+lxml

@@ -3,7 +3,7 @@ python:
 - "3.6"
 compiler: clang
 script:
-- pip install -r requirements.linux.txt
+- pip install -r requirements.dev.linux.txt
 - pip install -e .
 - pylint animeu
 - pydocstyle animeu

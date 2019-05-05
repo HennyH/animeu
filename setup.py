@@ -1,3 +1,9 @@
+# /setup.py
+#
+# Setup file for the animeu module.
+#
+# See /LICENCE.md for Copyright information
+"""Setup file for the animeu module."""
 from setuptools import setup, find_packages
 
 setup(
@@ -15,9 +21,5 @@ setup(
             "myanimelist-extractor=animeu.spiders.myanimelist_extractor:main",
             "merge-json=animeu.spiders.json_helpers:merge_json_files_cli"
         ]
-    },
-    install_requires=[
-        "Flask", "Flask-SQLAlchemy", "Flask-Migrate", "Flask-Login",
-        "Flask-WTF", "youtube-dl"
-    ]
+    }
 )
