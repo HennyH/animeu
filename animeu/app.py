@@ -11,7 +11,7 @@ from functools import partial
 from flask import Flask, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager
 
 # pylint: disable=invalid-name
 app = Flask(__name__)
@@ -53,8 +53,10 @@ app.register_blueprint(auth_bp)
 
 @app.context_processor
 def jinja_utilities():
+    """Utilities to expose in jinja2 templates."""
     return {"debug": partial(print, file=sys.stderr)}
 
 @app.route("/")
 def index():
+    """Root of the site."""
     return redirect("/battle")

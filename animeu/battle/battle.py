@@ -19,6 +19,7 @@ battle_bp = Blueprint("battle_bp",
                       template_folder="templates")
 
 @battle_bp.route("/")
+@login_required
 def battle():
     """Render a simple A vs. B battle screen."""
     characters = load_character_data()

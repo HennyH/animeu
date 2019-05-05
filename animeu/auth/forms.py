@@ -17,12 +17,14 @@ _PASSWORD_FIELD = PasswordField(
 
 class LoginForm(FlaskForm):
     """Form for user login."""
+
     email = _EMAIL_FIELD
     password = _PASSWORD_FIELD
     remember_me = BooleanField("Remember Me?")
 
 class RegisterForm(FlaskForm):
     """Form for signing up to the site."""
+
     email = _EMAIL_FIELD
     username = StringField("Username",
                            validators=[validators.DataRequired()])

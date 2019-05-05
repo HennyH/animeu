@@ -8,7 +8,7 @@ from urllib.parse import urlparse, urljoin
 from flask import redirect, url_for
 
 def is_safe_url(request, target):
-    """Tests if a given target URL is a safe redirect target.
+    """Test if a given target URL is a safe redirect target.
 
     Taken from: http://flask.pocoo.org/snippets/62/
     """
