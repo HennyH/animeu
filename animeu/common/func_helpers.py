@@ -1,4 +1,4 @@
-# /common/funchelpers.py
+# /common/func_helpers.py
 #
 # General purpose functional helper functions.
 #
