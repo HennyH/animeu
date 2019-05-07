@@ -7,7 +7,6 @@
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, jsonify
 
-from animeu.models import WaifuPickBattle
 from animeu.data_loader import get_character_by_name
 from .queries import (query_most_battled_waifus,
                       query_most_winning_waifus,
@@ -32,9 +31,11 @@ def feed(limit=20):
 
 @feed_bp.route("/top-waifus")
 def top_waifus():
+    """Return the most winning waifus."""
     return jsonify(query_most_winning_waifus())
 
 @feed_bp.route("/active-waifus")
 def active_waifus():
+    """Return the most active waifus battle wise."""
     from_date = datetime.now() + timedelta(days=-30)
     return jsonify(query_most_battled_waifus(from_date))

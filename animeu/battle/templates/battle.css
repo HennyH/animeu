@@ -5,7 +5,8 @@
 }
 
 .card-footer {
-  display: flex;
+  display: grid;
+  grid-template-columns: 40px 1fr;
   gap: 1em;
 }
 
@@ -206,14 +207,10 @@
   display: flex;
   flex-direction: row;
   padding: 1em;
-  gap: 2em;
 }
 
-/* chrome doesn't understand the 'gap' property correctly */
-@supports not (gap: 2em) {
-  .character-card:first-child {
+.character-card:first-child {
     margin-right: 2em;
-  }
 }
 
 .character-card {
@@ -229,6 +226,10 @@
 
   .character-card {
     width: 100%;
+  }
+
+  .character-card:first-child {
+    margin-bottom: 2em;
   }
 }
 

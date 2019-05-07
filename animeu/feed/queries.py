@@ -4,7 +4,7 @@
 #
 # See /LICENCE.md for Copyright information
 """Query functions used to populate the feed."""
-from sqlalchemy.sql import select, func, expression, or_
+from sqlalchemy.sql import select, func, expression
 from animeu.app import db
 from animeu.models import WaifuPickBattle
 
