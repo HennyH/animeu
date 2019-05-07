@@ -1,0 +1,64 @@
+<style>
+    .carousel > img {
+        display: none;
+        max-width: 100%;
+        max-height: 100%;
+        height: auto;
+    }
+
+    .carousel > img.active {
+        display: initial;
+    }
+
+    @keyframes fade-out {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0.1;
+        }
+    }
+
+    @keyframes fade-in {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .carousel > img.fade-out {
+        animation: fade-out 0.6s ease-in;
+    }
+
+    .carousel > img.fade-in {
+        animation: fade-in 0.6s ease-out;
+    }
+
+    .indicators {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
+        justify-content: space-around;
+        gap: 1em;
+        margin: 1em;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding-bottom: 1em;
+    }
+
+    .indicator {
+        background-color: black;
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        cursor: pointer;
+        height: 0.25em;
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .indicator.active {
+        background-color: #fff;
+    }
+</style>

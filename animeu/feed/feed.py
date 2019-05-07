@@ -4,11 +4,14 @@
 #
 # See /LICENCE.md for Copyright information
 """Route definitions for the authentication module."""
-from flask import Blueprint, render_template
+from datetime import datetime, timedelta
+from flask import Blueprint, render_template, jsonify
 
 from animeu.models import WaifuPickBattle
 from animeu.data_loader import get_character_by_name
-from animeu.battle.battle import temp_fix_picutres
+from .queries import (query_most_battled_waifus,
+                      query_most_winning_waifus,
+                      query_most_recent_battles)
 
 # pylint: disable=invalid-name
 feed_bp = Blueprint("feed_bp", __name__, template_folder="templates")
@@ -16,16 +19,22 @@ feed_bp = Blueprint("feed_bp", __name__, template_folder="templates")
 @feed_bp.route("/feed")
 def feed(limit=20):
     """Display a feed of recent waifu battles."""
-    recent_battles = WaifuPickBattle.query\
-        .order_by(WaifuPickBattle.date.desc())\
-        .limit(limit)\
-        .all()
+    recent_battles = query_most_recent_battles(limit)
     battle_summaries = [
         {
             "date": b.date,
-            "winner": temp_fix_picutres(get_character_by_name(b.winner_name)),
-            "loser": temp_fix_picutres(get_character_by_name(b.loser_name))
+            "winner": get_character_by_name(b.winner_name),
+            "loser": get_character_by_name(b.loser_name)
         }
         for b in recent_battles
     ]
     return render_template("feed.html", battles=battle_summaries)
+
+@feed_bp.route("/top-waifus")
+def top_waifus():
+    return jsonify(query_most_winning_waifus())
+
+@feed_bp.route("/active-waifus")
+def active_waifus():
+    from_date = datetime.now() + timedelta(days=-30)
+    return jsonify(query_most_battled_waifus(from_date))

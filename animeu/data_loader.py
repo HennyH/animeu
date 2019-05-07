@@ -11,6 +11,13 @@ import subprocess
 import json
 from functools import lru_cache
 
+def temp_fix_picutres(character):
+    """Remove the 23x32 gallery images from a character."""
+    character["pictures"]["gallery"] = \
+        [p for p in character["pictures"]["gallery"]
+         if "23x32" not in p and "questionmark" not in p]
+    return character
+
 @lru_cache(maxsize=1)
 def load_character_data():
     """Load the character data from DATA_FILE or DATA_GOOGLE_DRIVE_ID."""
@@ -35,7 +42,10 @@ def load_character_data():
         )
         with open(temp_filename, "rb") as fileobj:
             json_bytes = fileobj.read()
-    return json.loads(json_bytes, encoding="utf8")
+    characters = json.loads(json_bytes, encoding="utf8")
+    for character in characters:
+        temp_fix_picutres(character)
+    return characters
 
 @lru_cache(maxsize=1)
 def load_name_to_character_map():

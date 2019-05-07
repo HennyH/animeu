@@ -1,0 +1,61 @@
+<style>
+
+    .feed {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .summary {
+        width: max-content;
+        justify-self: center;
+        display: grid;
+        grid-template-columns: max-content 1fr 10ch 1fr max-content;
+        background-color: rgba(0, 0, 0, 0.01);
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        border-radius: 5px;
+        padding: 1em;
+        margin: 1em;
+        width: calc(100% - 2em);
+    }
+
+    .vs {
+        align-self: center;
+        justify-self: center;
+        font-weight: 600;
+        font-size: 1.5em;
+        font-style: oblique;
+    }
+
+    .info {
+        display: grid;
+        justify-self: center;
+        align-self: center;
+        grid-template-rows: min-content max-content max-content 1fr;
+        justify-content: center;
+        align-content: center;
+    }
+
+    .info i {
+        font-size: 2em;
+        align-self: center;
+        justify-self: center;
+        padding: 0.5em 0.5em 0;
+    }
+
+    .winner-message, .loser-message {
+        justify-self: center;
+        font-style: oblique;
+        padding-bottom: 1em;
+    }
+
+    .waifu-banner {
+        justify-self: center;
+        align-self: center;
+    }
+
+    .carousel {
+        height: 136px;
+        width: 96px;
+    }
+
+</style>

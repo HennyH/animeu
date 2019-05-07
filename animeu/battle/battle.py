@@ -21,22 +21,13 @@ battle_bp = Blueprint("battle_bp",
                       url_prefix="/battle",
                       template_folder="templates")
 
-def temp_fix_picutres(character):
-    """Remove the 23x32 gallery images from a character."""
-    character["pictures"]["gallery"] = \
-        [p for p in character["pictures"]["gallery"] if "23x32" not in p]
-    return character
-
-
 @battle_bp.route("/", methods=["GET"])
 @login_required
 def battle():
     """Render a simple A vs. B battle screen."""
     characters = load_character_data()
     character1 = random.choice(characters)
-    temp_fix_picutres(character1)
     character2 = random.choice(characters)
-    temp_fix_picutres(character2)
     return render_template(
         "battle.html",
         left=character1,
