@@ -1,39 +1,46 @@
 <style>
-    .carousel > img {
+    .carousel {
+        overflow: hidden;
+        display: flex;
+        align-content: center;
+    }
+
+    .carousel-image-container {
         display: none;
         max-width: 100%;
         max-height: 100%;
         height: auto;
     }
 
-    .carousel > img.active {
+    .carousel-image-container.visible {
         display: initial;
+        position: absolute;
     }
 
     @keyframes fade-out {
         0% {
-            opacity: 1;
+            transform: translateX(0%);
         }
         100% {
-            opacity: 0.1;
+            transform: translateX(-100%);
         }
     }
 
     @keyframes fade-in {
         0% {
-            opacity: 0;
+            transform: translateX(100%);
         }
         100% {
-            opacity: 1;
+            transform: translateX(0%);
         }
     }
 
     .carousel > img.fade-out {
-        animation: fade-out 0.6s ease-in;
+        animation: fade-out 0.6s linear;
     }
 
-    .carousel > img.fade-in {
-        animation: fade-in 0.6s ease-out;
+    .carousel > img.fade-in:not(.initial-image) {
+        animation: fade-in 0.6s linear;
     }
 
     .indicators {

@@ -8,9 +8,11 @@
 
             function fadeImageOutAsync(img) {
                 return new Promise((resolve, reject) => {
+                    img.classList.remove("fade-in");
                     img.classList.add("fade-out");
                     setTimeout(() => {
                         img.classList.remove("fade-out");
+                        img.classList.remove("visible");
                         resolve();
                     }, 600);
                 });
@@ -18,16 +20,17 @@
 
             function fadeImageInAsync(img) {
                 return new Promise((resolve, reject) => {
+                    img.classList.remove("fade-out");
+                    img.classList.add("visible");
                     img.classList.add("fade-in");
                     setTimeout(() => {
-                        img.classList.remove("fade-in");
                         resolve();
                     }, 600);
                 });
             }
 
             function getCurrentIndex() {
-                return el.querySelector("img.active").getAttribute("data-index");
+                return el.querySelector("img.fade-in").getAttribute("data-index");
             }
 
             function getNumberOfImages() {
@@ -36,20 +39,18 @@
 
             function changeToImage(index) {
                 CURRENT_ANIMATION = CURRENT_ANIMATION.then(async () => {
-                    const currentImage = el.querySelector("img.active");
+                    const currentImage = el.querySelector("img.fade-in");
                     const currentIndicator = el.querySelector(".indicator.active");
-                    await fadeImageOutAsync(currentImage);
-                    currentImage.classList.remove("active");
-                    if (currentIndicator) {
-                        currentIndicator.classList.remove("active");
-                    }
                     const targetImage = el.querySelector(`img[data-index="${index}"]`);
                     const targetIndicator = el.querySelector(`.indicator[data-index="${index}"]`);
-                    targetImage.classList.add("active");
-                    if (targetIndicator) {
+                    await Promise.all([
+                        fadeImageOutAsync(currentImage),
+                        fadeImageInAsync(targetImage)
+                    ]);
+                    if (targetIndicator && currentIndicator) {
+                        currentIndicator.classList.remove("active");
                         targetIndicator.classList.add("active");
                     }
-                    await fadeImageInAsync(targetImage);
                 });
             }
 

@@ -1,7 +1,7 @@
 {% macro carousel(name, gallery_urls, show_indicators=True) %}
     <div id="{{ name }}" class="carousel">
         {% for gallery_url in gallery_urls %}
-            <img data-index="{{ loop.index }}" class="{{ 'active' if loop.first else '' }}" src="{{ gallery_url }}" />
+            <img data-index="{{ loop.index }}" class="{{ 'fade-in visible initial-image' if loop.first else '' }}" src="{{ gallery_url }}" />
         {% endfor %}
         {% if show_indicators %}
             <div class="indicators">
