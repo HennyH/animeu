@@ -5,52 +5,56 @@
             let TRANSITION_DELAY = 0;
             let CURRENT_ANIMATION = Promise.resolve();
             const AUTO_TRANSITION_INTERVAL = 3000;
+            const ANIMATION_DURATION = 400;
 
-            function fadeImageOutAsync(img) {
+            function fadeItemOutAsync(item, maybeIndicator) {
                 return new Promise((resolve, reject) => {
-                    img.classList.remove("fade-in");
-                    img.classList.add("fade-out");
+                    item.classList.remove("slide-in");
+                    item.classList.add("slide-out");
+                    if (maybeIndicator) {
+                        maybeIndicator.classList.remove("selected");
+                    }
                     setTimeout(() => {
-                        img.classList.remove("fade-out");
-                        img.classList.remove("visible");
+                        item.classList.remove("slide-out");
+                        item.classList.remove("visible");
+                        item.classList.remove("initial-image");
                         resolve();
-                    }, 600);
+                    }, ANIMATION_DURATION);
                 });
             }
 
-            function fadeImageInAsync(img) {
+            function fadeItemInAsync(item, maybeIndicator) {
                 return new Promise((resolve, reject) => {
-                    img.classList.remove("fade-out");
-                    img.classList.add("visible");
-                    img.classList.add("fade-in");
+                    item.classList.remove("slide-out");
+                    item.classList.add("visible");
+                    item.classList.add("slide-in");
+                    if (maybeIndicator) {
+                        maybeIndicator.classList.add("selected");
+                    }
                     setTimeout(() => {
                         resolve();
-                    }, 600);
+                    }, ANIMATION_DURATION);
                 });
             }
 
             function getCurrentIndex() {
-                return el.querySelector("img.fade-in").getAttribute("data-index");
+                return el.querySelector(".carousel-item-container.slide-in").getAttribute("data-index");
             }
 
-            function getNumberOfImages() {
-                return el.querySelectorAll("img").length;
+            function getNumberOfItems() {
+                return el.querySelectorAll(".carousel-item-container").length;
             }
 
-            function changeToImage(index) {
+            function changeSelectedItem(index) {
                 CURRENT_ANIMATION = CURRENT_ANIMATION.then(async () => {
-                    const currentImage = el.querySelector("img.fade-in");
-                    const currentIndicator = el.querySelector(".indicator.active");
-                    const targetImage = el.querySelector(`img[data-index="${index}"]`);
+                    const currentImage = el.querySelector(".carousel-item-container.slide-in");
+                    const currentIndicator = el.querySelector(".indicator.selected");
+                    const targetImage = el.querySelector(`.carousel-item-container[data-index="${index}"]`);
                     const targetIndicator = el.querySelector(`.indicator[data-index="${index}"]`);
                     await Promise.all([
-                        fadeImageOutAsync(currentImage),
-                        fadeImageInAsync(targetImage)
+                        fadeItemOutAsync(currentImage, currentIndicator),
+                        fadeItemInAsync(targetImage, targetIndicator)
                     ]);
-                    if (targetIndicator && currentIndicator) {
-                        currentIndicator.classList.remove("active");
-                        targetIndicator.classList.add("active");
-                    }
                 });
             }
 
@@ -61,13 +65,13 @@
                 } else {
                     TRANSITION_DELAY = 0;
                 }
-                const nextIndex = (getCurrentIndex() % getNumberOfImages()) + 1;
-                changeToImage(nextIndex);
+                const nextIndex = (getCurrentIndex() % getNumberOfItems()) + 1;
+                changeSelectedItem(nextIndex);
             }
 
             function onIndicatorClicked(event) {
                 const index = event.target.getAttribute("data-index");
-                changeToImage(index);
+                changeSelectedItem(index);
                 /* Only start transitioning again after 5s */
                 TRANSITION_DELAY = 5000;
             }
