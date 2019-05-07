@@ -16,24 +16,24 @@
                 {% set loser_en_name = battle["loser"]["names"]["en"][0] %}
                 {% set loser_jp_name = battle["loser"]["names"]["jp"][0] %}
                 {% set loser_gallery_urls = battle["loser"]["pictures"]["gallery"] %}
-                <div class="picture-carousel">
-                    {{ carousel("winner_carousel", winner_gallery_urls, show_indicators=False) }}
+                <div class="winner picture-carousel">
+                    {{ carousel("winner-carousel", winner_gallery_urls, show_indicators=False) }}
                 </div>
                 <div class="info winner-info">
                     <i class="fas fa-church"></i>
-                    <span class="winner-message">Waifu</span>
-                    <span>{{ winner_en_name }}</span>
+                    <span class="message winner-message">Waifu</span>
+                    <span class="name">{{ winner_en_name }}</span>
                     <span class="japanese">{{ winner_jp_name }}</span>
                 </div>
                 <span class="vs">v.s</span>
                 <div class="info loser-info">
                     <i class="fas fa-heart-broken"></i>
-                    <span class="loser-message">Rejected</span>
-                    <span>{{ loser_en_name }}</span>
+                    <span class="message loser-message">Rejected</span>
+                    <span class="name">{{ loser_en_name }}</span>
                     <span class="japanese">{{ loser_jp_name }}</span>
                 </div>
-                <div class="picture-carousel">
-                    {{ carousel("loser_carousel", loser_gallery_urls, show_indicators=False) }}
+                <div class="loser picture-carousel">
+                    {{ carousel("loser-carousel", loser_gallery_urls, show_indicators=False) }}
                 </div>
             </div>
         {% endfor %}

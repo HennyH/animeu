@@ -58,4 +58,49 @@
         width: 96px;
     }
 
+    @media screen and (max-width: 840px) {
+        .feed {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, 320px);
+            justify-content: center;
+            align-content: center;
+            gap: 2em;
+        }
+
+        .summary {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: max-content 1fr;
+            gap: 0.2em 2em;
+            width: initial;
+        }
+
+        .vs, .info > .message, .info > .name {
+            display: none;
+        }
+
+        .info > i {
+            font-size: 1em;
+        }
+
+        .info > .message {
+            padding-bottom: initial;
+        }
+
+        .winner-info {
+            grid-area: 1 / 1 / 2 / 2;
+        }
+
+        .loser-info {
+            grid-area: 1 / 2 / 2 / 3;
+        }
+
+        .picture-carousel.winner {
+            grid-area: 2 / 1 / 3 / 2;
+        }
+
+        .picture-carousel.loser  {
+            grid-area: 2 / 2 / 3 / 3;
+        }
+    }
+
 </style>
