@@ -4,12 +4,10 @@
 #
 # See /LICENCE.md for Copyright information
 """Route definitions for the authentication module."""
-from flask import Blueprint, render_template, request
-from flask_login import login_user, logout_user, current_user
+from flask import Blueprint, render_template
 
 from animeu.models import WaifuPickBattle
 from animeu.data_loader import get_character_by_name
-from animeu.common.request_helpers import arg_redirect
 from animeu.battle.battle import temp_fix_picutres
 
 # pylint: disable=invalid-name

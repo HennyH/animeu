@@ -5,7 +5,7 @@
 # See /LICENCE.md for Copyright information
 """Forms for the battle module."""
 from flask_wtf import FlaskForm
-from wtforms import StringField, HiddenField,  validators
+from wtforms import  HiddenField, validators
 
 class WaifuPickBattleForm(FlaskForm):
     """Form for the waifu pick battle."""
