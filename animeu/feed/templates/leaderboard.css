@@ -49,6 +49,10 @@
         color: white;
     }
 
+    .leaderboard > .entry > .en-name, .leaderboard > .entry > .jp-name {
+        justify-self: flex-start;
+    }
+
     .win-counter {
         background-color: #28a745;
     }
