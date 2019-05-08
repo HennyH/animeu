@@ -1,86 +1,13 @@
-{% extends "base.html" %}
 {% from "carousel.html" import carousel with context %}
+{% extends "base.html" %}
+
+{% block styles %}
+    {% include "carousel.css" without context %}
+    {% include "battle.css" without context %}
+{% endblock styles %}
+
 {% block body %}
-
-    <script>
-        $(document).ready(() => {
-            const VIEWS = [
-                "picture-view",
-                "info-view",
-                "description-view"
-            ];
-
-            function resetCardView({ $card, deactivateButtons = false, keepViews = [] }) {
-                for (const view of VIEWS) {
-                    if (keepViews.some(v => view === v)) {
-                        continue;
-                    }
-                    $card.removeClass(view);
-                    if (deactivateButtons) {
-                        $card.find(`.toggle-${view}`).removeClass("active");
-                    }
-                }
-            }
-
-            function toggleCardView(viewToToggle, $allCards, $selectedCards, singleExpand) {
-                $allCards.removeClass("hidden");
-
-                const selectedCards = $selectedCards.toArray();
-                for (const card of $allCards) {
-                    const $card = $(card)
-                    if (selectedCards.some(sc => sc.id === $card.prop("id"))) {
-                        if ($card.hasClass(viewToToggle)) {
-                            resetCardView({ $card, deactivateButtons: true });
-                            $card.addClass("info-view");
-                        } else {
-                            resetCardView({ $card,deactivateButtons: true,  keepViews: [viewToToggle] });
-                            $card.addClass(viewToToggle);
-                            $card.find(`.toggle-${viewToToggle}`).addClass("active");
-                        }
-                    }
-                }
-            }
-
-            $(".toggle-picture-view").click(e => {
-                const $allCards = $(".character-card");
-                const clickedButton = $(e.target);
-                const $selectedCards = e.ctrlKey
-                    ? $allCards
-                    : clickedButton.closest(".character-card");
-                toggleCardView("picture-view", $allCards, $selectedCards);
-                e.preventDefault();
-                e.stopPropagation();
-            });
-
-            $(".toggle-description-view").click(e => {
-                const $allCards = $(".character-card");
-                const clickedButton = $(e.target);
-                const $selectedCards = e.ctrlKey
-                    ? $allCards
-                    : clickedButton.closest(".character-card");
-                toggleCardView("description-view", $allCards, $selectedCards);
-                e.preventDefault();
-                e.stopPropagation();
-            });
-
-            $(".pictures-grid > img").click(e => {
-                $("#fullscreen-modal .modal-dialog").empty()
-                var picFull = e.target;
-                picFull = picFull.cloneNode(true);
-                $("#fullscreen-modal .modal-dialog").append(picFull);
-                $("#fullscreen-modal").modal("show")
-            });
-
-            $(".jump-to-top").click(e => {
-                const yOffset = Math.max(0, $(e.target).closest(".character-card").offset().top - 20);
-                window.scroll({ top: yOffset });
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        });
-    </script>
-
-    {% macro character_card(id, character) -%}
+    {% macro character_card(id, character, form) -%}
         {% set en_name = character["names"]["en"][0] %}
         {% set jp_name = character["names"]["jp"][0] %}
         {% set info_fields = character["info_fields"] %}
@@ -162,270 +89,26 @@
                 <button type="button" class="btn btn-outline-secondary jump-to-top">
                     <i class="fas fa-arrow-up"></i>
                 </button>
-                <button type="button" class="btn btn-outline-primary proposal-button">
-                    Make <b class="proposal-name">{{ en_name.split() | first }}</b> your waifu!
-                </button>
+                <form method="POST" action="{{ url_for('battle_bp.submit_battle') }}">
+                    {{ form.hidden_tag() }}
+                    {{ form.winner_name() }}
+                    {{ form.loser_name() }}
+                    <button class="btn btn-outline-primary proposal-button">
+                        Make <b class="proposal-name">{{ en_name.split() | first }}</b> your waifu!
+                    </input>
+                </form>
+
             </div>
         </div>
     {%- endmacro %}
 
-    <style>
-       .hidden {
-           display: none;
-       }
-
-       .card-footer {
-           display: flex;
-           gap: 1em;
-       }
-
-       .proposal-button {
-           flex-grow: 1;
-       }
-
-
-       /* Layout the information in the character cards and adapt to sceen
-        * sizes.
-        */
-
-        .primary-name button {
-            float: right;
-            grid-row: 3;
-        }
-
-        .primary-name button:not(:first-child) {
-            margin-right: 0.5em;
-        }
-
-        .primary-name .english-name{
-            grid-row: 1;
-        }
-
-        .character-card .card-body {
-            display: grid;
-            grid-row-gap: 1em;
-            grid-template-rows: repeat(auto-fit, minmax(0, 3));
-        }
-
-        /* Toggle the visibility of different sections of the card depending
-         * on the 'view' stype class that is currently applied to the
-         * character card.
-         */
-
-        .character-card.info-view .info-view-visible {
-            display: initial !important;
-        }
-
-        .character-card.pictures-view .picture-view-visible {
-            display: initial !important;
-        }
-
-        .character-card.description-view .description-view-visible {
-            display: initial !important;
-        }
-
-        .character-card.overlay-view .overlay-view-visible {
-            display: initial !important;
-        }
-
-        .character-card:not(.info-view) .info-view-visible {
-            display: none;
-        }
-
-        .character-card:not(.pictures-view) .picture-view-visible {
-            display: none;
-        }
-
-        .character-card:not(.description-view) .description-view-visible {
-            display: none;
-        }
-
-        .character-card:not(.overlay-view) .overlay-view-visible {
-            display: none;
-        }
-
-        .description-view .character-picture-carousel {
-            justify-self: center;
-        }
-
-        .picture-view .picture-view-visible.pictures-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
-            grid-auto-rows: 350px;
-            gap: 2em 2em;
-        }
-
-        .pictures-grid img {
-            justify-self: center;
-            align-self: center;
-            max-width: 225px;
-            max-height: 350px;
-        }
-
-        @media screen and (max-width: 1919px) {
-            .picture-view .picture-view-visible.pictures-grid {
-                grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-                grid-auto-rows: 195px;
-            }
-
-            .pictures-grid img {
-                max-width: 125px;
-                max-height: 195px;
-            }
-        }
-
-        @media screen and (max-width: 1100px) {
-            .picture-view .picture-view-visible.pictures-grid {
-                grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
-                grid-auto-rows: 195px;
-            }
-
-            .pictures-grid img {
-                max-width: 125px;
-                max-height: 195px;
-            }
-        }
-
-        .character-card.info-view .card-body {
-            grid-template-rows: minmax(350px, min-content) repeat(auto-fit, minmax(min-content, min-content));
-        }
-
-        @media screen and (min-width: 992px) {
-            .character-card.info-view .card-body {
-                grid-template-columns: 255px 1fr;
-                grid-column-gap: 1em;
-            }
-            .character-card.picture-view .card-body {
-                grid-template-columns: 1fr;
-                grid-template-rows: initial;
-                grid-column-gap: 1em;
-            }
-        }
-
-        .character-card.info-view .anime-roles-grid {
-            display: grid;
-            grid-column: 1 / -1;
-            grid-template-columns: repeat(auto-fit, 190px);
-            grid-auto-rows: 32px;
-            grid-row-gap: 1em;
-            grid-column-gap: 1em;
-        }
-
-        .character-card.info-view .character-brief-metadata-flex {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .character-card.info-view .character-brief-metadata-flex > *:not(:first-child) {
-            margin-top: 1em;
-        }
-
-        .anime-role {
-            width: 190px;
-            display: grid;
-            font-size: 11px;
-            line-height: 1.5em;
-            grid-template-columns: 23px 1fr;
-            grid-column-gap: 1em;
-        }
-
-        .anime-name {
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            display: block;
-            overflow: hidden;
-            width: 150px;
-        }
-
-        .anime-role .anime-role-type {
-            grid-column: 2 / -1;
-        }
-
-        .anime-role img {
-            border: 1px solid lightgray;
-            padding: 1px;
-        }
-
-        .character-description {
-            font-size: 12px;
-        }
-
-        /* On smaller screens we can't fit both the picture gallery and
-         * the 'info fields' on a single row.
-         */
-        @media screen and (max-width: 992px) {
-            .character-card .card-body {
-                grid-template-columns: 1fr;
-            }
-
-            /* When displaying the picture gallery in it's own row we
-             * need to make sure we center it.
-             */
-            .character-picture-carousel {
-                justify-self: center;
-            }
-        }
-
-
-       /* Layout the character cards themselves and the rating controls
-        * at a high level.
-        */
-
-        .battle-grid {
-            display: flex;
-            flex-direction: row;
-            padding: 1em;
-            gap: 2em;
-        }
-
-        /* chrome doesn't understand the 'gap' property correctly */
-        @media screen and (-webkit-min-device-pixel-ratio:0) {
-            .character-card:first-child {
-                margin-right: 2em;
-            }
-        }
-
-        .character-card {
-            flex-grow: 1;
-            height: 100%;
-            width: 50%;
-        }
-
-        @media screen and (max-width: 640px) {
-            .battle-grid {
-                flex-direction: column;
-            }
-
-            .character-card {
-                width: 100%;
-            }
-        }
-    </style>
-
     <section class="battle-grid">
-        {{ character_card("left", left) }}
-        {{ character_card("right", right) }}
+        {{ character_card("left", left, left_form) }}
+        {{ character_card("right", right, right_form) }}
     </section>
-
-    <!-- Modal here -->
-    <div class="modal fade" id="fullscreen-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-            <!-- Content appended here by javascript -->
-            </div>
-        </div>
-    </div>
-
-    <style>
-        .modal-dialog{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-dialog img{
-            width: 60vw;
-        }
-    </style>
-
 {% endblock body %}
+
+{% block scripts %}
+    {% include "carousel.js" without context %}
+    {% include "battle.js" without context %}
+{% endblock scripts %}

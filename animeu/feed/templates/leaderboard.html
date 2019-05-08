@@ -1,0 +1,21 @@
+{% macro leaderboard(title, entries, class="") %}
+    <div class="leaderboard {{ class }}">
+        <span class="title">{{ title }}</span>
+        {% for entry in entries %}
+            <div class="entry">
+                <span class="rank">{{ loop.index }}</span>
+                {{ carousel( "%s-carousel-%d" | format(title, loop.index) , entry['gallery'], show_indicators=False) }}
+                <span class="en-name">{{ entry['en_name'] }}</span>
+                <span class="jp-name">{{ entry['jp_name'] }}</span>
+                <span class="win-counter counter">
+                    <span class="counter-title">W</span>
+                    <span class="counter-count">{{ entry['win_count'] }}</span>
+                </span>
+                <span class="loss-counter counter">
+                    <span class="counter-title">L</span>
+                    <span class="counter-count">{{ entry['loss_count'] }}</span>
+                </span>
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}

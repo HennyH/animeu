@@ -6,5 +6,6 @@ build
 dist
 env
 venv
+*.db
 .git
 Dockerfile

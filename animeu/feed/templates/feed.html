@@ -1,0 +1,49 @@
+{% from "carousel.html" import carousel with context %}
+{% from "leaderboard.html" import leaderboard with context %}
+{% extends "base.html" %}
+
+{% block styles %}
+    {% include "carousel.css" without context %}
+    {% include "leaderboard.css" without context %}
+    {% include "feed.css" without context %}
+{% endblock styles %}
+
+{% block body %}
+    <div class="feed">
+        {{ leaderboard("Top Waifus", top_waifus, class="top-waifus-leaderboard") }}
+        {{ leaderboard("Active Waifus", active_waifus, class="active-waifus-leaderboard") }}
+        {% for battle in battles %}
+            <div class="summary">
+                {% set winner_en_name = battle["winner"]["names"]["en"][0] %}
+                {% set winner_jp_name = battle["winner"]["names"]["jp"][0] %}
+                {% set winner_gallery_urls = battle["winner"]["pictures"]["gallery"] %}
+                {% set loser_en_name = battle["loser"]["names"]["en"][0] %}
+                {% set loser_jp_name = battle["loser"]["names"]["jp"][0] %}
+                {% set loser_gallery_urls = battle["loser"]["pictures"]["gallery"] %}
+                <div class="winner picture-carousel">
+                    {{ carousel("winner-carousel", winner_gallery_urls, show_indicators=False) }}
+                </div>
+                <div class="info winner-info">
+                    <i class="fas fa-church"></i>
+                    <span class="message winner-message">Waifu</span>
+                    <span class="name">{{ winner_en_name }}</span>
+                    <span class="japanese">{{ winner_jp_name }}</span>
+                </div>
+                <span class="vs">v.s</span>
+                <div class="info loser-info">
+                    <i class="fas fa-heart-broken"></i>
+                    <span class="message loser-message">Rejected</span>
+                    <span class="name">{{ loser_en_name }}</span>
+                    <span class="japanese">{{ loser_jp_name }}</span>
+                </div>
+                <div class="loser picture-carousel">
+                    {{ carousel("loser-carousel", loser_gallery_urls, show_indicators=False) }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock body %}
+
+{% block scripts %}
+    {% include "carousel.js" without context %}
+{% endblock scripts %}
