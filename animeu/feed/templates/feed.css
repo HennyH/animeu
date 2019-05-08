@@ -68,11 +68,11 @@
         width: 96px;
     }
 
-    @media screen and (max-width: 840px) {
+    @media screen and (max-width: 1024px) {
         .feed {
             display: grid;
             gap: 1em;
-            grid-template-columns: repeat(auto-fit, 320px);
+            grid-template-columns: repeat(auto-fit, max-content);
             justify-content: center;
             align-content: center;
         }
@@ -141,9 +141,22 @@
         }
     }
 
-    @media screen and (max-width: 680px) {
+    @media screen and (max-width: 780px) {
         .feed {
             grid-template-columns: 1fr;
+        }
+    }
+
+    @media screen and (max-width: 390px) {
+        .leaderboard > .entry {
+            grid-template-columns: 5em
+                               1fr
+                               minmax(min-content, max-content)
+                               minmax(min-content, max-content);
+        }
+
+        .leaderboard > .entry > .rank {
+            display: none;
         }
     }
 

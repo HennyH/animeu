@@ -21,11 +21,12 @@
     .leaderboard > .entry {
         display: grid;
         grid-template-columns: max-content
-                               5em
+                               4.32em
                                1fr
                                1fr
                                minmax(min-content, max-content)
                                minmax(min-content, max-content);
+        gap: 1em;
         justify-content: center;
         justify-items: center;
         align-content: center;
@@ -40,5 +41,36 @@
     .leaderboard > .entry > .carousel {
         height: 4.32em;
         width: 3.12em;
+    }
+
+    .leaderboard > .entry > .counter {
+        padding: 0.2em 0.4em;
+        border-radius: 5px;
+        color: white;
+    }
+
+    .win-counter {
+        background-color: #28a745;
+    }
+
+    .loss-counter {
+        background-color: #dc3545;
+    }
+
+    .counter-title {
+        display: inline-block;
+        padding: 0.2em 0.3em;
+        font-size: 0.8em;
+        border-radius: 5px;
+        width: 2em;
+        text-align: center;
+    }
+
+    .win-counter > .counter-title {
+        background-color: #166127;
+    }
+
+    .loss-counter > .counter-title {
+        background-color: #771d26;
     }
 </style>
