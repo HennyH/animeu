@@ -132,7 +132,7 @@
         }
 
         .leaderboard > .entry {
-            grid-template-columns: max-content
+            grid-template-columns: minmax(2ch, max-content)
                                5em
                                1fr
                                minmax(min-content, max-content)

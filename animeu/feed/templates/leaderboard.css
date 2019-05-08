@@ -20,7 +20,7 @@
 
     .leaderboard > .entry {
         display: grid;
-        grid-template-columns: max-content
+        grid-template-columns: minmax(2ch, max-content)
                                4.32em
                                1fr
                                1fr
