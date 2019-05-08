@@ -1,0 +1,44 @@
+<style>
+    .leaderboard {
+        display: grid;
+        background-color: rgba(0, 0, 0, 0.01);
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        border-radius: 5px;
+        grid-template-rows: 2em;
+        grid-auto-rows: 4.5em;
+        gap: 1em 0;
+        padding-bottom: 1em;
+    }
+
+    .leaderboard > .title {
+        background-color: rgba(0, 0, 0, 0.03);
+        text-align: center;
+        padding: 0.2em 0;
+        font-weight: 600;
+        font-style: oblique;
+    }
+
+    .leaderboard > .entry {
+        display: grid;
+        grid-template-columns: max-content
+                               5em
+                               1fr
+                               1fr
+                               minmax(min-content, max-content)
+                               minmax(min-content, max-content);
+        justify-content: center;
+        justify-items: center;
+        align-content: center;
+        align-items: center;
+        padding: 0 1em;
+    }
+
+    .leaderboard > .entry > span {
+        display: inline-block;
+    }
+
+    .leaderboard > .entry > .carousel {
+        height: 4.32em;
+        width: 3.12em;
+    }
+</style>

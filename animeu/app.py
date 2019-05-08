@@ -34,6 +34,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     os.environ.get("DATABASE",
                    os.environ.get("DATABASE_URL", "sqlite:///../app.db"))
+if app.debug:
+    print(f"USING DATABASE = {app.config['SQLALCHEMY_DATABASE_URI']}",
+          file=sys.stderr)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 

@@ -4,8 +4,7 @@
 #
 # See /LICENCE.md for Copyright information
 """Route definitions for the authentication module."""
-from datetime import datetime, timedelta
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template
 
 from animeu.data_loader import get_character_by_name
 from .queries import (query_most_battled_waifus,
@@ -27,15 +26,27 @@ def feed(limit=20):
         }
         for b in recent_battles
     ]
-    return render_template("feed.html", battles=battle_summaries)
-
-@feed_bp.route("/top-waifus")
-def top_waifus():
-    """Return the most winning waifus."""
-    return jsonify(query_most_winning_waifus())
-
-@feed_bp.route("/active-waifus")
-def active_waifus():
-    """Return the most active waifus battle wise."""
-    from_date = datetime.now() + timedelta(days=-30)
-    return jsonify(query_most_battled_waifus(from_date))
+    top_waifus = []
+    for result in query_most_winning_waifus():
+        character = get_character_by_name(result.name)
+        top_waifus.append({
+            "en_name": character["names"]["en"][0],
+            "jp_name": character["names"]["jp"][0],
+            "win_count": result.wins,
+            "loss_count": result.losses,
+            "gallery": character["pictures"]["gallery"]
+        })
+    active_waifus = []
+    for result in query_most_battled_waifus():
+        character = get_character_by_name(result.name)
+        active_waifus.append({
+            "en_name": character["names"]["en"][0],
+            "jp_name": character["names"]["jp"][0],
+            "win_count": result.wins,
+            "loss_count": result.losses,
+            "gallery": character["pictures"]["gallery"]
+        })
+    return render_template("feed.html",
+                           battles=battle_summaries,
+                           top_waifus=top_waifus,
+                           active_waifus=active_waifus)
