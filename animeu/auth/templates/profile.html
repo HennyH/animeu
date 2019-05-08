@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% from "carousel.html" import carousel with context %}
+{% block body %}
+
+<style>
+    .profile_picture{   
+        width: 150px;
+        height: 150px;
+
+        margin-right: 20px;
+
+        border-radius: 100%;
+        box-shadow: 0 0 0rem 0rem rgb(105,105,105);
+    }
+
+    .eng_user_name{
+    }
+
+    .jap_user_name{
+    }
+
+    .profile_headers{
+        position: relative;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        height: 310px;
+
+        /* border: 1px solid red;   */
+    }
+
+    .vertical-center{
+        display: flex;
+        align-items: center;
+    }
+
+    .nameQuote{
+        /* margin-left: 20px; */
+    }
+
+    .info-box{
+        margin: 10px;
+        width: 30%;
+    }
+</style>
+
+<div class="profile_headers container">  
+    <div class="info-box">
+        <div class="vertical-center">
+            <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" alt="profile_pic" class="profile_picture">
+            <div class="nameQuote">
+                <h5 class="capitalize eng_user_name">
+                    Ritsuko Kunihiro
+                </h5>
+                <h6 class="user-flair">
+                    国広 律子
+                </h6>    
+            </div>
+        </div>
+    </div>
+    <h6 class="capitalize">
+        best Waifu: Sth here
+        <br>
+        Battles done: 100
+    </h6>
+</div>
+
+{% endblock body %}

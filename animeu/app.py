@@ -59,4 +59,4 @@ def jinja_utilities():
 @app.route("/")
 def index():
     """Root of the site."""
-    return redirect("/battle")
+    return redirect("/battle/")

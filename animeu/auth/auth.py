@@ -5,7 +5,7 @@
 # See /LICENCE.md for Copyright information
 """Route definitions for the authentication module."""
 from flask import Blueprint, render_template, request
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 
 from animeu.models import User
 from animeu.app import db
@@ -14,7 +14,9 @@ from .forms import LoginForm, RegisterForm
 from .logic import hash_password, maybe_find_user
 
 # pylint: disable=invalid-name
-auth_bp = Blueprint("auth_bp", __name__, template_folder="templates")
+auth_bp = Blueprint("auth_bp", 
+                    __name__, 
+                    template_folder="templates")
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -54,3 +56,9 @@ def register():
             login_user(new_user)
             return arg_redirect(request, "next")
     return render_template("register.html", form=form, register=True)
+
+@auth_bp.route("/profile")
+@login_required
+def profile():
+    """Log the current user out if they are authenticated."""
+    return render_template('profile.html')
