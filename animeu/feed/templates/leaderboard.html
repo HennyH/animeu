@@ -6,7 +6,7 @@
                 <span class="rank">{{ loop.index }}</span>
                 {{ carousel( "%s-carousel-%d" | format(title, loop.index) , entry['gallery'], show_indicators=False) }}
                 <span class="en-name">{{ entry['en_name'] }}</span>
-                <span class="jp-name">{{ entry['jp_name'] }}</span>
+                <span class="jp-name japanese">{{ entry['jp_name'] }}</span>
                 <span class="win-counter counter">
                     <span class="counter-title">W</span>
                     <span class="counter-count">{{ entry['win_count'] }}</span>
