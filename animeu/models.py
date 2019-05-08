@@ -14,7 +14,7 @@ class User(db.Model, UserMixin):
 
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     username = db.Column(db.String(20), nullable=True)
     password_hash = db.Column(db.String, nullable=False)
 
@@ -31,5 +31,5 @@ class WaifuPickBattle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     date = db.Column(db.DateTime, nullable=False)
-    winner_name = db.Column(db.String, nullable=False)
-    loser_name = db.Column(db.String, nullable=False)
+    winner_name = db.Column(db.String, index=True, nullable=False)
+    loser_name = db.Column(db.String, index=True, nullable=False)
