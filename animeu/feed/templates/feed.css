@@ -68,6 +68,10 @@
         width: 96px;
     }
 
+    .entry > .rank {
+        font-weight: 600;
+    }
+
     @media screen and (max-width: 1024px) {
         .feed {
             display: grid;
