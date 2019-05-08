@@ -1,0 +1,120 @@
+<style>
+    .profile_picture{   
+        width: 150px;
+        height: 150px;
+
+        margin-right: 20px;
+
+        border: 2px solid #0276FD;
+        border-radius: 100%;
+        box-shadow: 0 0 0rem 0rem rgb(105,105,105);
+    }
+
+    .eng_user_name{
+    }
+
+    .jap_user_name{
+    }
+
+    .profile_headers{
+        position: relative;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        /* border: 1px solid red;   */
+    }
+
+    .vertical-center{
+        display: flex;
+        align-items: center;
+    }
+
+    .nameQuote{
+        /* margin-left: 20px; */
+    }
+
+    .info-box{
+        margin: 10px;
+        width: 40%;
+    }
+
+    .profile_headers:hover .button_customization{
+        visibility: visible;
+        transition: 0.5s;
+    }
+
+    .button_customization{
+        visibility: hidden;
+        display: inline-block;
+        font-weight: 400;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        background-color: rgb(255,255,255);
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: 20px;
+
+        box-shadow: 0 3px 3px 1px rgb(105,105,105);
+
+        opacity: 0.5;
+        transition: 0.4s;
+    }
+
+    .button_customization:hover{
+        /* background-color: rgb(169,169,169); */
+        opacity: 1;
+        transition: 0.4s;
+    }
+
+    .edit_btn{
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    .personal_info{
+        margin-top: 10px;
+    }
+
+    /* Personal user ranking leaderboard */
+
+    .carousel {
+        height: 136px;
+        width: 96px;
+    }
+
+    .leaderboard > .entry > .counter {
+        display: none;
+    }
+
+    @media screen and (max-width: 840px) {
+
+        .picture-carousel {
+            justify-content: center;
+        }
+
+        .top-waifus-leaderboard {
+            grid-column: initial;
+        }
+
+        .leaderboard > .entry {
+            grid-template-columns: max-content
+                               5em
+                               1fr
+                               minmax(min-content, max-content)
+                               minmax(min-content, max-content);
+        }
+
+    }
+
+    @media screen and (max-width: 680px) {
+        .leaderboard > .entry {
+            padding: 0 2px;
+        }
+    }
+</style>

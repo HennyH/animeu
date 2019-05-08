@@ -1,0 +1,43 @@
+{% from "carousel.html" import carousel with context %}
+{% from "leaderboard.html" import leaderboard with context %}
+{% extends "base.html" %}
+
+{% block styles %}
+    {% include "carousel.css" without context %}
+    {% include "leaderboard.css" without context %}
+    {% include "profile.css" without context %}
+{% endblock styles %}
+
+{% block body %}
+<div class="profile_headers container">  
+    <div class="info-box">
+        <div class="vertical-center">
+            <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" alt="profile_pic" class="profile_picture">
+            <div class="nameQuote">
+                <h4 class="capitalize eng_user_name">
+                    Ritsuko Kunihiro
+                </h4>
+                <h5 class="user-flair">
+                    国広 律子
+                </h5>    
+            </div>
+        </div>
+    </div>
+    <button class="btn button_customization edit_btn">
+        Edit <i class="fas fa-cog"></i>
+    </button>
+</div>
+
+<section class="container">
+    <div class="row">
+        <div class="col-lg-4">
+            {{ leaderboard("Best Waifus", top_waifus, class="top-waifus-leaderboard") }}
+        </div>
+    </div>
+</section>
+
+{% endblock body %}
+
+{% block scripts %}
+    {% include "carousel.js" without context %}
+{% endblock scripts %}
