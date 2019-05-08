@@ -30,14 +30,14 @@ def query_most_winning_waifus(from_date=None, limit=20):
     query = \
         select([
             appearence_cte.c.name,
-            func.count(appearence_cte.c.was_winner).label("wins"),
-            func.count(appearence_cte.c.was_winner).label("losses"),
+            func.sum(appearence_cte.c.was_winner).label("wins"),
+            func.sum(appearence_cte.c.was_loser).label("losses"),
         ])
     if from_date:
         query = query.where(appearence_cte.c.date >= from_date)
     query = query\
         .group_by(appearence_cte.c.name)\
-        .order_by(func.count(appearence_cte.c.was_winner).desc())\
+        .order_by(func.sum(appearence_cte.c.was_winner).desc())\
         .limit(limit)\
         .alias("sqlalchemy-bug-workaround")
     return db.session.query(query).all()
@@ -48,8 +48,8 @@ def query_most_battled_waifus(from_date=None, limit=20):
     query = \
         select([
             appearence_cte.c.name,
-            func.count(appearence_cte.c.was_winner).label("wins"),
-            func.count(appearence_cte.c.was_winner).label("losses"),
+            func.sum(appearence_cte.c.was_winner).label("wins"),
+            func.sum(appearence_cte.c.was_loser).label("losses"),
         ])
     if from_date:
         query = query.where(appearence_cte.c.date >= from_date)
