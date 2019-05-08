@@ -47,6 +47,9 @@
 
             function changeSelectedItem(index) {
                 CURRENT_ANIMATION = CURRENT_ANIMATION.then(async () => {
+                    if (getCurrentIndex() === index) {
+                        return;
+                    }
                     const currentImage = el.querySelector(".carousel-item-container.slide-in");
                     const currentIndicator = el.querySelector(".indicator.selected");
                     const targetImage = el.querySelector(`.carousel-item-container[data-index="${index}"]`);
