@@ -55,11 +55,14 @@ from animeu.auth import auth_bp
 from animeu.feed import feed_bp
 # pylint: disable=wrong-import-position
 from animeu.api import api_bp
+# pylint: disable=wrong-import-position
+from animeu.profile import profile_bp
 
 app.register_blueprint(battle_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(feed_bp)
 app.register_blueprint(api_bp)
+app.register_blueprint(profile_bp)
 
 @app.context_processor
 def jinja_utilities():
