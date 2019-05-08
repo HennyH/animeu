@@ -109,7 +109,7 @@
         }
 
         .picture-carousel {
-            justify-content: center;
+            justify-self: center;
         }
 
         .picture-carousel.winner {
