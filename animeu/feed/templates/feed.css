@@ -39,7 +39,6 @@
     .info {
         display: grid;
         justify-self: center;
-        align-self: center;
         grid-template-rows: min-content max-content max-content 1fr;
         justify-content: center;
         align-content: center;
