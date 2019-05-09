@@ -13,6 +13,7 @@ from flask_login import login_required, current_user
 from animeu.app import db
 from animeu.data_loader import load_character_data
 from animeu.models import WaifuPickBattle
+from animeu.profile.queries import query_has_favourited_waifus
 from .forms import WaifuPickBattleForm
 
 # pylint: disable=invalid-name
@@ -26,19 +27,25 @@ battle_bp = Blueprint("battle_bp",
 def battle():
     """Render a simple A vs. B battle screen."""
     characters = load_character_data()
-    character1 = random.choice(characters)
-    character2 = random.choice(characters)
+    left_character = random.choice(characters)
+    right_character = random.choice(characters)
+    left_name = left_character["names"]["en"][0]
+    right_name = right_character["names"]["en"][0]
+    name_to_favourited = \
+        query_has_favourited_waifus(current_user.id, [left_name, right_name])
+    left_character["favourited"] = name_to_favourited[left_name]
+    right_character["favourited"] = name_to_favourited[right_name]
     return render_template(
         "battle.html",
-        left=character1,
+        left=left_character,
         left_form=WaifuPickBattleForm(
-            winner_name=character1["names"]["en"][0],
-            loser_name=character2["names"]["en"][0],
+            winner_name=left_name,
+            loser_name=right_character["names"]["en"][0],
         ),
-        right=character2,
+        right=right_character,
         right_form=WaifuPickBattleForm(
-            winner_name=character2["names"]["en"][0],
-            loser_name=character1["names"]["en"][0],
+            winner_name=right_name,
+            loser_name=left_character["names"]["en"][0],
         )
     )
 
