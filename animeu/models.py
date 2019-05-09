@@ -23,7 +23,6 @@ def load_user(user_id):
     """Load a user object from the database given their ID."""
     return User.query.get(user_id)
 
-
 class WaifuPickBattle(db.Model):
     """Table which represents a where one girl is chosen as a waifu."""
 
@@ -33,3 +32,14 @@ class WaifuPickBattle(db.Model):
     date = db.Column(db.DateTime, nullable=False)
     winner_name = db.Column(db.String, index=True, nullable=False)
     loser_name = db.Column(db.String, index=True, nullable=False)
+
+class FavouritedWaifu(db.Model):
+    """Table whose rows are an ordered collection of waifus."""
+
+    __tablename__ = "favourited_waifu"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"),
+                        index=True, nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
+    character_name = db.Column(db.String, index=True, nullable=False)
+    order = db.Column(db.Integer, index=True, nullable=False)
