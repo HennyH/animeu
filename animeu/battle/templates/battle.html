@@ -8,6 +8,7 @@
 
 {% block body %}
     {% macro character_card(id, character, form) -%}
+        {% set is_favourited = character["favourited"] %}
         {% set en_name = character["names"]["en"][0] %}
         {% set jp_name = character["names"]["jp"][0] %}
         {% set info_fields = character["info_fields"] %}
@@ -28,11 +29,10 @@
                     <button type="button" class="toggle-description-view btn btn-outline-secondary">
                         <i class="fas fa-info-circle"></i>
                     </button>
-                    <button type="button" class="btn btn-outline-secondary">
-                        <i class="far fa-heart" style="color: red;"></i>
+                    <button type="button" class="favourite-button btn btn-outline-danger">
+                        <i class="{{ 'fas' if is_favourited else 'far' }} fa-heart" style="color: red;"></i>
                     </button>
                 </div>
-
             </h5>
             <div class="card-body">
                 <div class="overlay overlay-view-visible">
@@ -111,4 +111,17 @@
 {% block scripts %}
     {% include "carousel.js" without context %}
     {% include "battle.js" without context %}
+    {% include "favourite.js" without context %}
+    <script>
+        $(document).ready(() => {
+            $(".favourite-button").each((i, btn) => {
+                FavoritingButton(
+                    btn,
+                    $(btn).siblings(".english-name").text().trim(),
+                    () => btn.querySelector("i").classList.replace("far", "fas"),
+                    () => btn.querySelector("i").classList.replace("fas", "far")
+                );
+            });
+        });
+    </script>
 {% endblock scripts %}

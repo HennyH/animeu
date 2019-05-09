@@ -238,4 +238,25 @@
     height: 350px;
 }
 
+.favourited {
+  color: red;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.favourite-button:hover {
+  background-color: initial !important;
+}
+
+.favourite-button:hover > i {
+  animation: pulse 0.5s linear 0s infinite alternate-reverse
+}
+
 </style>
