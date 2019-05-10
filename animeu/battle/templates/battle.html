@@ -17,23 +17,19 @@
         {% set gallery_urls = character["pictures"]["gallery"] %}
         {% set anime_roles = character["anime_roles"] %}
         <div class="card character-card info-view" id="{{ id }}">
-            <h5 class="card-header">
-                <div class="primary-name">
-                    <div class="english-name">
-                        {{ en_name }}
-                    </div>
-                    <small class="jp-name font-weight-bold">{{ jp_name }}</small>
-                    <button type="button" class="toggle-picture-view btn btn-outline-secondary">
-                        <i class="fas fa-images"></i>
-                    </button>
-                    <button type="button" class="toggle-description-view btn btn-outline-secondary">
-                        <i class="fas fa-info-circle"></i>
-                    </button>
-                    <button type="button" class="favourite-button btn btn-outline-danger">
-                        <i class="{{ 'fas' if is_favourited else 'far' }} fa-heart" style="color: red;"></i>
-                    </button>
-                </div>
-            </h5>
+            <div class="card-header">
+                <h5 class="english-name">{{ en_name }}</h5>
+                <h6 class="jp-name font-weight-bold">{{ jp_name }}</h4>
+                <button type="button" class="toggle-picture-view btn btn-outline-secondary">
+                    <i class="fas fa-images"></i>
+                </button>
+                <button type="button" class="toggle-description-view btn btn-outline-secondary">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+                <button type="button" class="favourite-button btn btn-outline-danger">
+                    <i class="{{ 'fas' if is_favourited else 'far' }} fa-heart" style="color: red;"></i>
+                </button>
+            </div>
             <div class="card-body">
                 <div class="overlay overlay-view-visible">
                     <!-- content here -->

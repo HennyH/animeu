@@ -18,19 +18,6 @@
     * sizes.
     */
 
-.primary-name button {
-  float: right;
-  grid-row: 3;
-}
-
-.primary-name button:not(:first-child) {
-  margin-right: 0.5em;
-}
-
-.primary-name .english-name {
-  grid-row: 1;
-}
-
 .character-card .card-body {
   display: grid;
   grid-row-gap: 1em;
@@ -257,6 +244,30 @@
 
 .favourite-button:hover > i {
   animation: pulse 0.5s linear 0s infinite alternate-reverse
+}
+
+.card-header {
+  display: grid;
+  grid-template-columns: 1fr repeat(3, max-content);
+  grid-template-rows: 1fr 1fr;
+}
+
+.card-header > .english-name {
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+.card-header > .jp-name {
+  grid-area: 2 / 1 / 3 / 2;
+}
+
+.card-header > button {
+  grid-row: 1 / -1;
+  justify-self: center;
+  align-self: center;
+}
+
+.card-header > button:not(:last-child) {
+  margin-right: 0.2em;
 }
 
 </style>
