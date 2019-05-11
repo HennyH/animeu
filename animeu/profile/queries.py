@@ -33,21 +33,13 @@ def get_favourite_waifu_list(user_id, limit=10):
         .limit(limit)\
         .all()
 
-def get_favourited_waifu_battles(user_id, limit=10):
-    """Query the waifus the user has favourited."""
-    favourited_waifu_names = \
-        select([
-            FavouritedWaifu.character_name
-        ])\
-        .where(FavouritedWaifu.user_id == user_id)
+def get_recent_waifu_battles(user_id, limit=10):
+    """Query the recent battles the user has participated in."""
     battles = \
         select([
             WaifuPickBattle
         ])\
-        .where(
-            or_(
-                WaifuPickBattle.winner_name.in_(favourited_waifu_names),
-                WaifuPickBattle.loser_name.in_(favourited_waifu_names)
-            ))\
+        .where(WaifuPickBattle.user_id == user_id)\
+        .order_by(WaifuPickBattle.date.desc())\
         .limit(limit)
     return db.engine.execute(battles).fetchall()
