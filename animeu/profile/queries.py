@@ -4,7 +4,7 @@
 #
 # See /LICENCE.md for Copyright information
 """Query functions used to populate the profile."""
-from sqlalchemy.sql import select, and_, or_
+from sqlalchemy.sql import select, and_
 from animeu.app import db
 from animeu.models import FavouritedWaifu, WaifuPickBattle
 
