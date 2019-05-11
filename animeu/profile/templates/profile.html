@@ -73,6 +73,56 @@
             display: none;
         }
 
+        /* On mobile we become really hard pressed to fit in the japanese
+         * names as well so need to hide it.
+         */
+        @media screen and (max-width: 480px) {
+            .best-waifus-leaderboard > .entry {
+                grid-template-columns: minmax(2ch, max-content) 4.32em 1fr;
+            }
+
+            .best-waifus-leaderboard > .entry > .jp-name {
+                display: none;
+            }
+        }
+
+        /* When the screen becomes really small the text on the battle cards
+         * becomes really cramped - so what we want to do is override their
+         * default layouts and place the required content above the carousel.
+         */
+         @media screen and (max-width: 680px) {
+            .battlecard {
+                grid-template-columns: 1fr 1ch 1fr;
+                grid-template-rows: max-content 1fr;
+            }
+
+            .battlecard > .vs::after,
+            .battlecard > .info > .message,
+            .battlecard > .info > .japanese {
+                display: none;
+            }
+
+            .battlecard > .picture-carousel {
+                padding-top: calc(0.5 * var(--base-padding));
+            }
+
+            .battlecard > .picture-carousel.winner {
+                grid-area: 2 / 1 / 3 / 2;
+            }
+
+            .battlecard > .picture-carousel.loser {
+                grid-area: 2 / 3 / 3 / 4;
+            }
+
+            .battlecard > .vs {
+                grid-row: 1 / -1;
+                height: 100%;
+                width: 2px;
+                background-color: var(--seperator-color);
+                border-radius: var(--base-border-radius);
+            }
+        }
+
     </style>
 {% endblock styles %}
 
