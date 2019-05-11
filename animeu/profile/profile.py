@@ -10,7 +10,7 @@ from flask_login import current_user, login_required
 
 from animeu.data_loader import get_character_by_name
 from .queries import (get_favourite_waifu_list,
-                      get_favourited_waifu_battles)
+                      get_recent_waifu_battles)
 from .logic import (maybe_get_favourited_waifu,
                     favourite_a_waifu,
                     unfavourite_a_waifu)
@@ -31,7 +31,7 @@ def profile():
             "date-favour": result.date.strftime("%d %b %Y"),
             "gallery": character["pictures"]["gallery"]
         })
-    recent_battles = get_favourited_waifu_battles(current_user.id)
+    recent_battles = get_recent_waifu_battles(current_user.id)
     battle_summaries = [
         {
             "date": b.date,
