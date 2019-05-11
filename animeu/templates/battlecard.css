@@ -1,0 +1,41 @@
+<style>
+    .battlecard {
+        display: grid;
+        grid-template-columns: max-content 1fr minmax(5ch, 10ch) 1fr max-content;
+        justify-items: center;
+        align-items: center;
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: var(--base-border-radius);
+        padding: var(--base-padding);
+    }
+
+    .battlecard > .vs::after {
+        content: "v.s";
+        font-weight: 600;
+        font-size: 1.5em;
+        font-style: oblique;
+    }
+
+    .battlecard > .info {
+        display: grid;
+        grid-template-rows: min-content max-content max-content 1fr;
+        justify-items: center;
+        align-items: center;
+    }
+
+    .battlecard > .info > i {
+        font-size: 2em;
+        padding: 0.5em 0;
+    }
+
+    .battlecard .message {
+        font-style: oblique;
+        padding-bottom: 1em;
+    }
+
+    .battlecard .carousel {
+        height: 136px;
+        width: 96px;
+    }
+</style>

@@ -1,66 +1,102 @@
 {% from "carousel.html" import carousel with context %}
 {% from "leaderboard.html" import leaderboard with context %}
+{% from "battlecard.html" import battlecard with context %}
+
 {% extends "base.html" %}
 
 {% block styles %}
     {% include "carousel.css" without context %}
     {% include "leaderboard.css" without context %}
-    {% include "profile.css" without context %}
+    {% include "battlecard.css" without context %}
+    <style>
+        .profile {
+            display: grid;
+            grid-template-columns: 1fr;
+            justify-items: center;
+            padding: var(--base-padding);
+            gap: var(--base-padding);
+        }
+
+        .profile > * {
+            width: 100%;
+            margin: 0 var(--base-padding);
+        }
+
+        /* On a larger screen it looks better to have the best waifus
+         * sit beside the recent battles.
+         */
+        @media screen and (min-width: 1280px) {
+            .profile {
+                grid-template-columns: 1fr 3fr;
+            }
+
+            .profile-picture {
+                grid-column: 1 / -1;
+            }
+
+            .best-waifu-leaderboard {
+                grid-column: 1 / 2;
+            }
+
+            .battle-list {
+                grid-column: 2 / 3;
+            }
+        }
+
+        .profile-picture {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: calc(2 * var(--base-padding));
+        }
+
+        .battle-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--base-padding);
+        }
+
+        /* When the screen becomes large enough we can comfortably fit
+         * two of our battle cards side-by-side.
+         */
+        @media screen and (min-width: 1780px) {
+            .battle-list {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* On the profile page we hide the win/loss information from the top
+         * waifus leaderboard since they're sorted by the user setting their
+         * positions.
+         */
+        .best-waifus-leaderboard > .entry > .counter {
+            display: none;
+        }
+
+    </style>
 {% endblock styles %}
 
 {% block body %}
-<div class="profile-headers container">
-    <div class="info-box">
-        <div class="vertical-center">
-            <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" alt="profile-pic" class="profile-picture">
-            <div class="nameQuote">
-                <h4 class="capitalize eng-user-name">
-                    {{ current_user.username }}
-                </h4>
-            </div>
+    <div class="profile">
+        <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" class="profile-picture">
+        <!-- best waifu leaderboard -->
+        {% call(entry, is_empty) leaderboard("Waifus for laifu", best_waifus, class="best-waifus-leaderboard") %}
+            {% if is_empty %}
+                <span class="no-favourited-waifus-message">
+                    It looks like you have no favourite waifus :(
+                </span>
+            {% endif %}
+            <span class="date-favourited">
+                {{ entry['date-favour'] }}
+            </span>
+        {% endcall %}
+        <!-- recent battles -->
+        <div class="battle-list">
+            {% for battle in battles %}
+                {{ battlecard(battle) }}
+            {% endfor %}
         </div>
     </div>
-</div>
-
-<section class="container activity-container">
-    {% call(entry) leaderboard("Waifus for laifu", best_waifus, class="best-waifus-leaderboard") %}
-        <span class="date-favourited">
-            {{ entry['date-favour'] }}
-        </span>
-    {% endcall %}
-    <div class="battle-container">
-        {% for battle in battles %}
-            <div class="summary">
-                {% set winner_en_name = battle["winner"]["names"]["en"][0] %}
-                {% set winner_jp_name = battle["winner"]["names"]["jp"][0] %}
-                {% set winner_gallery_urls = battle["winner"]["pictures"]["gallery"] %}
-                {% set loser_en_name = battle["loser"]["names"]["en"][0] %}
-                {% set loser_jp_name = battle["loser"]["names"]["jp"][0] %}
-                {% set loser_gallery_urls = battle["loser"]["pictures"]["gallery"] %}
-                <div class="winner picture-carousel">
-                    {{ carousel("winner-carousel", winner_gallery_urls, show_indicators=False) }}
-                </div>
-                <div class="info winner-info">
-                    <i class="fas fa-church"></i>
-                    <span class="message winner-message">Waifu</span>
-                    <span class="name">{{ winner_en_name }}</span>
-                    <span class="japanese">{{ winner_jp_name }}</span>
-                </div>
-                <span class="vs">v.s</span>
-                <div class="info loser-info">
-                    <i class="fas fa-heart-broken"></i>
-                    <span class="message loser-message">Rejected</span>
-                    <span class="name">{{ loser_en_name }}</span>
-                    <span class="japanese">{{ loser_jp_name }}</span>
-                </div>
-                <div class="loser picture-carousel">
-                    {{ carousel("loser-carousel", loser_gallery_urls, show_indicators=False) }}
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-</section>
-
 {% endblock body %}
 
 {% block scripts %}
