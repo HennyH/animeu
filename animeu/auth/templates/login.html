@@ -1,7 +1,11 @@
+{% from "field.html" import render_field %}
 {% extends "base.html" %}
-{% block body %}
+
+{% block styles %}
     {% include "form.css" without context %}
-    {% from "field.html" import render_field %}
+{% endblock styles %}
+
+{% block body %}
     <style>
         /* Place the 'forgot password?' link at the end of its grid cell. */
         .forgot-password-link {
@@ -26,10 +30,12 @@
             <a tabindex="4" href="register" class="register-link">No Account? Register!</a>
         </form>
     </section>
-
-    <script>
-        $(document).ready(() => {
-            $("input[name='email']").focus();
-        });
-    </script>
 {% endblock body %}
+
+{% block scripts %}
+<script>
+    $(document).ready(() => {
+        $("input[name='email']").focus();
+    });
+</script>
+{% endblock scripts %}
