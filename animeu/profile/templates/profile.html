@@ -9,30 +9,58 @@
 {% endblock styles %}
 
 {% block body %}
-<div class="profile_headers container">  
+<div class="profile-headers container">  
     <div class="info-box">
         <div class="vertical-center">
-            <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" alt="profile_pic" class="profile_picture">
+            <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" alt="profile-pic" class="profile-picture">
             <div class="nameQuote">
-                <h4 class="capitalize eng_user_name">
-                    Ritsuko Kunihiro
-                </h4>
-                <h5 class="user-flair">
-                    国広 律子
-                </h5>    
+                <h4 class="capitalize eng-user-name">
+                    {{ current_user.username }}
+                </h4> 
             </div>
         </div>
     </div>
-    <button class="btn button_customization edit_btn">
+    <!-- <button class="btn button-customization edit-btn">
         Edit <i class="fas fa-cog"></i>
-    </button>
+    </button> -->
 </div>
 
-<section class="container">
-    <div class="row">
-        <div class="col-lg-4">
-            {{ leaderboard("Best Waifus", top_waifus, class="top-waifus-leaderboard") }}
-        </div>
+<section class="container activity-container">
+    {% call(entry) leaderboard("Waifus for laifu", best_waifus, class="best-waifus-leaderboard") %}
+        <span class="date-favourited">
+            {{ entry['date-favour'] }}
+        </span>
+    {% endcall %}
+    <div class="battle-container">
+        {% for battle in battles %}
+            <div class="summary">
+                {% set winner_en_name = battle["winner"]["names"]["en"][0] %}
+                {% set winner_jp_name = battle["winner"]["names"]["jp"][0] %}
+                {% set winner_gallery_urls = battle["winner"]["pictures"]["gallery"] %}
+                {% set loser_en_name = battle["loser"]["names"]["en"][0] %}
+                {% set loser_jp_name = battle["loser"]["names"]["jp"][0] %}
+                {% set loser_gallery_urls = battle["loser"]["pictures"]["gallery"] %}
+                <div class="winner picture-carousel">
+                    {{ carousel("winner-carousel", winner_gallery_urls, show_indicators=False) }}
+                </div>
+                <div class="info winner-info">
+                    <i class="fas fa-church"></i>
+                    <span class="message winner-message">Waifu</span>
+                    <span class="name">{{ winner_en_name }}</span>
+                    <span class="japanese">{{ winner_jp_name }}</span>
+                </div>
+                <span class="vs">v.s</span>
+                <div class="info loser-info">
+                    <i class="fas fa-heart-broken"></i>
+                    <span class="message loser-message">Rejected</span>
+                    <span class="name">{{ loser_en_name }}</span>
+                    <span class="japanese">{{ loser_jp_name }}</span>
+                </div>
+                <div class="loser picture-carousel">
+                    {{ carousel("loser-carousel", loser_gallery_urls, show_indicators=False) }}
+                </div>
+            </div>
+        {% endfor %}
     </div>
 </section>
 

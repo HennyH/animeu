@@ -4,9 +4,9 @@
         background-color: rgba(0, 0, 0, 0.01);
         border: 1px solid rgba(0, 0, 0, 0.125);
         border-radius: 5px;
-        grid-template-rows: 2em;
-        grid-auto-rows: 4.5em;
-        gap: 1em 0;
+        grid-auto-rows: max-content;
+        gap: 0.6em;
+        align-self: flex-start;
         padding-bottom: 1em;
     }
 
@@ -19,6 +19,7 @@
     }
 
     .leaderboard > .entry {
+        border-radius: 5px;
         display: grid;
         grid-template-columns: minmax(2ch, max-content)
                                4.32em
@@ -31,7 +32,10 @@
         justify-items: center;
         align-content: center;
         align-items: center;
-        padding: 0 1em;
+        background-color: rgba(0, 0, 0, 0.015);
+        margin: 0 0.6em;
+        border: 1px solid rgba(0, 0, 0, 0.105);
+        padding: 0.6em;
     }
 
     .leaderboard > .entry > span {
@@ -44,9 +48,16 @@
     }
 
     .leaderboard > .entry > .counter {
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-content: center;
         padding: 0.2em 0.4em;
         border-radius: 5px;
         color: white;
+    }
+
+    .leaderboard > .entry > .counter > .counter-count {
+        text-align: center;
     }
 
     .leaderboard > .entry > .en-name, .leaderboard > .entry > .jp-name {

@@ -15,6 +15,7 @@
                     <span class="counter-title">L</span>
                     <span class="counter-count">{{ entry['loss_count'] }}</span>
                 </span>
+                {{ caller(entry) if caller else "" }}
             </div>
         {% endfor %}
     </div>
