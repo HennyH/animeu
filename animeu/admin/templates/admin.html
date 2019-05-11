@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <style>
+        .admin-table  {
+            width: 100% !important;
+        }
+
+        .tab-content {
+            padding: 2em;
+        }
+    </style>
+{% endblock styles %}
+
+{% block body %}
+    <ul class="nav nav-tabs" id="admin-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active"
+               id="users-tab"
+               data-toggle="tab"
+               href="#users"
+               role="tab"
+               aria-controls="users"
+               aria-selected="true">Users</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               id="battles-tab"
+               data-toggle="tab"
+               href="#battles"
+               role="tab"
+               aria-controls="battles"
+               aria-selected="false">Battles</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               id="favourited-waifus-tab"
+               data-toggle="tab"
+               href="#favourited-waifus"
+               role="tab"
+               aria-controls="favourited-waifus"
+               aria-selected="false">Favourited Waifus</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="admin-tabs-content">
+        <div class="tab-pane fade show active" id="users">
+            <table id="users-table" class="admin-table display">
+                <thead>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Is Admin</th>
+                    <th>Actions</th>
+                </thead>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="battles">
+            <table id="battles-table" class="admin-table display">
+                <thead>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Date</th>
+                    <th>Winner</th>
+                    <th>Loser</th>
+                    <th>Actions</th>
+                </thead>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="favourited-waifus">
+            <table id="favourited-waifus-table" class="admin-table display">
+                <thead>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Date</th>
+                    <th>Character</th>
+                    <th>Order</th>
+                    <th>Actions</th>
+                </thead>
+            </table>
+        </div>
+    </div>
+{% endblock body %}
+
+{% block scripts %}
+    <script>
+        const DELETE_BTN_COLUMN = {
+            "targets": -1,
+            "data": null,
+            "defaultContent": "<button type='button' class='delete-button btn btn-danger'>Delete</button>"
+        };
+
+        function DeleteButton(dt, table, url) {
+            $(table).on("click", async (event) => {
+                debugger;
+                if (event.target.classList.contains("delete-button")) {
+                    const td = event.target.parentElement;
+                    const row = td.parentElement;
+                    const id = row.querySelector(".row-id").textContent;
+                    await $.ajax({
+                        url: `${url}/${encodeURIComponent(id)}`,
+                        method: "DELETE"
+                    });
+                    await dt.ajax.reload();
+                }
+            });
+        }
+
+        $(document).ready(() => {
+            $("#users-tab a").on("click", event => {
+                event.preventDefault();
+                $(this).tab("show");
+            });
+            $("#battles-tab a").on("click", event => {
+                event.preventDefault();
+                $(this).tab("show");
+            });
+            $("#favourited-waifus-tab a").on("click", event => {
+                event.preventDefault();
+                $(this).tab("show");
+            });
+
+            const usersTable = $("#users-table").DataTable({
+                dom: 'Bfrtip',
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "dt/users",
+                    type: "POST",
+                    data: JSON.stringify
+                },
+                columns: [
+                    { "data": "id", "name": "id", "className": "row-id" },
+                    { "data": "email", "name": "email" },
+                    { "data": "username", "name": "username" },
+                    { "data": "is_admin", "name": "is_admin" },
+                    DELETE_BTN_COLUMN
+                ]
+            });
+            DeleteButton(usersTable, "#users-table", "/admin/users");
+
+            const battlesTable = $("#battles-table").DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "dt/battles",
+                    type: "POST",
+                    data: JSON.stringify
+                },
+                columns: [
+                    { "data": "id", "name": "id", "className": "row-id" },
+                    { "data": "user_id", "name": "user_id" },
+                    { "data": "date", "name": "date" },
+                    { "data": "winner_name", "name": "winner_name" },
+                    { "data": "loser_name", "name": "loser_name" },
+                    DELETE_BTN_COLUMN
+                ]
+            });
+            DeleteButton(battlesTable, "#battles-table", "/admin/battles");
+
+            const favouritedWaifusTables = $("#favourited-waifus-table").DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "dt/favourites",
+                    type: "POST",
+                    data: JSON.stringify
+                },
+                columns: [
+                    { "data": "id", "name": "id", "className": "row-id" },
+                    { "data": "user_id", "name": "user_id" },
+                    { "data": "date", "name": "date" },
+                    { "data": "character_name", "name": "character_name" },
+                    { "data": "order", "name": "order" },
+                    DELETE_BTN_COLUMN
+                ]
+            });
+            DeleteButton(favouritedWaifusTables, "#favourited-waifus-table", "/admin/favourited-waifus")
+        })
+    </script>
+{% endblock scripts %}

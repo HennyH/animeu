@@ -6,6 +6,7 @@
 """Entrypoint which configures the animeu flask app."""
 import os
 import sys
+import json
 from functools import partial
 
 from flask import Flask, redirect, url_for
@@ -30,6 +31,7 @@ app.config["RECAPTCHA_PRIVATE_KEY"] = \
                    "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
 app.config["RECAPTCHA_DATA_ATTRS"] = {"callback": "recaptchaOk"}
 # see https://stackoverflow.com/a/33790196 for more information
+app.config["SQLALCHEMY_ECHO"] = app.debug
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     os.environ.get("DATABASE",
@@ -57,17 +59,20 @@ from animeu.feed import feed_bp
 from animeu.api import api_bp
 # pylint: disable=wrong-import-position
 from animeu.profile import profile_bp
+# pylint: disable=wrong-import-position
+from animeu.admin import admin_bp
 
 app.register_blueprint(battle_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(feed_bp)
 app.register_blueprint(api_bp)
 app.register_blueprint(profile_bp)
+app.register_blueprint(admin_bp)
 
 @app.context_processor
 def jinja_utilities():
     """Utilities to expose in jinja2 templates."""
-    return {"debug": partial(print, file=sys.stderr)}
+    return {"debug": partial(print, file=sys.stderr), "json": json.dumps}
 
 @app.route("/")
 def index():
