@@ -1,0 +1,9 @@
+<style>
+    :root {
+        --card-bg: rgba(0, 0, 0, 0.01);
+        --card-border: rgba(0, 0, 0, 0.125);
+        --base-border-radius: 5px;
+        --base-padding: 1em;
+        --seperator-color: rgba(0, 0, 0, 0.150);
+    }
+</style>

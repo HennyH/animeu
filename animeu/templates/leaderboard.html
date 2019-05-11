@@ -1,6 +1,9 @@
 {% macro leaderboard(title, entries, class="") %}
     <div class="leaderboard {{ class }}">
         <span class="title">{{ title }}</span>
+        {% if not entries %}
+            {{ caller(None, True) if caller else "" }}
+        {% endif %}
         {% for entry in entries %}
             <div class="entry">
                 <span class="rank">{{ loop.index }}</span>
@@ -15,7 +18,7 @@
                     <span class="counter-title">L</span>
                     <span class="counter-count">{{ entry['loss_count'] }}</span>
                 </span>
-                {{ caller(entry) if caller else "" }}
+                {{ caller(entry, False) if caller else "" }}
             </div>
         {% endfor %}
     </div>

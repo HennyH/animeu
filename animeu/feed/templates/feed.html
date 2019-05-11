@@ -1,46 +1,95 @@
 {% from "carousel.html" import carousel with context %}
 {% from "leaderboard.html" import leaderboard with context %}
+{% from "battlecard.html" import battlecard with context %}
+
 {% extends "base.html" %}
 
 {% block styles %}
     {% include "carousel.css" without context %}
     {% include "leaderboard.css" without context %}
-    {% include "feed.css" without context %}
+    {% include "battlecard.css" without context %}
+    <style>
+        .feed {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--base-padding);
+            padding: var(--base-padding);
+        }
+
+        .battle-list {
+            display: grid;
+            gap: var(--base-padding);
+        }
+
+        /* On a larger screen we can place two leaderboards side by side */
+        @media screen and (min-width: 1024px) {
+            .feed {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .top-waifus-leaderboard {
+                grid-column: 1 / 2;
+            }
+
+            .active-waifus-leaderboard {
+                grid-column: 2 / 3;
+            }
+
+            .battle-list {
+                grid-column: 1 / -1;
+            }
+        }
+
+        /* When the screen becomes really small the text on the battle cards
+         * becomes really cramped - so what we want to do is override their
+         * default layouts and place the required content above the carousel.
+         */
+        @media screen and (max-width: 680px) {
+            .battlecard {
+                grid-template-columns: 1fr 1ch 1fr;
+                grid-template-rows: max-content 1fr;
+            }
+
+            .battlecard > .vs::after,
+            .battlecard > .info > .message,
+            .battlecard > .info > .japanese {
+                display: none;
+            }
+
+            .battlecard > .picture-carousel {
+                padding-top: calc(0.5 * var(--base-padding));
+            }
+
+            .battlecard > .picture-carousel.winner {
+                grid-area: 2 / 1 / 3 / 2;
+            }
+
+            .battlecard > .picture-carousel.loser {
+                grid-area: 2 / 3 / 3 / 4;
+            }
+
+            .battlecard > .vs {
+                grid-row: 1 / -1;
+                height: 100%;
+                width: 2px;
+                background-color: var(--seperator-color);
+                border-radius: var(--base-border-radius);
+            }
+
+        }
+
+    </style>
 {% endblock styles %}
 
 {% block body %}
     <div class="feed">
         {{ leaderboard("Top Waifus", top_waifus, class="top-waifus-leaderboard") }}
         {{ leaderboard("Active Waifus", active_waifus, class="active-waifus-leaderboard") }}
-        {% for battle in battles %}
-            <div class="summary">
-                {% set winner_en_name = battle["winner"]["names"]["en"][0] %}
-                {% set winner_jp_name = battle["winner"]["names"]["jp"][0] %}
-                {% set winner_gallery_urls = battle["winner"]["pictures"]["gallery"] %}
-                {% set loser_en_name = battle["loser"]["names"]["en"][0] %}
-                {% set loser_jp_name = battle["loser"]["names"]["jp"][0] %}
-                {% set loser_gallery_urls = battle["loser"]["pictures"]["gallery"] %}
-                <div class="winner picture-carousel">
-                    {{ carousel("winner-carousel", winner_gallery_urls, show_indicators=False) }}
-                </div>
-                <div class="info winner-info">
-                    <i class="fas fa-church"></i>
-                    <span class="message winner-message">Waifu</span>
-                    <span class="name">{{ winner_en_name }}</span>
-                    <span class="japanese">{{ winner_jp_name }}</span>
-                </div>
-                <span class="vs">v.s</span>
-                <div class="info loser-info">
-                    <i class="fas fa-heart-broken"></i>
-                    <span class="message loser-message">Rejected</span>
-                    <span class="name">{{ loser_en_name }}</span>
-                    <span class="japanese">{{ loser_jp_name }}</span>
-                </div>
-                <div class="loser picture-carousel">
-                    {{ carousel("loser-carousel", loser_gallery_urls, show_indicators=False) }}
-                </div>
-            </div>
-        {% endfor %}
+        <div class="battle-list">
+            {% for battle in battles %}
+                {{ battlecard(battle) }}
+            {% endfor %}
+        </div>
     </div>
 {% endblock body %}
 
