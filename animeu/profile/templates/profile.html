@@ -22,12 +22,34 @@
             margin: 0 var(--base-padding);
         }
 
+        .profile-picture {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: calc(2 * var(--base-padding));
+        }
+
         .no-favourited-waifus-message {
             text-align: center;
             font-style: italic;
             font-weight: 500;
-            color: rgb(146, 145, 145);
+            color: var(--info-message-color);
             padding-top: 1em;
+        }
+
+        .battle-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--base-padding);
+            padding: 0 var(--base-padding);
+        }
+
+        /* On the profile page we hide the win/loss information from the top
+         * waifus leaderboard since they're sorted by the user setting their
+         * positions.
+         */
+         .best-waifus-leaderboard > .entry > .counter {
+            display: none;
         }
 
         /* On a larger screen it looks better to have the best waifus
@@ -46,22 +68,9 @@
                 grid-column: 1 / 2;
             }
 
-            .battle-list {
+            .recent-battles-leaderboard {
                 grid-column: 2 / 3;
             }
-        }
-
-        .profile-picture {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            margin: calc(2 * var(--base-padding));
-        }
-
-        .battle-list {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--base-padding);
         }
 
         /* When the screen becomes large enough we can comfortably fit
@@ -71,14 +80,6 @@
             .battle-list {
                 grid-template-columns: 1fr 1fr;
             }
-        }
-
-        /* On the profile page we hide the win/loss information from the top
-         * waifus leaderboard since they're sorted by the user setting their
-         * positions.
-         */
-        .best-waifus-leaderboard > .entry > .counter {
-            display: none;
         }
 
         /* On mobile we become really hard pressed to fit in the japanese
@@ -138,22 +139,26 @@
     <div class="profile">
         <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" class="profile-picture">
         <!-- best waifu leaderboard -->
-        {% call(entry, is_empty) leaderboard("Waifus for laifu", best_waifus, class="best-waifus-leaderboard") %}
-            {% if is_empty %}
+        {% call(entry, is_header, is_no_content, is_entry) leaderboard("Waifus for laifu", best_waifus, class="best-waifus-leaderboard") %}
+            {% if is_no_content %}
                 <span class="no-favourited-waifus-message">
                     It looks like you have no favourite waifus :(
                 </span>
+            {% elif is_entry %}
+                <span class="date-favourited">
+                    {{ entry['date-favour'] }}
+                </span>
             {% endif %}
-            <span class="date-favourited">
-                {{ entry['date-favour'] }}
-            </span>
         {% endcall %}
-        <!-- recent battles -->
-        <div class="battle-list">
-            {% for battle in battles %}
-                {{ battlecard(battle) }}
-            {% endfor %}
-        </div>
+        {% call(entry, is_header, is_no_content, is_entry) leaderboard("Recent Battles", class="recent-battles-leaderboard") %}
+            {% if is_no_content %}
+                <div class="battle-list">
+                    {% for battle in battles %}
+                        {{ battlecard(battle) }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endcall %}
     </div>
 {% endblock body %}
 

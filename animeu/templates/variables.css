@@ -2,8 +2,10 @@
     :root {
         --card-bg: rgba(0, 0, 0, 0.01);
         --card-border: rgba(0, 0, 0, 0.125);
+        --card-header: rgba(0, 0, 0, 0.03);
         --base-border-radius: 5px;
         --base-padding: 1em;
         --seperator-color: rgba(0, 0, 0, 0.150);
+        --info-message-color: rgb(146, 145, 145);
     }
 </style>

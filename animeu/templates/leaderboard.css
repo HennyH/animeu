@@ -1,21 +1,26 @@
 <style>
     .leaderboard {
         display: grid;
-        background-color: rgba(0, 0, 0, 0.01);
-        border: 1px solid rgba(0, 0, 0, 0.125);
-        border-radius: 5px;
         grid-auto-rows: max-content;
-        gap: 0.6em;
-        align-self: flex-start;
-        padding-bottom: 1em;
+        grid-template-columns: 1fr;
+        gap: var(--base-padding);
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: var(--base-border-radius);
+        padding-bottom: var(--base-padding);
     }
 
-    .leaderboard > .title {
-        background-color: rgba(0, 0, 0, 0.03);
-        text-align: center;
-        padding: 0.2em 0;
+    .leaderboard > .header {
+        display: grid;
+        justify-items: center;
+        align-items: center;
+        background-color: var(--card-header);
+        height: calc(4 * var(--base-padding));
+    }
+
+    .leaderboard > .header > .title {
+        font-size: 1.4em;
         font-weight: 600;
-        font-style: oblique;
     }
 
     .leaderboard > .entry {

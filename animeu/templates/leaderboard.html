@@ -1,8 +1,13 @@
-{% macro leaderboard(title, entries, class="") %}
+{% macro leaderboard(title, entries=[], class="") %}
     <div class="leaderboard {{ class }}">
-        <span class="title">{{ title }}</span>
+        <div class="header">
+            {% if title %}
+                <span class="title">{{ title }}</span>
+            {% endif %}
+            {{ caller(None, is_header=True, is_no_content=False, is_entry=False) if caller else "" }}
+        </div>
         {% if not entries %}
-            {{ caller(None, True) if caller else "" }}
+            {{ caller(None, is_header=False, is_no_content=True, is_entry=False) if caller else "" }}
         {% endif %}
         {% for entry in entries %}
             <div class="entry">
@@ -18,7 +23,7 @@
                     <span class="counter-title">L</span>
                     <span class="counter-count">{{ entry['loss_count'] }}</span>
                 </span>
-                {{ caller(entry, False) if caller else "" }}
+                {{ caller(entry, is_header=False, is_no_content=False, is_entry=True) if caller else "" }}
             </div>
         {% endfor %}
     </div>

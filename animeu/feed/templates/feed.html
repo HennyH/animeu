@@ -19,24 +19,42 @@
         .battle-list {
             display: grid;
             gap: var(--base-padding);
+            padding: 0 var(--base-padding);
         }
 
-        /* On a larger screen we can place two leaderboards side by side */
+        .leaderboard > .header {
+            display: flex;
+            justify-content: center;
+            align-content: center;
+        }
+
+        .leaderboard-dropdown {
+            margin: var(--base-padding) 0;
+            width: 50%;
+        }
+
+        .leaderboard-dropdown > button {
+            width: 100%;
+        }
+
+        .leaderboard-dropdown > .dropdown-menu {
+            width: 100%;
+            text-align: center;
+            font-style: normal;
+        }
+
+        .no-leaderboard-entries {
+            text-align: center;
+            font-style: italic;
+            font-weight: 500;
+            color: var(--info-message-color);
+            padding-top: 1em;
+        }
+
+
         @media screen and (min-width: 1024px) {
             .feed {
                 grid-template-columns: 1fr 1fr;
-            }
-
-            .top-waifus-leaderboard {
-                grid-column: 1 / 2;
-            }
-
-            .active-waifus-leaderboard {
-                grid-column: 2 / 3;
-            }
-
-            .battle-list {
-                grid-column: 1 / -1;
             }
         }
 
@@ -82,13 +100,38 @@
 
 {% block body %}
     <div class="feed">
-        {{ leaderboard("Top Waifus", top_waifus, class="top-waifus-leaderboard") }}
-        {{ leaderboard("Active Waifus", active_waifus, class="active-waifus-leaderboard") }}
-        <div class="battle-list">
-            {% for battle in battles %}
-                {{ battlecard(battle) }}
-            {% endfor %}
-        </div>
+        {% call(entry, is_header, is_no_content, is_entry) leaderboard(None, leaderboard_entries) %}
+            {% if is_header %}
+                <div class="leaderboard-dropdown dropdown">
+                    <button class="btn btn-secondary dropdown-toggle"
+                            type="button"
+                            id="leaderboard-dropdown"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                    >
+                        {{ leaderboard_name }}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="leaderboard-dropdown">
+                        <a class="dropdown-item" href="{{ url_for('feed_bp.feed', leaderboard='winners') }}">Top Waifus</a>
+                        <a class="dropdown-item" href="{{ url_for('feed_bp.feed', leaderboard='active') }}">Active Waifus</a>
+                    </div>
+                </div>
+            {% elif is_no_content %}
+                <span class="no-leaderboard-entries">
+                    It looks like you have no favourite waifus :(
+                </span>
+            {% endif %}
+        {% endcall %}
+        {% call(entry, is_header, is_no_content, is_entry) leaderboard("Recent Battles", class="recent-battles-leaderboard") %}
+            {% if is_no_content %}
+                <div class="battle-list">
+                    {% for battle in battles %}
+                        {{ battlecard(battle) }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endcall %}
     </div>
 {% endblock body %}
 
