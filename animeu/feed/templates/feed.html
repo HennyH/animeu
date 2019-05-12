@@ -58,11 +58,12 @@
             }
         }
 
-        /* When the screen becomes really small the text on the battle cards
-         * becomes really cramped - so what we want to do is override their
-         * default layouts and place the required content above the carousel.
+        /* When the screen becomes really small or when we first move to a
+         * two column layout the text on the battle cards becomes really
+         * cramped - so what we want to do is override their default layouts
+         * and place the required content above the carousel.
          */
-        @media screen and (max-width: 680px) {
+        @media screen and (min-width: 1024px) and (max-width: 1380px), screen and (max-width: 680px) {
             .battlecard {
                 grid-template-columns: 1fr 1ch 1fr;
                 grid-template-rows: max-content 1fr;
