@@ -7,7 +7,7 @@
 from collections import defaultdict
 
 DEFAULT_RANK = 1000
-K_FACTOR = 30
+K_FACTOR = 200
 
 def calculate_expected_score(rank_a, rank_b):
     """Calculate the probability that the player will win or draw.
@@ -25,9 +25,13 @@ def calculate_updated_ranking(rank_a, expected_score, actual_score, k_factor):
     """
     return rank_a + k_factor * (actual_score - expected_score)
 
-def calculate_elo_rankings(ordered_games, game_to_winner, game_to_loser):
+def calculate_elo_rankings(ordered_games,
+                           player_to_current_rank,
+                           game_to_winner,
+                           game_to_loser):
     """Calculate the ELO rankings of players from an ordered set of games."""
     player_to_rank = defaultdict(lambda: DEFAULT_RANK)
+    player_to_rank.update(player_to_current_rank)
     for game in ordered_games:
         winner = game_to_winner(game)
         loser = game_to_loser(game)

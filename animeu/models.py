@@ -44,3 +44,14 @@ class FavouritedWaifu(db.Model):
     date = db.Column(db.DateTime, nullable=False)
     character_name = db.Column(db.String, index=True, nullable=False)
     order = db.Column(db.Integer, index=True, nullable=False)
+
+class ELORankingCalculation(db.Model):
+    """Table which represents the an ELO leaderboard calculation."""
+
+    __tablename__ = "elo_ranking_calclation"
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    latest_battle_id = db.Column(db.Integer, db.ForeignKey("waifu_battles.id"),
+                                 index=True, nullable=False)
+    rankings = db.Column(db.String, nullable=False)
+    algorithim_hash = db.Column(db.String, nullable=False)

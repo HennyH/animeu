@@ -15,14 +15,12 @@
                 {{ carousel( "%s-carousel-%d" | format(title, loop.index) , entry['gallery'], show_indicators=False) }}
                 <span class="en-name">{{ entry['en_name'] }}</span>
                 <span class="jp-name japanese">{{ entry['jp_name'] }}</span>
-                <span class="win-counter counter">
-                    <span class="counter-title">W</span>
-                    <span class="counter-count">{{ entry['win_count'] }}</span>
-                </span>
-                <span class="loss-counter counter">
-                    <span class="counter-title">L</span>
-                    <span class="counter-count">{{ entry['loss_count'] }}</span>
-                </span>
+                {% for counter in entry["counters"] %}
+                    <span class="counter {{ counter['class'] }}">
+                        <span class="counter-title">{{ counter["title"] }}</span>
+                        <span class="counter-count">{{ counter["count"] }}</span>
+                    </span>
+                {% endfor %}
                 {{ caller(entry, is_header=False, is_no_content=False, is_entry=True) if caller else "" }}
             </div>
         {% endfor %}

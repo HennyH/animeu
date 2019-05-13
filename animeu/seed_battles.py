@@ -5,9 +5,13 @@
 # See /LICENCE.md for Copyright information
 """CLI app to seed battles into the database."""
 import sys
+import os
 import argparse
 import random
 from datetime import datetime
+from functools import partial
+
+from tqdm import tqdm
 
 from animeu.data_loader import load_character_data
 from animeu.app import db
@@ -27,21 +31,59 @@ def get_seeding_user():
     db.session.commit()
     return user
 
-
-def get_character_ranking(character, name, select=float):
+def get_character_ranking(character, name):
     """Get a particular ranking of a character."""
     value = [r for r in character["rankings"] if r["name"] == name][0]["value"]
-    return select(value)
+    return float(value)
 
-def get_character_heart_on_off_ratio(character):
-    """Get the heart on/off ratio for a character."""
-    heart_on = get_character_ranking(character, "heart_on")
-    heart_off = get_character_ranking(character, "heart_off")
-    return heart_on / heart_off
+def get_character_ratio_ranking(character, numerator, denominator):
+    """Get a particular ratio base ranking of a character."""
+    numerator_value = get_character_ranking(character, numerator)
+    denominator_value = get_character_ranking(character, denominator)
+    return numerator_value / denominator_value
 
-def normalize_heart_on_off_ratio(ratio, max_ratio):
-    """Normalize a heart on/off ratio to between 0 - 1."""
-    return ratio / max_ratio
+def get_max_ranking(characters, name):
+    """Get the maximum value for a ranking."""
+    return max(map(partial(get_character_ranking, name=name), characters))
+
+def get_max_ratio_ranking(characters, numerator, denominator):
+    """Get the maximum ratio value for a ranking."""
+    get_ratio = partial(get_character_ratio_ranking,
+                        numerator=numerator,
+                        denominator=denominator)
+    return max(map(get_ratio, characters))
+
+def get_normalized_character_ranking(characters, character, name):
+    """Get and normalize a ranking so it is between 0 - 1."""
+    ranking = get_character_ranking(character, name)
+    max_ranking = get_max_ranking(characters, name)
+    return ranking / max_ranking
+
+# pylint: disable=line-too-long
+def get_normalized_character_ratio(characters, character, numerator, denominator):
+    """Get and normalize a ratio ranking so it is between 0 - 1."""
+    ranking = get_character_ratio_ranking(character, numerator, denominator)
+    max_ranking = get_max_ratio_ranking(characters, numerator, denominator)
+    return ranking / max_ranking
+
+def get_ranking_functions(characters):
+    """Get a list of ranking functions to use."""
+    return [
+        partial(get_normalized_character_ratio,
+                characters,
+                numerator="top_loved",
+                denominator="top_hated"),
+        partial(get_normalized_character_ratio,
+                characters,
+                numerator="heart_on",
+                denominator="heart_off"),
+        partial(get_normalized_character_ranking,
+                characters,
+                name="heart_on"),
+        partial(get_normalized_character_ranking,
+                characters,
+                name="top_loved")
+    ]
 
 def main(argv=None):
     """Entry point to the seeder program."""
@@ -51,26 +93,26 @@ def main(argv=None):
                         metavar="BATTLES",
                         type=int,
                         default=50000)
+    parser.add_argument("--log", action="store_true")
     result = parser.parse_args(argv)
+
+    if result.log:
+        os.environ["SQLALCHEMY_ECHO"] = "True"
+
     user = get_seeding_user()
     characters = load_character_data()
-    max_heart_on_off_ratio = \
-        max(map(get_character_heart_on_off_ratio, characters))
+    ranking_functions = get_ranking_functions(characters)
+
     # pylint: disable=unused-variable
-    for iteration in range(result.battles):
+    for iteration in tqdm(range(result.battles)):
         left = random.choice(characters)
         right = random.choice(characters)
-        left_heart_on_off_ratio = normalize_heart_on_off_ratio(
-            get_character_heart_on_off_ratio(left),
-            max_heart_on_off_ratio
-        )
-        right_heart_on_off_ratio = normalize_heart_on_off_ratio(
-            get_character_heart_on_off_ratio(right),
-            max_heart_on_off_ratio
-        )
+        ranking_func = random.choice(ranking_functions)
         left_win_prob = random.uniform(
+            # by default there is a 50/50 chance
             0.5,
-            0.5 + (0.4 * (left_heart_on_off_ratio - right_heart_on_off_ratio))
+            # add on at most 40% odds of winning
+            0.5 + (0.4 * (ranking_func(left) - ranking_func(right)))
         )
         if random.random() >= left_win_prob:
             winner = left

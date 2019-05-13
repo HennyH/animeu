@@ -5,3 +5,4 @@ Flask-Login
 Flask-WTF
 youtube-dl
 regex
+tqdm

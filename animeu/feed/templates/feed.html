@@ -115,13 +115,15 @@
                         {{ leaderboard_name }}
                     </button>
                     <div class="dropdown-menu" aria-labelledby="leaderboard-dropdown">
+                        <a class="dropdown-item" href="{{ url_for('feed_bp.feed', leaderboard='highELO')}}">Highest ELO</a>
+                        <a class="dropdown-item" href="{{ url_for('feed_bp.feed', leaderboard='lowELO')}}">Lowest ELO</a>
                         <a class="dropdown-item" href="{{ url_for('feed_bp.feed', leaderboard='winners') }}">Top Waifus</a>
                         <a class="dropdown-item" href="{{ url_for('feed_bp.feed', leaderboard='active') }}">Active Waifus</a>
                     </div>
                 </div>
             {% elif is_no_content %}
                 <span class="no-leaderboard-entries">
-                    It looks like you have no favourite waifus :(
+                    It looks like there are no entries in the leaderboard :(
                 </span>
             {% endif %}
         {% endcall %}

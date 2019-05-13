@@ -56,7 +56,7 @@
     .leaderboard > .entry > .counter {
         display: grid;
         grid-template-columns: 1fr;
-        justify-content: center;
+        justify-items: center;
         padding: 0.2em 0.4em;
         border-radius: 5px;
         color: white;
@@ -70,11 +70,11 @@
         justify-self: flex-start;
     }
 
-    .win-counter {
+    .green-counter {
         background-color: #28a745;
     }
 
-    .loss-counter {
+    .red-counter {
         background-color: #dc3545;
     }
 
@@ -83,15 +83,15 @@
         padding: 0.2em 0.3em;
         font-size: 0.8em;
         border-radius: 5px;
-        width: 2em;
+        width: 100%;
         text-align: center;
     }
 
-    .win-counter > .counter-title {
+    .green-counter > .counter-title {
         background-color: #166127;
     }
 
-    .loss-counter > .counter-title {
+    .red-counter > .counter-title {
         background-color: #771d26;
     }
 </style>
