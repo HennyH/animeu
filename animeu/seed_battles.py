@@ -18,7 +18,7 @@ def get_seeding_user():
     """Add the seeding user to the database."""
     user = User(email="seedy-seeder-mcseeder@gmail.com",
                 username="seedymcguee",
-                password_hash=hash_password("seeder"),
+                password_hash=hash_password("iamtheseeder"),
                 is_admin=False)
     existing_user = User.query.filter_by(email=user.email).first()
     if existing_user:
@@ -28,13 +28,16 @@ def get_seeding_user():
     return user
 
 
+def get_character_ranking(character, name, select=float):
+    """Get a particular ranking of a character."""
+    value = [r for r in character["rankings"] if r["name"] == name][0]["value"]
+    return select(value)
+
 def get_character_heart_on_off_ratio(character):
     """Get the heart on/off ratio for a character."""
-    heart_on = \
-        [r for r in character["rankings"] if r["name"] == "heart_on"][0]
-    heart_off = \
-        [r for r in character["rankings"] if r["name"] == "heart_off"][0]
-    return float(heart_on["value"]) / float(heart_off["value"])
+    heart_on = get_character_ranking(character, "heart_on")
+    heart_off = get_character_ranking(character, "heart_off")
+    return heart_on / heart_off
 
 def normalize_heart_on_off_ratio(ratio, max_ratio):
     """Normalize a heart on/off ratio to between 0 - 1."""
