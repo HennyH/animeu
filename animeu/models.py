@@ -48,7 +48,7 @@ class FavouritedWaifu(db.Model):
 class ELORankingCalculation(db.Model):
     """Table which represents the an ELO leaderboard calculation."""
 
-    __tablename__ = "elo_ranking_calclation"
+    __tablename__ = "elo_ranking_calculation"
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, nullable=False)
     latest_battle_id = db.Column(db.Integer, db.ForeignKey("waifu_battles.id"),

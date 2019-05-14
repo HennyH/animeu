@@ -5,7 +5,7 @@
             startOptsFactory = () => {},
             pollOptsFactory = () => {},
             deleteOptsFactory = () => {},
-            pollingInterval = 1000
+            pollingInterval = 5000
     }) {
         const performActionBtn = el.querySelector("button.perform-action");
         const deleteLockBtn = el.querySelector("button.delete-lock");
