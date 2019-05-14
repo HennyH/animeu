@@ -1,0 +1,40 @@
+{% macro locking_action(name, maybe_lock, maybe_result, action_label=None, unlock_label=None) %}
+    <div class="locking-action {{ name }}">
+        <span class="action-status">
+            {% if maybe_lock %}
+                Update already started at: {{ maybe_lock["date"] }} with progress {{ maybe_lock["progress"] }}%
+                (A cooldown period of less than 5min be in effect keeping this lock alive - this is normal!)
+            {% elif maybe_result %}
+                {% if caller %}
+                    {{ caller() }}
+                {% else %}
+                    Last result: {{ maybe_result }}
+                {% endif %}
+            {% endif %}
+        </span>
+        <div class="action-buttons">
+            <button class="perform-action btn btn-primary" {{ "disabled" if maybe_lock else "" }} type="button">
+                {% if action_label %}
+                    {{ action_label }}
+                {% else %}
+                    Perform {{ name }}
+                {% endif %}
+            </button>
+            <button class="delete-lock btn btn-danger" type="button">
+                {% if unlock_label %}
+                    {{ unlock_label }}
+                {% else %}
+                    Delete {{ name }} Lock
+                {% endif %}
+            </button>
+        </div>
+        <div class="progress" style="height: 20px">
+            <div class="progress-bar"
+                 role="progressbar"
+                 data-start-polling="{{ 'true' if maybe_lock and maybe_lock['progress'] < 100 else 'false' }}"
+                 style="width: {{ maybe_lock['progress'] }}%;"
+            >
+            </div>
+        </div>
+    </div>
+{% endmacro %}

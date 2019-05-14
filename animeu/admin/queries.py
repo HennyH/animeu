@@ -5,6 +5,7 @@
 # See /LICENCE.md for Copyright information
 """Query functions used to populate the admin page."""
 from sqlalchemy.sql import select, or_
+
 from animeu.app import db
 
 DATATABLES_NO_LIMIT = -1

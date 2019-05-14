@@ -4,15 +4,14 @@
 #
 # See /LICENCE.md for Copyright information
 """Task to update the ELO leaderboard."""
-import os
 import sys
 import hashlib
 import json
 from datetime import datetime
 
+import animeu.elo.elo_algorithim as elo_algorithim
 from animeu.app import db
 from animeu.models import ELORankingCalculation, WaifuPickBattle
-import animeu.elo.elo_algorithim as elo_algorithim
 
 def get_elo_algorithim_hash():
     """Get the hash of the algorithim file."""
@@ -21,7 +20,7 @@ def get_elo_algorithim_hash():
         md5.update(fileobj.read().encode("utf8"))
     return md5.hexdigest()
 
-def update_rankings():
+def update_rankings(progress_callback=None, callback_rate=1000):
     """Update the ELO ranking board."""
     latest_battle = \
         WaifuPickBattle.query.order_by(WaifuPickBattle.date.desc()).first()
@@ -51,15 +50,23 @@ def update_rankings():
     end_battle_id = new_games_query\
         .order_by(WaifuPickBattle.date.desc())\
         .limit(1)\
-        .value(WaifuPickBattle.id)
+        .value(WaifuPickBattle.id) or start_battle_id
     print(f"elo: updating using battles {start_battle_id} - {end_battle_id}",
           file=sys.stderr)
     ordered_games = new_games_query\
         .filter(WaifuPickBattle.id <= end_battle_id)\
         .order_by(WaifuPickBattle.date)\
         .all()
+    def _progressable_ordered_games():
+        for i, game in enumerate(ordered_games):
+            yield game
+            if progress_callback:
+                if i % callback_rate == 0 or i == len(ordered_games) - 1:
+                    progress_callback(i, len(ordered_games))
+    if not any(ordered_games):
+        progress_callback(1, 1)
     new_rankings = elo_algorithim.calculate_elo_rankings(
-        ordered_games=ordered_games,
+        ordered_games=_progressable_ordered_games(),
         player_to_current_rank=player_to_current_rank,
         game_to_winner=lambda g: g.winner_name,
         game_to_loser=lambda g: g.loser_name

@@ -63,6 +63,6 @@ def query_most_battled_waifus(from_date=None, limit=20):
 def query_most_recent_battles(limit=20):
     """Find the most recent battles."""
     return WaifuPickBattle.query\
-        .order_by(WaifuPickBattle.date.desc())\
+        .order_by(WaifuPickBattle.id.desc())\
         .limit(limit)\
         .all()

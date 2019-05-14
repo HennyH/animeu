@@ -1,0 +1,7 @@
+<style>
+    .locking-action {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1em;
+    }
+</style>

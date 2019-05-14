@@ -1,87 +1,128 @@
+{% from "locking_action.html" import locking_action with context %}
+
 {% extends "base.html" %}
 
 {% block styles %}
+    {% include "locking_action.css" without context %}
     <style>
-        .admin-table  {
-            width: 100% !important;
+        .admin-page {
+            display: grid;
+            grid-template-columns: 1fr;
         }
 
-        .tab-content {
+        .nav-links {
+            display: grid;
+            grid-auto-columns: max-content;
+            grid-auto-flow: column;
+            justify-content: space-around;
+            justify-items: center;
+            align-items: center;
+            gap: 2em;
             padding: 2em;
         }
+
+        .nav-links > a.active {
+            padding: 1em;
+            border: 3px solid rgb(37, 119, 196);
+        }
+
+        .content {
+            padding: 2em;
+        }
+
     </style>
 {% endblock styles %}
 
 {% block body %}
-    <ul class="nav nav-tabs" id="admin-tabs" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active"
-               id="users-tab"
-               data-toggle="tab"
-               href="#users"
-               role="tab"
-               aria-controls="users"
-               aria-selected="true">Users</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link"
-               id="battles-tab"
-               data-toggle="tab"
-               href="#battles"
-               role="tab"
-               aria-controls="battles"
-               aria-selected="false">Battles</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link"
-               id="favourited-waifus-tab"
-               data-toggle="tab"
-               href="#favourited-waifus"
-               role="tab"
-               aria-controls="favourited-waifus"
-               aria-selected="false">Favourited Waifus</a>
-        </li>
-    </ul>
-    <div class="tab-content" id="admin-tabs-content">
-        <div class="tab-pane fade show active" id="users">
-            <table id="users-table" class="admin-table display">
-                <thead>
-                    <th>ID</th>
-                    <th>Email</th>
-                    <th>Username</th>
-                    <th>Is Admin</th>
-                    <th>Actions</th>
-                </thead>
-            </table>
+    <div class="admin-page">
+        <div class="nav-links"  role="tablist">
+            <a class="{{ 'active' if active_tab == 'elo' else '' }}" href="{{ url_for('admin_bp.admin_page', tab='elo') }}">
+                ELO
+            </a>
+            <a class="{{ 'active' if active_tab == 'users' else '' }}" href="{{ url_for('admin_bp.admin_page', tab='users') }}">
+                Users
+            </a>
+            <a class="{{ 'active' if active_tab == 'battles' else '' }}" href="{{ url_for('admin_bp.admin_page', tab='battles') }}">
+                Battles
+            </a>
+            <a class="{{ 'active' if active_tab == 'favourited-waifus' else '' }}" href="{{ url_for('admin_bp.admin_page', tab='favourited-waifus') }}">
+                Favourited Waifus
+            </a>
         </div>
-        <div class="tab-pane fade" id="battles">
-            <table id="battles-table" class="admin-table display">
-                <thead>
-                    <th>ID</th>
-                    <th>User ID</th>
-                    <th>Date</th>
-                    <th>Winner</th>
-                    <th>Loser</th>
-                    <th>Actions</th>
-                </thead>
-            </table>
-        </div>
-        <div class="tab-pane fade" id="favourited-waifus">
-            <table id="favourited-waifus-table" class="admin-table display">
-                <thead>
-                    <th>ID</th>
-                    <th>User ID</th>
-                    <th>Date</th>
-                    <th>Character</th>
-                    <th>Order</th>
-                    <th>Actions</th>
-                </thead>
-            </table>
+        <div class="content">
+            {% if active_tab == "elo" %}
+                <div id="elo">
+                    {% call locking_action("ELO", maybe_elo_lock, maybe_elo_calc, "Update ELO Rankings") %}
+                        Last updated at {{ maybe_elo_calc["date"] }}
+                    {% endcall %}
+                </div>
+            {% elif active_tab == "users" %}
+                <table id="users-table" class="admin-table display">
+                    <thead>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Username</th>
+                        <th>Is Admin</th>
+                        <th>Actions</th>
+                    </thead>
+                </table>
+            {% elif active_tab == "battles" %}
+                <div id="seed-battles">
+                    <label for="number">Number of Battles</label>
+                    <input id="seed-battles-number" name="number" type="number" value="1000" />
+                    {% call locking_action("BATTLES", maybe_seed_lock, None, "Seed Database With Battles") %}
+                        Last seeded at {{ maybe_seed_lock["date"] }}
+                    {% endcall %}
+                </div>
+                <hr />
+                <table id="battles-table" class="admin-table display">
+                    <thead>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Date</th>
+                        <th>Winner</th>
+                        <th>Loser</th>
+                        <th>Actions</th>
+                    </thead>
+                </table>
+            {% elif active_tab == "favourited-waifus" %}
+                <table id="favourited-waifus-table" class="admin-table display">
+                    <thead>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Date</th>
+                        <th>Character</th>
+                        <th>Order</th>
+                        <th>Actions</th>
+                    </thead>
+                </table>
+            {% endif %}
         </div>
     </div>
 {% endblock body %}
 
 {% block scripts %}
+    {% include "locking_action.js" without context %}
+    <script>
+        $(document).ready(() => {
+            {% if active_tab == "elo" %}
+                LockingAction({
+                    el: document.getElementById("elo"),
+                    actionUrl: "/admin/action/elo"
+                });
+            {% elif active_tab == "battles" %}
+                LockingAction({
+                    el: document.getElementById("seed-battles"),
+                    actionUrl: "/admin/action/seed",
+                    startOptsFactory: () => ({
+                        data: {
+                            "number": document.getElementById("seed-battles-number").value || 5000
+                        }
+                    })
+                });
+            {% endif %}
+        });
+    </script>
     <script>
         const DELETE_BTN_COLUMN = {
             "targets": -1,
@@ -91,7 +132,6 @@
 
         function DeleteButton(dt, table, url) {
             $(table).on("click", async (event) => {
-                debugger;
                 if (event.target.classList.contains("delete-button")) {
                     const td = event.target.parentElement;
                     const row = td.parentElement;

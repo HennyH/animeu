@@ -85,26 +85,14 @@ def get_ranking_functions(characters):
                 name="top_loved")
     ]
 
-def main(argv=None):
-    """Entry point to the seeder program."""
-    argv = argv or sys.argv[1:]
-    parser = argparse.ArgumentParser("""Database battle seeder.""")
-    parser.add_argument("--battles",
-                        metavar="BATTLES",
-                        type=int,
-                        default=50000)
-    parser.add_argument("--log", action="store_true")
-    result = parser.parse_args(argv)
-
-    if result.log:
-        os.environ["SQLALCHEMY_ECHO"] = "True"
-
+def seed_battles(iterations, progress_callback=None, callback_rate=1000):
+    """Seed the database with N iterations of battles."""
     user = get_seeding_user()
     characters = load_character_data()
     ranking_functions = get_ranking_functions(characters)
 
     # pylint: disable=unused-variable
-    for iteration in tqdm(range(result.battles)):
+    for iteration in tqdm(range(iterations)):
         left = random.choice(characters)
         right = random.choice(characters)
         ranking_func = random.choice(ranking_functions)
@@ -126,7 +114,24 @@ def main(argv=None):
             winner_name=winner["names"]["en"][0],
             loser_name=loser["names"]["en"][0]
         ))
+        if progress_callback:
+            if iteration % callback_rate == 0 or iteration == iterations - 1:
+                progress_callback(iteration, iterations)
     db.session.commit()
+
+def main(argv=None):
+    """Entry point to the seeder program."""
+    argv = argv or sys.argv[1:]
+    parser = argparse.ArgumentParser("""Database battle seeder.""")
+    parser.add_argument("--battles",
+                        metavar="BATTLES",
+                        type=int,
+                        default=50000)
+    parser.add_argument("--log", action="store_true")
+    result = parser.parse_args(argv)
+    if result.log:
+        os.environ["SQLALCHEMY_ECHO"] = "True"
+    seed_battles(result.iterations)
 
 if __name__ == "__main__":
     main()

@@ -55,3 +55,11 @@ class ELORankingCalculation(db.Model):
                                  index=True, nullable=False)
     rankings = db.Column(db.String, nullable=False)
     algorithim_hash = db.Column(db.String, nullable=False)
+
+class Lock(db.Model):
+    """Table which represents some lock on a resource."""
+
+    __tablename__ = "locks"
+    name = db.Column(db.String, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False)
+    progress = db.Column(db.Integer, nullable=False)
