@@ -67,6 +67,8 @@ from animeu.api import api_bp
 from animeu.profile import profile_bp
 # pylint: disable=wrong-import-position
 from animeu.admin import admin_bp
+# pylint: disable=wrong-import-position
+from animeu.about import about_bp
 
 app.register_blueprint(battle_bp)
 app.register_blueprint(auth_bp)
@@ -74,6 +76,7 @@ app.register_blueprint(feed_bp)
 app.register_blueprint(api_bp)
 app.register_blueprint(profile_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(about_bp)
 
 @app.context_processor
 def jinja_utilities():
