@@ -63,7 +63,7 @@ def users_datatable():
                                            parameters,
                                            ignore_columns=["password_hash"])
     records_total = User.query.count()
-    records_filtered = db.engine.scalar(base_query.count())
+    records_filtered = db.engine.scalar(base_query.alias().count())
     data_query = \
         apply_pagination_parameters_to_datatables_query(base_query, parameters)
     data = list(map(dict, db.engine.execute(data_query).fetchall()))
@@ -81,7 +81,7 @@ def battles_datatable():
     parameters = json.loads(request.get_data())
     base_query = get_base_datatables_query(WaifuPickBattle, parameters)
     records_total = WaifuPickBattle.query.count()
-    records_filtered = db.engine.scalar(base_query.count())
+    records_filtered = db.engine.scalar(base_query.alias().count())
     data_query = \
         apply_pagination_parameters_to_datatables_query(base_query, parameters)
     data = list(map(dict, db.engine.execute(data_query).fetchall()))
@@ -99,7 +99,7 @@ def favourited_waifus():
     parameters = json.loads(request.get_data())
     base_query = get_base_datatables_query(FavouritedWaifu, parameters)
     records_total = FavouritedWaifu.query.count()
-    records_filtered = db.engine.scalar(base_query.count())
+    records_filtered = db.engine.scalar(base_query.alias().count())
     data_query = \
         apply_pagination_parameters_to_datatables_query(base_query, parameters)
     data = list(map(dict, db.engine.execute(data_query).fetchall()))
