@@ -15,6 +15,7 @@
             justify-items: center;
             padding: var(--base-padding);
             gap: var(--base-padding);
+            align-items: flex-start;
         }
 
         .profile > * {
@@ -22,11 +23,23 @@
             margin: 0 var(--base-padding);
         }
 
+        .profile > .profile-info {
+            display: grid;
+            grid-template-rows: max-content max-content;
+            justify-content: center;
+        }
+
         .profile-picture {
-            width: 200px;
-            height: 200px;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
             margin: calc(2 * var(--base-padding));
+            margin-bottom: 10px;
+        }
+
+        .user-name {
+            justify-self: center;
+            text-align: center;
         }
 
         .no-favourited-waifus-message {
@@ -44,6 +57,10 @@
             padding: 0 var(--base-padding);
         }
 
+        .info > .name {
+            text-align: center;
+        }
+
         /* On the profile page we hide the win/loss information from the top
          * waifus leaderboard since they're sorted by the user setting their
          * positions.
@@ -52,15 +69,23 @@
             display: none;
         }
 
+        /* From 1300px up display battle card side by side
+         */
+        @media screen and (min-width: 1320px) {
+            .battle-list {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
         /* On a larger screen it looks better to have the best waifus
          * sit beside the recent battles.
          */
-        @media screen and (min-width: 1280px) {
+        @media screen and (min-width: 1210px) {
             .profile {
                 grid-template-columns: 1fr 3fr;
             }
 
-            .profile-picture {
+            .profile-info {
                 grid-column: 1 / -1;
             }
 
@@ -73,33 +98,13 @@
             }
         }
 
-        /* When the screen becomes large enough we can comfortably fit
-         * two of our battle cards side-by-side.
-         */
-        @media screen and (min-width: 1780px) {
-            .battle-list {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        /* On mobile we become really hard pressed to fit in the japanese
-         * names as well so need to hide it.
-         */
-        @media screen and (max-width: 480px) {
-            .best-waifus-leaderboard > .entry {
-                grid-template-columns: minmax(2ch, max-content) 4.32em 1fr;
-            }
-
-            .best-waifus-leaderboard > .entry > .jp-name {
-                display: none;
-            }
-        }
-
         /* When the screen becomes really small the text on the battle cards
          * becomes really cramped - so what we want to do is override their
          * default layouts and place the required content above the carousel.
          */
-         @media screen and (max-width: 680px) {
+        /* From 1320 to 1550px sbs but batte card in small format
+        */
+         @media screen and (max-width: 680px), screen and (min-width: 1320px) and (max-width: 1550px ) {
             .battlecard {
                 grid-template-columns: 1fr 1ch 1fr;
                 grid-template-rows: max-content 1fr;
@@ -132,12 +137,52 @@
             }
         }
 
+        /* On mobile we become really hard pressed to fit in the japanese
+         * names as well so need to hide it.
+         */
+        @media screen and (max-width: 480px) {
+            .best-waifus-leaderboard > .entry {
+                grid-template-columns: minmax(2ch, max-content) 4.32em 1fr;
+                gap: 0em;
+            }
+
+            .best-waifus-leaderboard > .entry > .jp-name {
+                display: none;
+            }
+
+            .profile-picture {
+                width: 110px;
+                height: 110px;
+                justify-self: left;
+                margin-left: 0px;
+            }
+
+            .user-name {
+                text-align: left;
+            }
+        }
+
+        @media screen and (max-width: 400px) {
+            .best-waifus-leaderboard > .entry {
+                grid-template-columns: 2ch 4.32em 1fr;
+            }
+
+            .best-waifus-leaderboard > .entry > .date-favourited {
+                display: none;
+            }
+        }
+
     </style>
 {% endblock styles %}
 
 {% block body %}
     <div class="profile">
-        <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" class="profile-picture">
+        <div class="profile-info">
+            <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" class="profile-picture">
+            <h4 class="capitalize user-name">
+                {{ current_user.username }}
+            </h4>
+        </div>
         <!-- best waifu leaderboard -->
         {% call(entry, is_header, is_no_content, is_entry) leaderboard("Waifus for Laifu", best_waifus, class="best-waifus-leaderboard") %}
             {% if is_no_content %}
