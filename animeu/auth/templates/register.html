@@ -42,7 +42,7 @@
     <section class="login-container">
         <form class="login-form" method="POST" action="{{ url_for('auth_bp.register') }}">
             {{ form.hidden_tag() }}
-            <h6 class="header">Sign up Animeu!</h6>
+            <h6 class="header">Sign up for Animeu!</h6>
             {{ render_field(form.email, 1 )}}
             {{ render_field(form.username, 2 )}}
             {{ render_field(form.password, 3 )}}
