@@ -46,20 +46,16 @@ def wait_for_visible(browser,
         return wait.until_not(expect.visibility_of_element_located(locator))
     return wait.until(expect.visibility_of_element_located(locator))
 
-class AuthenticationTests(unittest.TestCase):
-    """Test the signup and login/logout functionality."""
+class AnimeuIntegrationTestCase(unittest.TestCase):
+    """Base class for animeu integration tests."""
 
-    INDEX_URL = "http://localhost:5001/"
-    LOGIN_URL = "http://localhost:5001/login"
-    REGISTER_URL = "http://localhost:5001/register"
-    TEST_EMAIL = "test@gmail.com"
-    TEST_USERNAME = "iamuser"
-    TEST_PASSWORD = "password123"
-    TEST_PASSWORD_TOO_SHORT = "pw"
+    def __init__(self, *args, **kwargs):
+        """Initialize a new animeu test case."""
+        super().__init__(*args, **kwargs)
 
     @classmethod
     def setUpClass(cls):
-        """Set up the environment."""
+        """Set up a test environment."""
         cls.db_filename = mktemp()
         os.environ["COVERAGE_PROCESS_START"] = ".coveragerc"
         os.environ["DATABASE"] = os.environ.get(
@@ -73,6 +69,7 @@ class AuthenticationTests(unittest.TestCase):
         cls.server_thread = ServerThread()
         cls.server_thread.start()
         cls.server_thread.wait_till_server_ready()
+        cls.url_for = cls.server_thread.url_for
 
     @classmethod
     def tearDownClass(cls):
@@ -82,6 +79,15 @@ class AuthenticationTests(unittest.TestCase):
         cls.browser.quit()
         if os.path.exists(cls.db_filename):
             os.unlink(cls.db_filename)
+
+
+class AuthenticationTests(AnimeuIntegrationTestCase):
+    """Test the signup and login/logout functionality."""
+
+    TEST_EMAIL = "test@gmail.com"
+    TEST_USERNAME = "iamuser"
+    TEST_PASSWORD = "password123"
+    TEST_PASSWORD_TOO_SHORT = "pw"
 
     def get_invalid_feedback(self):
         """Get a string of any invalid feedback on the page."""
@@ -153,7 +159,7 @@ class AuthenticationTests(unittest.TestCase):
     def test_authentication(self):
         """Test the authentication logic."""
         with self.subTest("Unauthenticated users are redirected to login"):
-            self.browser.get(self.INDEX_URL)
+            self.browser.get(self.url_for("auth_bp.login"))
             self.assertIn("Login to Animeu", self.get_form_header_text())
 
         with self.subTest("A user cannot login without an account"):
@@ -183,12 +189,17 @@ class AuthenticationTests(unittest.TestCase):
             self.assertIn("Login to Animeu", self.get_form_header_text())
 
         with self.subTest("A user cannot register again with the same email"):
-            self.browser.get(self.REGISTER_URL)
+            self.browser.get(self.url_for("auth_bp.register"))
             self.try_register()
             self.assertIn("Email is already registered",
                           self.get_invalid_feedback())
 
         with self.subTest("The user can login normally"):
-            self.browser.get(self.LOGIN_URL)
+            self.browser.get(self.url_for("auth_bp.login"))
             self.try_sign_in()
             self.assert_user_is_logged_in()
+
+class BattleTests(unittest.TestCase):
+    """Test the battle page."""
+
+    pass

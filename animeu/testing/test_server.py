@@ -23,18 +23,27 @@ class ServerThread(threading.Thread):
         self.port = port
         self.started_event = threading.Event()
         self.server = None
+        self.app = None
 
     def run(self):
         """Start up the server."""
         coverage.process_startup()
         from animeu.app import app
-        self.server = wsgi.Server((self.host, self.port), app, max=1)
+        self.app = app
+        self.app.config["SERVER_NAME"] = f"{self.host}:{self.port}"
+        self.server = wsgi.Server((self.host, self.port), self.app, max=1)
         subprocess.run(["flask", "db", "upgrade"])
         self.server.start()
 
     def shutdown(self):
         """Shutdown the server."""
         self.server.stop()
+
+    def url_for(self, *args, **kwargs):
+        """Generate a URL for a given route."""
+        from flask import url_for
+        with self.app.app_context():
+            return url_for(*args, **kwargs)
 
     def is_server_ready(self):
         """Check if the server is ready to respond to to requests."""
