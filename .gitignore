@@ -1,5 +1,9 @@
 characters.json
 *.db
+*.db-journal
+drivers
+.coverage
+htmlcov
 
 # vs code
 .vscode
