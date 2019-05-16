@@ -26,6 +26,26 @@ def get_chrome_options(headless=True):
     options.add_argument("start-maximized")
     return options
 
+def wait_for_visible(browser,
+                    css_selector=None,
+                    id_selector=None,
+                    xpath_selector=None,
+                    invert=False,
+                    timeout=5):
+    """Wait for an element to become visible."""
+    wait = WebDriverWait(browser, timeout)
+    if css_selector:
+        locator = (By.CSS_SELECTOR, css_selector)
+    elif id_selector:
+        locator = (By.ID, id_selector)
+    elif xpath_selector:
+        locator = (By.XPATH, xpath_selector)
+    else:
+        raise ValueError("""Must provide a selector.""")
+    if invert:
+        return wait.until_not(expect.visibility_of_element_located(locator))
+    return wait.until(expect.visibility_of_element_located(locator))
+
 class AuthenticationTests(unittest.TestCase):
     """Test the signup and login/logout functionality."""
 
@@ -63,18 +83,6 @@ class AuthenticationTests(unittest.TestCase):
         if os.path.exists(cls.db_filename):
             os.unlink(cls.db_filename)
 
-    def try_sign_in(self):
-        """Assume we're on the login page and try sign in."""
-        email_input = \
-            self.browser.find_element_by_xpath("//input[@name='email']")
-        password_input = \
-            self.browser.find_element_by_xpath("//input[@name='password']")
-        email_input.send_keys(self.TEST_EMAIL)
-        password_input.send_keys(self.TEST_PASSWORD)
-        submit_button = \
-            self.browser.find_element_by_xpath("//input[@name='submit']")
-        submit_button.click()
-
     def get_invalid_feedback(self):
         """Get a string of any invalid feedback on the page."""
         invalid_feedback_els = \
@@ -85,31 +93,6 @@ class AuthenticationTests(unittest.TestCase):
         """Return the header text of the login or register form."""
         return self.browser.find_element_by_css_selector("h6.header").text
 
-    def try_register(self):
-        """Try fill out the registration form."""
-        email_input = \
-            self.browser.find_element_by_xpath("//input[@name='email']")
-        username_input = \
-            self.browser.find_element_by_xpath("//input[@name='username']")
-        password_input = \
-            self.browser.find_element_by_xpath("//input[@name='password']")
-        email_input.send_keys(self.TEST_EMAIL)
-        username_input.send_keys(self.TEST_USERNAME)
-        password_input.send_keys(self.TEST_PASSWORD)
-        recaptcha_iframe = self.wait.until(
-            expect.visibility_of_element_located(
-                # pylint: disable=line-too-long
-                (By.XPATH, "//iframe[contains(@src, 'recaptcha') and @role = 'presentation']")
-            )
-        )
-        self.browser.switch_to.frame(recaptcha_iframe)
-        self.browser.find_element_by_id("recaptcha-anchor").click()
-        time.sleep(5)
-        self.browser.switch_to.parent_frame()
-        submit_button = \
-            self.browser.find_element_by_xpath("//input[@name='submit']")
-        submit_button.click()
-
     def get_navbar_logout_link(self):
         """Find the logout link on the page."""
         try:
@@ -118,6 +101,40 @@ class AuthenticationTests(unittest.TestCase):
             )
         except NoSuchElementException:
             return None
+
+    def try_sign_in(self):
+        """Assume we're on the login page and try sign in."""
+        email_input = wait_for_visible(self.browser, "input[name='email']")
+        password_input = \
+            self.browser.find_element_by_css_selector("input[name='password']")
+        email_input.send_keys(self.TEST_EMAIL)
+        password_input.send_keys(self.TEST_PASSWORD)
+        submit_button = \
+            self.browser.find_element_by_xpath("//input[@name='submit']")
+        submit_button.click()
+
+    def try_register(self):
+        """Try fill out the registration form."""
+        email_input = wait_for_visible(self.browser, "input[name='email']")
+        username_input = \
+            self.browser.find_element_by_css_selector("input[name='username']")
+        password_input = \
+            self.browser.find_element_by_css_selector("input[name='password']")
+        email_input.send_keys(self.TEST_EMAIL)
+        username_input.send_keys(self.TEST_USERNAME)
+        password_input.send_keys(self.TEST_PASSWORD)
+        recaptcha_iframe = wait_for_visible(
+            self.browser,
+            # pylint: disable=line-too-long
+            xpath_selector="//iframe[contains(@src, 'recaptcha') and @role = 'presentation']"
+        )
+        self.browser.switch_to.frame(recaptcha_iframe)
+        self.browser.find_element_by_id("recaptcha-anchor").click()
+        wait_for_visible(self.browser, "span.recaptcha-checkbox-checked")
+        self.browser.switch_to.parent_frame()
+        submit_button = \
+            self.browser.find_element_by_xpath("//input[@name='submit']")
+        submit_button.click()
 
     def assert_user_is_logged_in(self):
         """Asset the user is logged in."""
@@ -135,8 +152,6 @@ class AuthenticationTests(unittest.TestCase):
 
     def test_authentication(self):
         """Test the authentication logic."""
-        self.browser.implicitly_wait(5)
-
         with self.subTest("Unauthenticated users are redirected to login"):
             self.browser.get(self.INDEX_URL)
             self.assertIn("Login to Animeu", self.get_form_header_text())
