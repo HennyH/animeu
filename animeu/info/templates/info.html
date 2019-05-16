@@ -1,0 +1,283 @@
+{% from "carousel.html" import carousel with context %}
+{% extends "base.html" %}
+
+{% block styles %}
+    {% include "carousel.css" without context %}
+    {% include "battle.css" without context %}
+    <style>
+        .character-brief-metadata-flex {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .character-brief-metadata-flex > *:not(:first-child) {
+            margin-top: 1em;
+        }
+
+        .anime-roles-grid {
+            display: grid;
+            grid-column: 1 / -1;
+            grid-template-columns: repeat(2, 190px);
+            grid-auto-rows: 32px;
+            grid-row-gap: 0.6em;
+            grid-column-gap: 1em;
+        }
+
+        .anime-roles-grid > h5 {
+            grid-column: 1/-1;
+        }
+
+        .anime-name {
+            text-overflow: unset;
+        }
+
+        .manga-roles-grid {
+            display: grid;
+            grid-column: 1 / -1;
+            grid-template-columns: repeat(2, 190px);
+            grid-auto-rows: 32px;
+            grid-row-gap: 0.6em;
+            grid-column-gap: 1em;
+        }
+
+        .manga-roles-grid > h5 {
+            grid-column: 1/-1;
+        }
+
+        .manga-role {
+            width: 190px;
+            display: grid;
+            font-size: 11px;
+            line-height: 1.5em;
+            grid-template-columns: 23px 1fr;
+            grid-column-gap: 1em;
+        }
+
+        .manga-name {
+            white-space: nowrap;
+            display: block;
+            overflow: hidden;
+            width: 140px;
+        }
+
+        .manga-role .manga-role-type {
+            grid-column: 2 / -1;
+        }
+
+        .manga-role img {
+            border: 1px solid lightgray;
+            padding: 1px;
+        }
+
+        .info-container {
+            position: relative;
+            width: 90vw;
+            margin-left: 5vw;
+            justify-self: center;
+            align-self: center;
+            display: grid;
+            margin-top: 1em;
+            gap: 1em;
+            padding: 1em;
+        }
+
+        .carousel{
+            width: 225px;
+            height: 350px;
+        }
+
+        .header-info {
+            display: grid;
+            grid-template-columns: minmax(max-content, 1fr) 2fr;
+            justify-content: center;
+            align-items: center;
+            gap: 1em;
+        }
+
+        .depth-info {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 1em;
+            justify-items: center;
+        }
+
+        .favourite-button {
+            position: absolute;
+            right: 0;
+            z-index: 10;
+        }
+
+        table tr:not(:first-child) {
+            border-top: 1px solid rgb(0,0,0);
+        }
+
+        @media screen and (max-width: 1000px) {
+            .depth-info {
+                display: grid;
+                grid-template-columns: 3fr 1fr;
+                gap: 1em;
+            }
+
+            .anime-roles-grid{
+                grid-template-columns: 1fr;
+            }
+
+            .manga-roles-grid{
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media screen and (max-width: 640px) {
+            .info-container{
+                width: 95vw;
+                margin: 0;
+                padding: 1em;
+            }
+
+            .header-info {
+                grid-template-columns: 1fr;
+            }
+
+            .depth-info {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .anime-roles-grid {
+                grid-template-columns: repeat(2, 190px);
+            }
+
+            .manga-roles-grid {
+                grid-template-columns: repeat(2, 190px);
+            }
+        }
+
+        @media screen and (max-width: 450px) {
+            .info-container{
+                width: 92vw;
+                padding: 1em;
+            }
+
+            .anime-roles-grid{
+                grid-template-columns: 1fr;
+            }
+
+            .manga-roles-grid{
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+{% endblock styles %}
+
+{% block body %}
+    {% set is_favourited = character["favourited"] %}
+    {% set en_name = character["names"]["en"][0] %}
+    {% set jp_name = character["names"]["jp"][0] %}
+    {% set info_fields = character["info_fields"] %}
+    {% set tags = character["tags"] %}
+    {% set description = character["descriptions"][0] %}
+    {% set gallery_urls = character["pictures"]["gallery"] %}
+    {% set anime_roles = character["anime_roles"] %}
+    {% set manga_roles = character["manga_roles"] %}
+    <section class="info-container">
+        {% if current_user.is_authenticated %}
+            <button type="button" class="favourite-button btn btn-outline-danger">
+                <i class="{{ 'fas' if is_favourited else 'far' }} fa-heart" style="color: red;"></i>
+            </button>
+        {% endif %}
+        <div class="header-info">
+            {{ carousel(en_name + "_carousel", gallery_urls) }}
+            <table class="info basic-info capitalize">
+                <tr>
+                    <th>English name:</th>
+                    <td class="english-name">{{ en_name }}</td>
+                </tr>
+                <tr>
+                    <th>Japanese name:</th>
+                    <td class="jp-name">{{ jp_name }}</td>
+                </tr>
+                <tr>
+                    <th>Gender:</th>
+                    <td class="jp-name">{{ character["gender"] }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="info depth-info">
+            <table>
+                {% for field in info_fields %}
+                    <tr>
+                        <th>{{ field["key"] }}:</th>
+                        <td>{{ field["value"] }}</td>
+                    </tr>
+                {% endfor %}
+                {% if character["descriptions"] is defined %}
+                    <tr>
+                        <th>Description:</th>
+                        <td>{{ character["descriptions"] }}</td>
+                    </tr>
+                {% endif %}
+            </table>
+            <div class="character-brief-metadata-flex info-view-visible">
+                <div class="anime-roles-grid">
+                    {% if anime_roles is defined %}
+                        <h5 class="capitalize">Anime Appearance:</h5>
+                        {% for anime_role in anime_roles | sort(attribute="role") %}
+                            {% if "picture" in anime_role %}
+                                <div class="anime-role">
+                                    <img src="{{ anime_role['picture'] }}" />
+                                    <div>
+                                        <a href="#" class="anime-name">{{ anime_role["name" ]}}</a>
+                                        <small class="anime-role-type">{{ anime_role["role"] }}</small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="manga-roles-grid">
+                    {% if manga_roles is defined %}
+                        <h5 class="capitalize">Manga Appearance:</h5>
+                        {% for manga_role in manga_roles | sort(attribute="role") %}
+                            {% if "picture" in manga_role %}
+                                <div class="manga-role">
+                                    <img src="{{ manga_role['picture'] }}" />
+                                    <div>
+                                        <a href="#" class="manga-name">{{ manga_role["name" ]}}</a>
+                                        <small class="manga-role-type">{{ manga_role["role"] }}</small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="tags-list">
+                    {% for tag in tags %}
+                        <span class="m-1 p-2 badge badge-light">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock body %}
+
+{% block scripts %}
+    {% include "carousel.js" without context %}
+    {% include "battle.js" without context %}
+    {% include "favourite.js" without context %}
+
+    <script>
+        $(document).ready(() => {
+            $(".favourite-button").each((i, btn) => {
+                FavoritingButton(
+                    btn,
+                    $(btn).siblings(".english-name").text().trim(),
+                    () => btn.querySelector("i").classList.replace("far", "fas"),
+                    () => btn.querySelector("i").classList.replace("fas", "far")
+                );
+            });
+        });
+    </script>
+{% endblock scripts %}

@@ -13,7 +13,11 @@
             <div class="entry">
                 <span class="rank">{{ loop.index }}</span>
                 {{ carousel( "%s-carousel-%d" | format(title, loop.index) , entry['gallery'], show_indicators=False) }}
-                <span class="en-name">{{ entry['en_name'] }}</span>
+                <span class="en-name">
+                    <a href="{{ url_for('info_bp.info', char_name=entry['en_name']) }}">
+                        {{ entry['en_name'] }}
+                    </a>
+                </span>
                 <span class="jp-name japanese">{{ entry['jp_name'] }}</span>
                 {% for counter in entry["counters"] %}
                     <span class="counter {{ counter['class'] }}">
