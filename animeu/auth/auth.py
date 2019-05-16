@@ -19,6 +19,7 @@ auth_bp = Blueprint("auth_bp", __name__, template_folder="templates")
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     """Render the login page."""
+    print(db.engine.url)
     form = LoginForm()
     if form.validate_on_submit():
         maybe_user = maybe_find_user(request.form["email"],
