@@ -14,14 +14,22 @@
         <div class="info winner-info">
             <i class="fas fa-church"></i>
             <span class="message winner-message">Waifu</span>
-            <span class="name">{{ winner_en_name }}</span>
+            <span class="name">
+                <a href="{{ url_for('info_bp.info', char_name=winner_en_name) }}">
+                    {{ winner_en_name }}
+                </a>
+            </span>
             <span class="japanese">{{ winner_jp_name }}</span>
         </div>
         <span class="vs"></span>
         <div class="info loser-info">
             <i class="fas fa-heart-broken"></i>
             <span class="message loser-message">Rejected</span>
-            <span class="name">{{ loser_en_name }}</span>
+            <span class="name">
+                <a href="{{ url_for('info_bp.info', char_name=loser_en_name) }}">
+                    {{ loser_en_name }}
+                </a>
+            </span>
             <span class="japanese">{{ loser_jp_name }}</span>
         </div>
         <div class="loser picture-carousel">

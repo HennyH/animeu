@@ -18,7 +18,9 @@
         {% set anime_roles = character["anime_roles"] %}
         <div class="card character-card info-view" id="{{ id }}">
             <div class="card-header">
-                <h5 class="english-name">{{ en_name }}</h5>
+                <a href="{{ url_for('info_bp.info', char_name=en_name) }}">
+                    <h5 class="english-name">{{ en_name }}</h5>
+                </a>
                 <h6 class="jp-name font-weight-bold">{{ jp_name }}</h4>
                 <button type="button" class="toggle-picture-view btn btn-outline-secondary">
                     <i class="fas fa-images"></i>
