@@ -1,0 +1,9 @@
+[run]
+source = animeu
+omit =
+    # the scraping code is not tested
+    animeu/spiders/*,
+    animeu/testing/*
+
+[html]
+title = "Animeu Test Coverage Report"

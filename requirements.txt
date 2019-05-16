@@ -6,3 +6,6 @@ Flask-WTF
 youtube-dl
 regex
 tqdm
+coverage
+cheroot
+selenium

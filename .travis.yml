@@ -1,9 +1,22 @@
+dist: trusty
 language: python
 python:
-- "3.6"
+ - 3.6
+addons:
+ chrome: stable
+ apt:
+  packages:
+    - chromium-chromedriver
 compiler: clang
+before_script:
+ - ln --symbolic /usr/lib/chromium-browser/chromedriver "${HOME}/bin/chromedriver"
+ - "export DISPLAY=:99.0"
+ - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x16"
+ - sleep 3
 script:
-- pip install -r requirements.dev.linux.txt
-- pip install -e .
-- pylint animeu
-- pydocstyle animeu
+ - pip install -r requirements.dev.linux.txt
+ - pip install -e .
+ - pylint animeu
+ - pydocstyle animeu
+ - python -Wignore -m unittest animeu.testing.integration_tests
+ - coverage report
