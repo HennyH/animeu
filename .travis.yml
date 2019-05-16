@@ -18,5 +18,5 @@ script:
  - pip install -e .
  - pylint animeu
  - pydocstyle animeu
- - python -Wignore -m unittest animeu.testing.integration_tests
+ - FLASK_APP=animeu.app python -Wignore -m unittest animeu.testing.integration_tests
  - coverage report
