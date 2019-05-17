@@ -10,29 +10,25 @@ import urllib.request as request
 from urllib.error import URLError
 import time
 
-import coverage
 from cheroot import wsgi
 
 class ServerThread(threading.Thread):
     """Run a server in a seperate thread."""
 
-    def __init__(self, *args, host="127.0.0.1", port=5001, **kwargs):
+    def __init__(self, app, *args, host="127.0.0.1", port=5001, **kwargs):
         """Initialize a new ServerThread."""
         super().__init__(*args, **kwargs)
         self.host = host
         self.port = port
         self.started_event = threading.Event()
         self.server = None
-        self.app = None
+        self.app = app
 
     def run(self):
         """Start up the server."""
-        coverage.process_startup()
-        from animeu.app import app
-        self.app = app
+        subprocess.run(["flask", "db", "upgrade"])
         self.app.config["SERVER_NAME"] = f"{self.host}:{self.port}"
         self.server = wsgi.Server((self.host, self.port), self.app, max=1)
-        subprocess.run(["flask", "db", "upgrade"])
         self.server.start()
 
     def shutdown(self):

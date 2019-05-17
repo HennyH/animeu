@@ -1,4 +1,5 @@
 [run]
+parallel = true
 source = animeu
 omit =
     # the scraping code is not tested

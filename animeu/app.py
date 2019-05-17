@@ -4,15 +4,21 @@
 #
 # See /LICENCE.md for Copyright information
 """Entrypoint which configures the animeu flask app."""
-import os
 import sys
+import os
 import json
 from functools import partial
 
+try:
+    import coverage
+    coverage.process_startup()
+except ImportError:
+    print("Unable to import and start up coverage", file=sys.stderr)
 from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+
 
 # pylint: disable=invalid-name
 app = Flask(__name__)

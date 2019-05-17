@@ -3,6 +3,7 @@ characters.json
 *.db-journal
 drivers
 .coverage
+.coverage.*
 htmlcov
 
 # vs code

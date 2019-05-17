@@ -18,4 +18,5 @@ script:
  - pylint animeu
  - pydocstyle animeu
  - FLASK_APP=animeu.app python -Wignore -m unittest animeu.testing.integration_tests
+ - coverage combine
  - coverage report
