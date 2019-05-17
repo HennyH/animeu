@@ -6,11 +6,14 @@
 """Integration tests for the animeu site."""
 import os
 import unittest
+import re
+from datetime import datetime
 from tempfile import mkstemp
 
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, func
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import \
+    NoSuchElementException, TimeoutException as SeleniumTimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as expect
@@ -88,7 +91,7 @@ class AnimeuIntegrationTestCase(unittest.TestCase):
         headless = "NO_HEADLESS" not in os.environ
         cls.browser = \
             webdriver.Chrome(options=get_chrome_options(headless=headless))
-        cls.wait = WebDriverWait(cls.browser, 10)
+        cls.wait = WebDriverWait(cls.browser, 2)
         from animeu.app import app
         cls.server_thread = ServerThread(app)
         cls.server_thread.start()
@@ -296,6 +299,19 @@ class BattleTests(AnimeuIntegrationTestCase):
                 ).scalar()
                 self.assertEqual(expected_name, favourited_name)
 
+            with self.subTest("Can unfavourite a character"):
+                left_card = self.get_left_card()
+                # pylint: disable=line-too-long
+                left_card.find_element_by_css_selector(".favourite-button").click()
+                wait_for_visible(self.browser, "i.far.fa-heart")
+                favourited_count = db.engine.execute(
+                    select([
+                        func.count(FavouritedWaifu.id)
+                    ])\
+                    .where(FavouritedWaifu.id == user.id)
+                ).scalar()
+                self.assertEqual(0, favourited_count)
+
             with self.subTest("Can pick a winner"):
                 loser_card = self.get_left_card()
                 winner_card = self.get_right_card()
@@ -320,3 +336,176 @@ class BattleTests(AnimeuIntegrationTestCase):
                 ).first()
                 self.assertEqual(expected_winner_name, actual_winner)
                 self.assertEqual(expected_loser_name, actual_loser)
+
+
+class AdminToolsTests(AnimeuIntegrationTestCase):
+    """Test the admin pages."""
+
+    TEST_EMAIL = "tester@gmail.com"
+    TEST_PASSWORD = "password123"
+
+    @staticmethod
+    def move_to_admin_tab(browser, title):
+        """Navigate to a different admin tab and wait for it to load."""
+        browser.find_element_by_xpath(f"//a[contains(., '{title}')]").click()
+        wait_for_visible(
+            browser,
+            xpath_selector=f"//a[contains(@class, 'active') and contains(., '{title}')]"
+        )
+
+    @staticmethod
+    def maybe_get_number_of_entries_in_table(browser):
+        """Try get the number of entries in the currently visible table."""
+        try:
+            maybe_pagination_info = \
+                browser.find_element_by_css_selector("div.dataTables_info")
+            if not maybe_pagination_info:
+                return None
+            match = re.search(r"\sof\s(?P<total>[\d,]+)\s",
+                              maybe_pagination_info.text)
+            if not match:
+                return None
+            total_text = match.group("total")
+            return int(total_text.replace(",", ""))
+        except NoSuchElementException:
+            return None
+
+    @staticmethod
+    def iter_current_table_values(browser):
+        """Get the current values in the table."""
+        for row in browser.find_elements_by_css_selector("tr"):
+            cells = row.find_elements_by_css_selector("td")
+            yield tuple(c.text for c in cells)
+
+    def assert_all_sort_controls_work_in_table(self):
+        """Try out all the sorting controls in the table."""
+        for tab in self.browser.find_elements_by_css_selector("th.sorting"):
+            for _ in range(2):
+                tab.click()
+                try:
+                    wait_for_visible(
+                        self.browser,
+                        # pylint: disable=line-too-long
+                        xpath_selector="//div[@class = 'dataTables_processing' and contains(., 'Processing...')]",
+                        invert=True
+                    )
+                except SeleniumTimeoutException:
+                    self.fail("The results never finished processing")
+                else:
+                    # make sure we didn't get a server side error alert!
+                    try:
+                        self.wait.until(expect.alert_is_present())
+                        self.fail("An alert was raised")
+                    except (SeleniumTimeoutException, expect.NoAlertPresentException):
+                        continue
+
+    def perform_action_and_assert_completed(self):
+        """Perform the current admin action and expect it to complete."""
+        self.browser.find_element_by_css_selector("button.perform-action").click()
+        completed_progress_bar = wait_for_visible(
+            self.browser,
+            xpath_selector="//div[contains(@class, 'progress-bar') and contains(@style, '100%')]",
+            timeout=30
+        )
+        self.assertIsNotNone(
+            completed_progress_bar,
+            "A completed progress bar should be shown."
+        )
+        disabled_completed_btn = \
+            self.browser.find_element_by_css_selector(
+                "button.perform-action:disabled"
+            )
+        self.assertIsNotNone(
+            disabled_completed_btn,
+            "The perform action button should be disabled."
+        )
+        self.assertIn("Complete", disabled_completed_btn.text)
+
+    # pylint: disable=too-many-locals
+    def test_admin_tools(self):
+        """Test the battle functionality."""
+        from animeu.app import db
+        from animeu.models import \
+            User, FavouritedWaifu, WaifuPickBattle, ELORankingCalculation
+        from animeu.auth.logic import hash_password
+
+        with self.server_thread.app.app_context():
+            user = User(
+                email=BattleTests.TEST_EMAIL,
+                username="username",
+                is_admin=True,
+                password_hash=hash_password(BattleTests.TEST_PASSWORD)
+            )
+            db.session.add(user)
+            db.session.commit()
+            user = User.query.get(user.id)
+
+            self.browser.get(self.url_for("auth_bp.login"))
+            perform_login_expecting_success(self.browser,
+                                            AdminToolsTests.TEST_EMAIL,
+                                            AdminToolsTests.TEST_PASSWORD)
+            self.browser.find_element_by_xpath("//a[contains(., 'Admin')]").click()
+            wait_for_visible(self.browser, ".admin-page")
+
+            with self.subTest("Can seed database with battles"):
+                self.move_to_admin_tab(self.browser, "Battles")
+                self.perform_action_and_assert_completed()
+                self.browser.refresh()
+                number_of_entries = \
+                    self.maybe_get_number_of_entries_in_table(self.browser)
+                self.assertIsNotNone(
+                    number_of_entries,
+                    "Could not find the table summary information."
+                )
+                self.assertGreaterEqual(1000, number_of_entries)
+                db_entry_count = db.engine.execute(
+                    select([
+                        func.count(WaifuPickBattle.id)
+                    ])
+                ).scalar()
+                self.assertEqual(number_of_entries, db_entry_count)
+
+        with self.subTest("Can use all the sorting controls"):
+            self.assert_all_sort_controls_work_in_table()
+
+        with self.subTest("Can generate the ELO rankings"):
+            self.move_to_admin_tab(self.browser, "ELO")
+            self.perform_action_and_assert_completed()
+            self.browser.refresh()
+            rankings_count = db.engine.execute(
+                select([
+                    func.count(ELORankingCalculation.id)
+                ])
+            ).scalar()
+            self.assertEqual(1, rankings_count)
+
+        with self.subTest("Can see users table"):
+            self.move_to_admin_tab(self.browser, "Users")
+            self.assert_all_sort_controls_work_in_table()
+
+        with self.subTest("Can see favourited waifus"):
+            db.session.add(FavouritedWaifu(
+                user_id=user.id,
+                date=datetime.now(),
+                character_name="Tim",
+                order=1
+            ))
+            db.session.commit()
+            self.move_to_admin_tab(self.browser, "Favourited Waifus")
+            tims_name = self.browser.find_element_by_xpath(
+                "//td[contains(., 'Tim')]"
+            )
+            self.assertIsNotNone(
+                tims_name,
+                "Expected to find the favourited 'Tim' in table"
+            )
+
+        with self.subTest("Can delete favourited character"):
+            self.browser.find_element_by_css_selector("button.delete-button").click()
+            wait_for_visible(self.browser, "button.delete-button", invert=True)
+            favourited_characters_count = db.engine.execute(
+                select([
+                    func.count(FavouritedWaifu.id)
+                ])
+            ).scalar()
+            self.assertEqual(0, favourited_characters_count)
