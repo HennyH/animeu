@@ -29,10 +29,9 @@ def arg_redirect(request,
         return redirect(url)
     if fallback_url:
         return redirect(fallback_url)
-    elif fallback_endpoint:
+    if fallback_endpoint:
         return redirect(url_for(fallback_endpoint))
-    else:
-        return redirect("/")
+    return redirect("/")
 
 class InvalidQueryParameter(HTTPException):
     """Exception that represents a query parameter being invalid."""

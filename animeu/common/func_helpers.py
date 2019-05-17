@@ -13,13 +13,13 @@ def compose(*functions):
 
     f, g, k, ... => x -> f(g(k(...(x))))
     """
-    # pylint: disable=undefined-variable
+    # pylint: disable=undefined-variable,invalid-name
     def wrapper(f, g):
         def _inner(*args, **kwargs):
             return f(g(*args, **kwargs))
         return _inner
 
-    return reduce(lambda f, g: wrapper(f, g), functions)
+    return reduce(wrapper, functions)
 
 
 def identity(arg):

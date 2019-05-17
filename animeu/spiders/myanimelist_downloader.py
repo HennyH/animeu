@@ -19,9 +19,11 @@ from animeu.spiders.json_helpers import JSONListStream
 from animeu.spiders.base64_helpers import base64_urlencode
 
 try:
+    # pylint: disable=unused-import
     import ijson.backends.yajl2_cffi as ijson
 except ImportError:
     sys.stderr.write("""Falling back to slower pure-python ijson\n""")
+    # pylint: disable=unused-import
     import ijson
 
 MAL_URL = "https://myanimelist.net"
@@ -59,6 +61,7 @@ def make_mal_spider_cls(search_domain):
 
         name = "myanimelist"
         start_urls = [
+            # pylint: disable=line-too-long
             f"{MAL_URL}/anime.php?q=&type=1&score=0&status=0&p=0&r=0&sm=1&sd=1&sy=1980&em=0&ed=0&ey=0&c[0]=a&c[1]=b&c[2]=c&c[3]=f&gx=0&o=3&w=1&show=0",
         ]
 
@@ -81,16 +84,16 @@ def make_mal_spider_cls(search_domain):
             )
         )
 
-        def __init__(self, manifest_file=None, pages_directory=None,
-                    *args, **kwargs):
+        # pylint: disable=line-too-long
+        def __init__(self, *args, manifest_file=None, pages_directory=None, **kwargs):
             """Initialize a MyAnimeListSpider."""
             super().__init__(*args, **kwargs)
             os.makedirs(pages_directory, exist_ok=True)
             self.manifest_file = manifest_file
             self.pages_directory = pages_directory
 
-
-        def extract_pictures(self, response):
+        @staticmethod
+        def extract_pictures(response):
             """Save the pictures page and update manifest entry."""
             filename = response.meta["filename"]
             response.meta["metadata"]["pictures_stats"] = response.status

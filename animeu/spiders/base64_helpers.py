@@ -12,4 +12,4 @@ def base64_urlencode(text, encoding="utf8"):
 
 def base64_urldecode(b64str, encoding="utf8"):
     """Return the decoded version of url safe encoded base64 string."""
-    return b64decode(b64str, altchars=b"-_").decode("utf8")
+    return b64decode(b64str, altchars=b"-_").decode(encoding)

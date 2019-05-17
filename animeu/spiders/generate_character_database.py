@@ -4,18 +4,15 @@
 #
 # See /LICENCE.md for Copyright information
 """Script to generate the character database."""
-import os
 import sys
 import argparse
 import re
 import json
-import parmap
 from functools import partial
 from itertools import chain
 from operator import itemgetter, methodcaller
 
-import apsw
-from tqdm import tqdm
+import parmap
 from fuzzywuzzy import process
 
 from animeu.common.func_helpers import compose
@@ -93,6 +90,7 @@ def maybe_match_mal_character(mal_character, ap_characters):
     # we only support anime girls!
     if not mal_character["anime_roles"]:
         return None
+    # pylint: disable=broad-except
     try:
         best_ap_match = None
         best_ap_match_score = 0
@@ -100,6 +98,7 @@ def maybe_match_mal_character(mal_character, ap_characters):
             mal_names = mal_character["names"]["en"]
             ap_names = ap_character["names"]["en"]
             _, _, name_score = max(
+                # pylint: disable=line-too-long
                 [(n, *(process.extractOne(n, ap_names) or (None, 0))) for n in mal_names],
                 key=itemgetter(2)
             )
@@ -110,6 +109,7 @@ def maybe_match_mal_character(mal_character, ap_characters):
             anime_score = 0
             if mal_animes:
                 _, _, anime_score = max(
+                    # pylint: disable=line-too-long
                     [(n, *(process.extractOne(n, ap_animes) or (None, 0))) for n in mal_animes],
                     key=itemgetter(2)
                 )
@@ -154,11 +154,3 @@ def main(argv=None):
                                       pm_pbar=True):
             if maybe_match is not None:
                 json_stream.write(maybe_match)
-
-
-if __name__ == "__main__":
-    main([
-        "--myanimelist-extract", r"C:\Users\holli\Documents\Projects\animeu-data\mal-data\extract.json",
-        "--anime-planet-extract", r"C:\Users\holli\Documents\Projects\animeu-data\anime-planet-data\extract.json",
-        "--output", r"C:\Users\holli\Documents\Projects\animeu-data\matched-girls.json"
-    ])

@@ -4,28 +4,27 @@
 #
 # Pages to fix:
 #
-# https://myanimelist.net/character/38538/Eucliwood_Hellscythe  (description)
-# https://myanimelist.net/character/503/Illyasviel_von_Einzbern (tag has text missing, description gets too much)
-# https://myanimelist.net/character/82525/Shiro?q=Shiro%20 (tags)
-# https://myanimelist.net/character/63/Winry_Rockbell?q=Winry%20Rockbell (tags incorrect)
+# https://myanimelist.net/character/38538/Eucliwood_Hellscythe
+# (description)
+# https://myanimelist.net/character/503/Illyasviel_von_Einzbern
+# (tag has text missing, description gets too much)
+# https://myanimelist.net/character/82525/Shiro?q=Shiro%20
+# (tags)
+# https://myanimelist.net/character/63/Winry_Rockbell?q=Winry%20Rockbell
+# (tags incorrect)
 #
 # See /LICENCE.md for Copyright information
 """Extractor for the myanimelist pages."""
 import os
 import sys
+import re
+import json
+from functools import partial
+
 import argparse
 import parsel
-import re
-import urllib.parse
-import requests
-import base64
-import json
 import parmap
-from operator import itemgetter, methodcaller
-from functools import partial
-from parsel import Selector, SelectorList
-from lxml import etree
-from animeu.spiders.myanimelist_downloader import MAL_URL
+
 from animeu.spiders.json_helpers import JSONListStream
 from animeu.common.func_helpers import compose
 from animeu.common.file_helpers import open_transcoded
@@ -151,7 +150,7 @@ def extract_metadata_from_file(filename):
         )
         metadata["anime_roles"].extend(extract_anime_roles(profile_sel))
         metadata["manga_roles"].extend(extract_manga_roles(profile_sel))
-        info_fields, maybe_description  = \
+        info_fields, maybe_description = \
             extract_info_fields_and_description(profile_sel)
         metadata["info_fields"].extend(info_fields)
         if maybe_description:
@@ -169,8 +168,9 @@ def test_is_male_character(metadata):
     """Test if a character is male."""
     if metadata["descriptions"] and \
             any(re.search(r"\b(his|he)\b", d, flags=re.I)
-                for d in metadata["descriptions"]):
+                    for d in metadata["descriptions"]):
         return True
+    # pylint: disable=invalid-name
     for k, v in metadata["info_fields"]:
         if re.search(r"sex", k, flags=re.I) and \
                 re.search(r"\b(male|men|man)\b", v, flags=re.I):
@@ -216,5 +216,3 @@ def main(argv=None):
                 continue
             extract_file.write(metadata)
             result.output.flush()
-
-

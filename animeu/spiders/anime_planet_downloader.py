@@ -7,15 +7,11 @@
 import os
 import sys
 import argparse
-import scrapy
 import json
-import itertools
-from functools import partial
-from operator import itemgetter
+
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.crawler import CrawlerProcess
 from scrapy.linkextractors import LinkExtractor
-from animeu.common.func_helpers import compose
 from animeu.spiders.json_helpers import JSONListStream
 from animeu.spiders.base64_helpers import base64_urlencode, base64_urldecode
 
@@ -52,14 +48,15 @@ def make_anime_planet_spider_cls(previously_scraped_urls):
             Rule(
                 LinkExtractor(
                     allow=r"gender_id=2&page=\d+",
+                    # pylint: disable=line-too-long
                     restrict_xpaths="//ul[@class='nav']/li[@class='selected']/following-sibling::li[1]"
                 ),
                 follow=True
             ),
         )
 
-        def __init__(self, manifest_file=None, pages_directory=None, *args,
-                     **kwargs):
+        # pylint: disable=line-too-long
+        def __init__(self, *args, manifest_file=None, pages_directory=None, **kwargs):
             """Initialize a AnimePlanetSpider."""
             super().__init__(*args, **kwargs)
             os.makedirs(pages_directory, exist_ok=True)

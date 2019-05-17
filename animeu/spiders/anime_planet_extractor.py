@@ -6,17 +6,15 @@
 """Metadata extractor for anime planet pages."""
 import os
 import sys
-import argparse
-import parsel
 import re
 import urllib.parse
-import requests
-import base64
 import json
+from functools import partial
+
+import argparse
 import parmap
-from functools import partial, wraps
-from parsel import Selector, SelectorList
-from animeu.common.func_helpers import compose, call
+import parsel
+
 from animeu.spiders.anime_planet_downloader import ANIME_PLANET_URL
 from animeu.spiders.json_helpers import JSONListStream
 from animeu.spiders.xpath_helpers import get_all_text
@@ -52,7 +50,7 @@ def extract_info_fields(sel):
     return [
         {"key": "Hair Color", "value": strip_field_name(
             get_all_text(stats_sel.xpath("div[re:test(., 'hair color', 'i')]"))
-         )}
+        )}
     ]
 
 def extract_top_loved_rank(sel):
@@ -121,6 +119,7 @@ def extract_descriptions(sel):
 def optional(func, filename=None, default=None):
     """Wrap a function which could fail."""
     def wrapped(*args, **kwargs):
+        # pylint: disable=broad-except
         try:
             return func(*args, **kwargs)
         except Exception as error:
@@ -174,6 +173,7 @@ def is_sensitive_metadata(metadata):
         for pattern in BLACKLISTED_TAG_RES:
             if re.search(pattern, tag, flags=re.IGNORECASE):
                 return True
+    return False
 
 def main(argv=None):
     """Entry point to the anime planet page extractor."""
