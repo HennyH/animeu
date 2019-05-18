@@ -25,17 +25,3 @@ def info(char_name):
         query_has_favourited_waifus(current_user.id, char_name[0])
     character["favourited"] = name_to_favourited[char_name[0]]
     return render_template("info.html", character=character)
-
-@info_bp.route("/favourite/<name>", methods=["POST"])
-@login_required
-def favourite(name):
-    """Favourite a character."""
-    maybe_favourted_waifu = maybe_get_favourited_waifu(
-        user_id=current_user.id,
-        character_name=name
-    )
-    if maybe_favourted_waifu:
-        unfavourite_a_waifu(user_id=current_user.id, character_name=name)
-        return Response(status=HTTPStatus.NO_CONTENT)
-    waifu = favourite_a_waifu(user_id=current_user.id, character_name=name)
-    return Response(str(waifu.id), status=HTTPStatus.CREATED)
