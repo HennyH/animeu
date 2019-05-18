@@ -1,0 +1,78 @@
+{% macro character_card(id, character, class="info-view", anime_role_limit=5, manga_role_limit=5) -%}
+    {% set is_favourited = character["favourited"] %}
+    {% set en_name = character["names"]["en"][0] %}
+    {% set jp_name = character["names"]["jp"][0] %}
+    {% set info_fields = character["info_fields"] %}
+    {% set tags = character["tags"] %}
+    {% set description = character["descriptions"][0] %}
+    {% set gallery_urls = character["pictures"]["gallery"] %}
+    {% set anime_roles = character["anime_roles"] %}
+    <div class="card character-card {{ class }}" id="{{ id }}">
+        <div class="card-header">
+            <h5 class="english-name">
+                <a href="{{ url_for('info_bp.info', character_name=en_name) }}">
+                    {{ en_name }}
+                </a>
+            </h5>
+            <h6 class="jp-name font-weight-bold">{{ jp_name }}</h4>
+            <button type="button" class="toggle-picture-view btn btn-outline-secondary">
+                <i class="fas fa-images"></i>
+            </button>
+            <button type="button" class="toggle-description-view btn btn-outline-secondary">
+                <i class="fas fa-info-circle"></i>
+            </button>
+            <button type="button" class="favourite-button btn btn-outline-danger">
+                <i class="{{ 'fas' if is_favourited else 'far' }} fa-heart" style="color: red;"></i>
+            </button>
+            {% if caller %}
+                {{ caller(is_header=True, is_body=False, is_footer=False) }}
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="pictures-grid picture-view-visible">
+                {% for url in gallery_urls %}
+                    <img src="{{ url }}" />
+                {% endfor %}
+            </div>
+            <div class="character-picture-carousel description-view-visible info-view-visible">
+                {{ carousel(id + "_carousel", gallery_urls) }}
+            </div>
+            <div class="anime-roles-grid info-view-visible">
+                {% for anime_role in (anime_roles | selectattr("picture") | sort(attribute="role"))[:anime_role_limit] %}
+                    {% if "picture" in anime_role %}
+                        <div class="anime-role">
+                            <img src="{{ anime_role['picture'] }}" />
+                            <a href="#" class="anime-name">{{ anime_role["name" ]}}</a>
+                            <small class="anime-role-type">{{ anime_role["role"] }}</small>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                {% if anime_roles | length > 5 %}
+                    <a href="#">View All Animes</a>
+                {% endif %}
+            </div>
+            <div class="tags-list info-view-visible">
+                {% for tag in tags %}
+                    <span class="m-1 p-2 badge badge-light">{{ tag }}</span>
+                {% endfor %}
+            </div>
+            <div class="info-fields description-view-visible">
+                {% for field in info_fields %}
+                    <div class="info-field">
+                        <span class="info-field-name">{{ field["key"] }}</span>
+                        <span class="info-field-value">{{ field["value"] }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if description %}
+                <p class="character-description info-view-visible">{{ description }}</p>
+            {% endif %}
+            {% if caller %}
+                {{ caller(is_header=False, is_body=True, is_footer=False) }}
+            {% endif %}
+        </div>
+        {% if caller %}
+            {{ caller(is_header=False, is_body=False, is_footer=True) }}
+        {% endif %}
+    </div>
+{%- endmacro %}

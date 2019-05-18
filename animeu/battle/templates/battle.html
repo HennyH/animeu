@@ -1,114 +1,91 @@
 {% from "carousel.html" import carousel with context %}
+{% from "character_card.html" import character_card with context %}
 {% extends "base.html" %}
 
 {% block styles %}
     {% include "carousel.css" without context %}
-    {% include "battle.css" without context %}
+    {% include "character_card.css" without context %}
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        .card-footer {
+            display: grid;
+            grid-template-columns: 40px 1fr;
+            gap: 1em;
+        }
+
+        .proposal-button {
+            flex-grow: 1;
+        }
+
+        /* Layout the character cards themselves and the rating controls
+         * at a high level.
+         */
+
+        .battle-grid {
+            display: flex;
+            flex-direction: row;
+            padding: 1em;
+        }
+
+        .character-card:first-child {
+            margin-right: 2em;
+        }
+
+        .character-card {
+            flex-grow: 1;
+            height: 100%;
+            width: 50%;
+        }
+
+        @media screen and (max-width: 1023.9px) {
+            .battle-grid {
+                flex-direction: column;
+            }
+
+            .character-card {
+                width: 100%;
+            }
+
+            .character-card:first-child {
+                margin-bottom: 2em;
+            }
+        }
+    </style>
 {% endblock styles %}
 
 {% block body %}
-    {% macro character_card(id, character, form) -%}
-        {% set is_favourited = character["favourited"] %}
+    {% macro battle_card(id, character, form) %}
         {% set en_name = character["names"]["en"][0] %}
-        {% set jp_name = character["names"]["jp"][0] %}
-        {% set info_fields = character["info_fields"] %}
-        {% set tags = character["tags"] %}
-        {% set description = character["descriptions"][0] %}
-        {% set gallery_urls = character["pictures"]["gallery"] %}
-        {% set anime_roles = character["anime_roles"] %}
-        <div class="card character-card info-view" id="{{ id }}">
-            <div class="card-header">
-                <a href="{{ url_for('info_bp.info', character_name=en_name) }}">
-                    <h5 class="english-name">{{ en_name }}</h5>
-                </a>
-                <h6 class="jp-name font-weight-bold">{{ jp_name }}</h4>
-                <button type="button" class="toggle-picture-view btn btn-outline-secondary">
-                    <i class="fas fa-images"></i>
-                </button>
-                <button type="button" class="toggle-description-view btn btn-outline-secondary">
-                    <i class="fas fa-info-circle"></i>
-                </button>
-                <button type="button" class="favourite-button btn btn-outline-danger">
-                    <i class="{{ 'fas' if is_favourited else 'far' }} fa-heart" style="color: red;"></i>
-                </button>
-            </div>
-            <div class="card-body">
-                <div class="overlay overlay-view-visible">
-                    <!-- content here -->
+        {% call(is_header, is_body, is_footer) character_card(id, character) %}
+            {% if is_footer %}
+                <div class="card-footer">
+                    <button type="button" class="btn btn-outline-secondary jump-to-top">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+                    <form method="POST" action="{{ url_for('battle_bp.submit_battle') }}">
+                        {{ form.hidden_tag() }}
+                        {{ form.winner_name() }}
+                        {{ form.loser_name() }}
+                        <button class="btn btn-outline-primary proposal-button">
+                            Make <b class="proposal-name">{{ en_name.split() | first }}</b> your waifu!
+                        </input>
+                    </form>
                 </div>
-                <div class="pictures-grid picture-view-visible">
-                    {% for url in gallery_urls %}
-                        <img src="{{ url }}" />
-                    {% endfor %}
-                </div>
-                <div class="character-picture-carousel description-view-visible info-view-visible">
-                    {{ carousel(id + "_carousel", gallery_urls) }}
-                </div>
-                <div class="character-brief-metadata-flex info-view-visible">
-                    <div class="anime-roles-grid">
-                        {% for anime_role in anime_roles[:5] | sort(attribute="role") %}
-                            {% if "picture" in anime_role %}
-                                <div class="anime-role">
-                                    <img src="{{ anime_role['picture'] }}" />
-                                    <div>
-                                        <a href="#" class="anime-name">{{ anime_role["name" ]}}</a>
-                                        <small class="anime-role-type">{{ anime_role["role"] }}</small>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                        {% if anime_roles | length > 5 %}
-                            <a href="#">View All Animes</a>
-                        {% endif %}
-                    </div>
-                    <div class="tags-list">
-                        {% for tag in tags %}
-                            <span class="m-1 p-2 badge badge-light">{{ tag }}</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="character-description description-view-visible">
-                    <table class="table attributes-table table-sm">
-                        <tbody>
-                            {% for field in info_fields %}
-                                <tr>
-                                    <td>{{ field["key"] }}</td>
-                                    <td>{{ field["value"] }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% if description %}
-                        <p>{{ description }}</p>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="card-footer">
-                <button type="button" class="btn btn-outline-secondary jump-to-top">
-                    <i class="fas fa-arrow-up"></i>
-                </button>
-                <form method="POST" action="{{ url_for('battle_bp.submit_battle') }}">
-                    {{ form.hidden_tag() }}
-                    {{ form.winner_name() }}
-                    {{ form.loser_name() }}
-                    <button class="btn btn-outline-primary proposal-button">
-                        Make <b class="proposal-name">{{ en_name.split() | first }}</b> your waifu!
-                    </input>
-                </form>
-
-            </div>
-        </div>
-    {%- endmacro %}
-
+            {% endif %}
+        {% endcall %}
+    {% endmacro %}
     <section class="battle-grid">
-        {{ character_card("left", left, left_form) }}
-        {{ character_card("right", right, right_form) }}
+        {{ battle_card("left", left, left_form) }}
+        {{ battle_card("right", right, right_form) }}
     </section>
 {% endblock body %}
 
 {% block scripts %}
     {% include "carousel.js" without context %}
-    {% include "battle.js" without context %}
+    {% include "character_card.js" without context %}
     {% include "favourite.js" without context %}
     <script>
         $(document).ready(() => {

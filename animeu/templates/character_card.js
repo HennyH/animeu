@@ -1,5 +1,5 @@
 <script>
-    $(document).ready(() => {
+     $(document).ready(() => {
         const VIEWS = [
             "picture-view",
             "info-view",
