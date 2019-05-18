@@ -1,0 +1,263 @@
+<style>
+    /* Layout the information in the character cards and adapt to sceen
+    * sizes.
+    */
+
+    .character-card > .card-body {
+        display: grid;
+        gap: var(--base-padding);
+    }
+
+    /* Toggle the visibility of different sections of the card depending
+    * on the 'view' stype class that is currently applied to the
+    * character card.
+    */
+
+    .card.character-card.info-view .info-view-visible {
+        display: initial;
+    }
+
+    .card.character-card.pictures-view .picture-view-visible {
+        display: initial;
+    }
+
+    .card.character-card.description-view .description-view-visible {
+        display: initial;
+    }
+
+    .card.character-card.overlay-view .overlay-view-visible {
+        display: initial;
+    }
+
+    .character-card:not(.info-view) .info-view-visible {
+        display: none;
+    }
+
+    .character-card:not(.pictures-view) .picture-view-visible {
+        display: none;
+    }
+
+    .character-card:not(.description-view) .description-view-visible {
+        display: none;
+    }
+
+    .character-card:not(.overlay-view) .overlay-view-visible {
+        display: none;
+    }
+
+    /* SHARED STYLES BETWEEN VIEWS */
+
+    /* CONFIGURE THE INFO VIEW */
+
+    .card.character-card.info-view > .card-body {
+        grid-template-columns: min-content 1fr;
+        grid-template-rows: auto 1fr max-content;
+    }
+
+    .card.character-card.info-view .character-picture-carousel {
+        align-self: center;
+        grid-row: 1 / 3;
+    }
+
+    .card.character-card.info-view .anime-roles-grid {
+        display: grid;
+        grid-area: 1 / 2 / 2 / 3;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--base-padding);
+        width: 100%;
+    }
+
+    .card.character-card.info-view .anime-role {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        grid-template-rows: min-content min-content;
+        grid-column-gap: 1em;
+        width: minmax(max-content, 100%);
+        font-size: var(--detail-font-size);
+        line-height: 1.5em;
+    }
+
+    .card.character-card.info-view .anime-role > img {
+        grid-row: 1 / -1;
+        border: 1px solid lightgray;
+        padding: 1px;
+    }
+
+    .card.character-card.info-view .anime-role > .anime-name {
+        grid-area: 1 / 2 / 2 / 3;
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
+
+    .card.character-card.info-view .anime-role > .anime-role-type {
+        grid-area: 2 / 2 / 3 / 3;
+    }
+
+    .card.character-card.info-view .tags-list {
+        grid-area: 2 / 2 / 3 / 3;
+    }
+
+    .card.character-card.info-view .character-description {
+        grid-area: 3 / 1 / 4 / 3;
+    }
+
+    /* On really small screens we can't fit both the picture gallery and
+    * the 'info fields' on a single row.
+    */
+    @media screen and (max-width: 480px) {
+        .card.character-card.info-view > .card-body  {
+            grid-template-columns: 1fr;
+        }
+
+        .card.character-card.info-view > .card-body > * {
+            grid-area: initial;
+        }
+
+        /* When displaying the picture gallery in it's own row we
+        * need to make sure we center it.
+        */
+        .card.character-card.info-view > .card-body .character-picture-carousel {
+            justify-self: center;
+        }
+    }
+
+    /* CONFIGURE THE DESCRIPTION VIEW */
+
+    .card.character-card.description-view > .card-body {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
+    .card.character-card.description-view .info-fields {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: calc(2 * var(--base-padding));
+        justify-items: center;
+        width: 100%;
+    }
+
+    .card.character-card.description-view .info-field {
+        display: grid;
+        grid-template-columns: max-content auto;
+        gap: calc(2 * var(--base-padding));
+        border-bottom: 1px solid var(--seperator-color);
+        width: 100%;
+    }
+
+    .card.character-card.description-view .info-fields .info-field-name {
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .card.character-card.description-view .info-fields .info-field-value {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: end;
+    }
+
+    /* CONFIGURE THE PICTURES VIEW */
+
+    .picture-view .picture-view-visible.pictures-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+        grid-auto-rows: 350px;
+        gap: 2em 2em;
+    }
+
+    .pictures-grid img {
+        justify-self: center;
+        align-self: center;
+        max-width: 225px;
+        max-height: 350px;
+    }
+
+    @media screen and (max-width: 1919px) {
+        .picture-view .picture-view-visible.pictures-grid {
+            grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+            grid-auto-rows: 195px;
+        }
+
+        .pictures-grid img {
+            max-width: 125px;
+            max-height: 195px;
+        }
+    }
+
+    @media screen and (max-width: 1100px) {
+        .picture-view .picture-view-visible.pictures-grid {
+            grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+            grid-auto-rows: 195px;
+        }
+
+        .pictures-grid img {
+            max-width: 125px;
+            max-height: 195px;
+        }
+    }
+
+    @media screen and (min-width: 992px) {
+        .character-card.picture-view .card-body {
+            grid-template-columns: 1fr;
+            grid-template-rows: initial;
+            grid-column-gap: 1em;
+        }
+    }
+
+
+    .carousel {
+        width: 225px;
+        height: 350px;
+    }
+
+    .favourited {
+        color: red;
+    }
+
+    @keyframes pulse {
+        0% {
+            opacity: 0.1;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .favourite-button:hover {
+        background-color: initial !important;
+    }
+
+    .favourite-button:hover > i {
+        animation: pulse 0.5s linear 0s infinite alternate-reverse
+    }
+
+    .card-header {
+        display: grid;
+        grid-template-columns: 1fr repeat(3, max-content);
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .card-header > .english-name {
+        grid-area: 1 / 1 / 2 / 2;
+    }
+
+    .card-header > .jp-name {
+        grid-area: 2 / 1 / 3 / 2;
+    }
+
+    .card-header > button {
+        grid-row: 1 / -1;
+        justify-self: center;
+        align-self: center;
+    }
+
+    .card-header > button:not(:last-child) {
+        margin-right: 0.2em;
+    }
+</style>
