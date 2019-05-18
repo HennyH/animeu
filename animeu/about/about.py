@@ -4,15 +4,12 @@
 #
 # See /LICENCE.md for Copyright information
 """Route definitions for the about module."""
-from http import HTTPStatus
-from flask import Blueprint, render_template, Response
-from flask_login import current_user, login_required
-
-from animeu.data_loader import get_character_by_name
+from flask import Blueprint, render_template
 
 # pylint: disable=invalid-name
 about_bp = Blueprint("about_bp", __name__, template_folder="templates")
 
-@about_bp.route("/about_us")
-def aboutus():
-    return render_template("about_us.html")
+@about_bp.route("/about")
+def about():
+    """Render the about page."""
+    return render_template("about.html")
