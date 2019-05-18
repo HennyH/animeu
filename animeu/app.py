@@ -39,8 +39,7 @@ app.config["RECAPTCHA_PRIVATE_KEY"] = \
                    "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
 app.config["RECAPTCHA_DATA_ATTRS"] = {"callback": "recaptchaOk"}
 # see https://stackoverflow.com/a/33790196 for more information
-app.config["SQLALCHEMY_ECHO"] = \
-    True if os.environ.get("SQLALCHEMY_ECHO") else False
+app.config["SQLALCHEMY_ECHO"] = bool(os.environ.get("SQLALCHEMY_ECHO"))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     os.environ.get("DATABASE",
