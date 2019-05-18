@@ -25,9 +25,8 @@ def query_characters(name=None, anime=None, tags=None, description=None):
     anime_re = compile_or_escape_re(anime)
     tag_res = [compile_or_escape_re(t) for t in tags]
     description_re = compile_or_escape_re(description)
-    print("DESC RE=", description_re)
     for character in load_character_data():
-        character_names = chain.from_iterable(character["names"].values())
+        character_names = list(chain.from_iterable(character["names"].values()))
         if name_re and not \
                 any(name_re.search(n, timeout=0.5) for n in character_names):
             continue

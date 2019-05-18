@@ -18,6 +18,7 @@ from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 
 
 # pylint: disable=invalid-name
@@ -51,6 +52,8 @@ migrate = Migrate(app, db)
 # configre session management
 login_manager = LoginManager(app)
 login_manager.login_view = "auth_bp.login"
+basic_auth = HTTPBasicAuth()
+token_auth = HTTPTokenAuth()
 
 # pylint: disable=wrong-import-position,unused-import,wildcard-import,unused-wildcard-import
 from animeu.models import *

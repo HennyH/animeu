@@ -4,18 +4,49 @@
 #
 # See /LICENCE.md for Copyright information
 """Route definitions for the authentication module."""
+import os
+from base64 import b64encode
 from http import HTTPStatus
-from flask import Blueprint, jsonify, url_for, request
+from datetime import datetime, timedelta
+
+from flask import Blueprint, jsonify, url_for, request, g
 from werkzeug.http import HTTP_STATUS_CODES
+
+from animeu.app import db, basic_auth, token_auth
+from animeu.auth.logic import maybe_find_user
+from animeu.models import User
 from animeu.common.request_helpers import \
     InvalidQueryParameter, get_query_parameter
 from .queries import paginate_query_characters
+
+MAXIMUM_TOKEN_EXPIRY = timedelta(days=30)
+DEFAULT_TOKEN_EXPIRY_SECONDS = 3600
 
 # pylint: disable=invalid-name
 api_bp = Blueprint("api_bp",
                    __name__,
                    url_prefix="/api",
                    template_folder="templates")
+
+@basic_auth.verify_password
+def verify_basic_auth_and_maybe_attach_user_to_context(email, password):
+    """Test if the credentials provided via basic auth are valid."""
+    maybe_user = maybe_find_user(email, password)
+    if not maybe_user:
+        return False
+    g.current_user = maybe_user
+    return True
+
+@token_auth.verify_token
+def verify_token_and_maybe_attach_user_to_context(token):
+    """Verify a token and if valid attach a user object to the context."""
+    maybe_user = User.query.filter_by(api_token=token).first()
+    if not maybe_user:
+        return False
+    if maybe_user.api_token_expiry <= datetime.now():
+        return False
+    g.current_user = maybe_user
+    return True
 
 def error_response(status_code, message=None):
     """Construct an API error response."""
@@ -33,8 +64,27 @@ def handle_invalid_query_parameter(error):
         return error.response
     return error_response(error.code, message=error.description)
 
+@api_bp.route("token", methods=["GET"])
+@basic_auth.login_required
+def get_api_token():
+    """Provide an API token if the user is an admin."""
+    if not g.current_user.is_admin:
+        return error_response(HTTPStatus.UNAUTHORIZED,
+                              "Only admins can request API keys.")
+    expiry_seconds = \
+        int(request.args.get("expiry", DEFAULT_TOKEN_EXPIRY_SECONDS))
+    expiry_offset = min([
+        MAXIMUM_TOKEN_EXPIRY,
+        timedelta(seconds=expiry_seconds)
+    ])
+    g.current_user.api_token_expiry = datetime.now() + expiry_offset
+    g.current_user.api_token = b64encode(os.urandom(64)).decode("utf-8")
+    db.session.commit()
+    return g.current_user.api_token
+
 # pylint: disable=too-many-arguments
 @api_bp.route("characters", methods=["GET"])
+@token_auth.login_required
 def paginate_characters(page=0, limit=100, anime=None, name=None,
                         tags=None, description=None):
     """Return a subset of the character information as a JSON response."""

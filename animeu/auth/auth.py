@@ -19,7 +19,6 @@ auth_bp = Blueprint("auth_bp", __name__, template_folder="templates")
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     """Render the login page."""
-    print(db.engine.url)
     form = LoginForm()
     if form.validate_on_submit():
         maybe_user = maybe_find_user(request.form["email"],
@@ -28,7 +27,9 @@ def login():
             login_user(maybe_user)
             return arg_redirect(request, "next")
         form.email.errors.append("Unrecognised email or password.")
-    return render_template("login.html", form=form)
+    return render_template("login.html",
+                           next=request.args.get("next"),
+                           form=form)
 
 @auth_bp.route("/logout")
 def logout():
@@ -54,4 +55,7 @@ def register():
             db.session.commit()
             login_user(new_user)
             return arg_redirect(request, "next")
-    return render_template("register.html", form=form, register=True)
+    return render_template("register.html",
+                           next=request.args.get("next"),
+                           form=form,
+                           register=True)

@@ -19,15 +19,15 @@
     </style>
 
     <section class="login-container">
-        <form class="login-form" method="POST" action="{{ url_for('auth_bp.login') }}">
+        <form class="login-form" method="POST" action="{{ url_for('auth_bp.login', next=next) }}">
             {{ form.hidden_tag() }}
             <h6 class="header">Login to Animeu!</h6>
             {{ render_field(form.email, 1) }}
             {% call render_field(form.password, 2) %}
-                <a tabindex="5" href="auth/forgot" class="forgot-password-link">Forgot password?</a>
+                <a tabindex="5" href="#" class="forgot-password-link">Forgot password?</a>
             {% endcall %}
             <input tabindex="3" type="submit" name="submit" value="Sign In" class="btn btn-success" />
-            <a tabindex="4" href="register" class="register-link">No Account? Register!</a>
+            <a tabindex="4" href="{{ url_for('auth_bp.register', next=next) }}" class="register-link">No Account? Register!</a>
         </form>
     </section>
 {% endblock body %}

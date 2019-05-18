@@ -18,6 +18,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=True)
     password_hash = db.Column(db.String, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    api_token = db.Column(db.String)
+    api_token_expiry = db.Column(db.DateTime)
 
 @login_manager.user_loader
 def load_user(user_id):

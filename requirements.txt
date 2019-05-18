@@ -3,9 +3,11 @@ Flask-SQLAlchemy
 Flask-Migrate
 Flask-Login
 Flask-WTF
+Flask-HTTPAuth
 youtube-dl
 regex
 tqdm
 coverage
 cheroot
 selenium
+requests
