@@ -14,7 +14,7 @@
                 <span class="rank">{{ loop.index }}</span>
                 {{ carousel( "%s-carousel-%d" | format(title, loop.index) , entry['gallery'], show_indicators=False) }}
                 <span class="en-name">
-                    <a href="{{ url_for('info_bp.info', char_name=entry['en_name']) }}">
+                    <a href="{{ url_for('info_bp.info', character_name=entry['en_name']) }}">
                         {{ entry['en_name'] }}
                     </a>
                 </span>
