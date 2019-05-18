@@ -5,23 +5,27 @@
 # See /LICENCE.md for Copyright information
 """Route definitions for the info module."""
 from http import HTTPStatus
-from flask import Blueprint, render_template, url_for, Response
+from flask import Blueprint, render_template
 from flask_login import current_user, login_required
 
-from animeu.app import db
+from animeu.api import error_response
 from animeu.profile.queries import query_has_favourited_waifus
 from animeu.data_loader import get_character_by_name
-from animeu.profile.logic import (maybe_get_favourited_waifu,
-                    favourite_a_waifu,
-                    unfavourite_a_waifu)
 
 # pylint: disable=invalid-name
 info_bp = Blueprint("info_bp", __name__, template_folder="templates")
 
-@info_bp.route("/info/<char_name>")
-def info(char_name):
-    character = get_character_by_name(char_name)
+@info_bp.route("/info/<character_name>")
+@login_required
+def info(character_name):
+    """Return an info page for a character."""
+    maybe_character = get_character_by_name(character_name)
+    if maybe_character is None:
+        return error_response(
+            HTTPStatus.NOT_FOUND,
+            f"Character with name '{character_name}' not found"
+        )
     name_to_favourited = \
-        query_has_favourited_waifus(current_user.id, char_name[0])
-    character["favourited"] = name_to_favourited[char_name[0]]
-    return render_template("info.html", character=character)
+        query_has_favourited_waifus(current_user.id, [character_name])
+    maybe_character["favourited"] = name_to_favourited[character_name]
+    return render_template("info.html", character=maybe_character)
