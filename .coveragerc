@@ -4,7 +4,11 @@ source = animeu
 omit =
     # the scraping code is not tested
     animeu/spiders/*,
-    animeu/testing/*
+    animeu/testing/*,
+    # these are libraries i've written before for use in other projects
+    # so we shouldn't be checking them for coverage when testin the app
+    animeu/common/func_helpers.py,
+    animeu/common/file_helpers.py
 
 [html]
 title = "Animeu Test Coverage Report"
