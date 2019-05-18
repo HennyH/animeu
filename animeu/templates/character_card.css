@@ -47,6 +47,57 @@
 
     /* SHARED STYLES BETWEEN VIEWS */
 
+    .carousel {
+        width: 225px;
+        height: 350px;
+    }
+
+    .favourited {
+        color: red;
+    }
+
+    @keyframes pulse {
+        0% {
+            opacity: 0.1;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .favourite-button:hover {
+        background-color: initial !important;
+    }
+
+    .favourite-button:hover > i {
+        animation: pulse 0.5s linear 0s infinite alternate-reverse
+    }
+
+    .card-header {
+        display: grid;
+        grid-template-columns: 1fr repeat(3, max-content);
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .card-header > .english-name {
+        grid-area: 1 / 1 / 2 / 2;
+    }
+
+    .card-header > .jp-name {
+        grid-area: 2 / 1 / 3 / 2;
+    }
+
+    .card-header > button {
+        grid-row: 1 / -1;
+        justify-self: center;
+        align-self: center;
+    }
+
+    .card-header > button:not(:last-child) {
+        margin-right: calc(0.5 * var(--base-padding));
+    }
+
     /* CONFIGURE THE INFO VIEW */
 
     .card.character-card.info-view > .card-body {
@@ -207,57 +258,5 @@
             grid-template-rows: initial;
             grid-column-gap: 1em;
         }
-    }
-
-
-    .carousel {
-        width: 225px;
-        height: 350px;
-    }
-
-    .favourited {
-        color: red;
-    }
-
-    @keyframes pulse {
-        0% {
-            opacity: 0.1;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-
-    .favourite-button:hover {
-        background-color: initial !important;
-    }
-
-    .favourite-button:hover > i {
-        animation: pulse 0.5s linear 0s infinite alternate-reverse
-    }
-
-    .card-header {
-        display: grid;
-        grid-template-columns: 1fr repeat(3, max-content);
-        grid-template-rows: 1fr 1fr;
-    }
-
-    .card-header > .english-name {
-        grid-area: 1 / 1 / 2 / 2;
-    }
-
-    .card-header > .jp-name {
-        grid-area: 2 / 1 / 3 / 2;
-    }
-
-    .card-header > button {
-        grid-row: 1 / -1;
-        justify-self: center;
-        align-self: center;
-    }
-
-    .card-header > button:not(:last-child) {
-        margin-right: 0.2em;
     }
 </style>
