@@ -65,7 +65,7 @@
         padding-bottom: 1em;
     }
 
-    .carousel:not(.expanded) > .indicator {
+    .carousel:not(.expanded) > .indicators > .indicator {
         background-color: black;
         padding-top: 0.5em;
         padding-bottom: 0.5em;
@@ -74,12 +74,12 @@
         background-color: rgba(255, 255, 255, 0.5);
     }
 
-    .carousel:not(.expanded) > .indicator:not(.selected) {
+    .carousel:not(.expanded) > .indicators > .indicator:not(.selected) {
         background-color: rgba(255, 255, 255, 0.5);
         transition: background-color 0.4s linear;
     }
 
-    .carousel:not(.expanded) > .indicator.selected {
+    .carousel:not(.expanded) > .indicators > .indicator.selected {
         background-color: #fff;
         transition: background-color 0.4s linear;
     }

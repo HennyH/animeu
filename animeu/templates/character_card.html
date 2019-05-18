@@ -35,7 +35,7 @@
                 {% endfor %}
             </div>
             <div class="character-picture-carousel description-view-visible info-view-visible">
-                {{ carousel(id + "_carousel", gallery_urls) }}
+                {{ carousel(id + "_carousel", gallery_urls, show_indicators=True) }}
             </div>
             <div class="anime-roles-grid info-view-visible">
                 {% for anime_role in (anime_roles | selectattr("picture") | sort(attribute="role"))[:anime_role_limit] %}
