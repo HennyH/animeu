@@ -1,12 +1,14 @@
-dist: trusty
+dist: xenial
 language: python
 python:
  - 3.6
 addons:
- chrome: stable
  apt:
+  update: true
   packages:
-    - chromium-chromedriver
+   - sqlite3
+   - chromium-browser
+   - chromium-chromedriver
 compiler: clang
 before_script:
  - ln --symbolic /usr/lib/chromium-browser/chromedriver "${HOME}/bin/chromedriver"

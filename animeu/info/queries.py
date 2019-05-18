@@ -20,7 +20,6 @@ def query_character_win_loss_counts(character_name):
             func.sum(appearence_cte.c.was_loser).label("losses"),
         ])\
         .where(appearence_cte.c.name == character_name)
-        .alias()
     ).first()
 
 def query_character_elo(character_name):
