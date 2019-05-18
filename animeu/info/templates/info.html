@@ -111,7 +111,11 @@
     <section class="info">
         {% call(is_header, is_body, is_footer) character_card("character", character, "picture-view info-view description-view") %}
             {% if is_header %}
-                {% set max_counter_width = counters | map(attribute="count") | select | map('string') | map('length') | max %}
+                {% if (counters | map(attribute="count") | select | list | length) > 0 %}
+                    {% set max_counter_width = counters | map(attribute="count") | select | map('string') | map('length') | max %}
+                {% else %}
+                    {% set max_counter_width = 1 %}
+                {% endif %}
                 <div class="counters">
                     {% for counter in counters %}
                         <span class="counter {{ counter['class'] }}" style="width: {{ max_counter_width + 2 }}ch">

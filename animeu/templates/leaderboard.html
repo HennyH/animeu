@@ -9,7 +9,11 @@
         {% if not entries %}
             {{ caller(None, is_header=False, is_no_content=True, is_entry=False) if caller else "" }}
         {% endif %}
-        {% set max_counter_width = entries | map(attribute="counters") | chain | map(attribute="count") | select | map('string') | map('length') | max %}
+        {% if (entries | map(attribute="counters") | chain | map(attribute="count") | select | list | length) > 0 %}
+            {% set max_counter_width = entries | map(attribute="counters") | chain | map(attribute="count") | select | map('string') | map('length') | max %}
+        {% else %}
+            {% set max_counter_width = 1 %}
+        {% endif %}
         {% for entry in entries %}
             <div class="entry">
                 <span class="rank">{{ loop.index }}</span>
