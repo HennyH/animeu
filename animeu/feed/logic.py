@@ -42,6 +42,7 @@ def get_elo_rankings(limit=20, reverse=True, **kwargs):
 
 def map_name_win_loss_result_to_leaderboard_entries(result):
     """Map a name/win/loss result to a leaderboard entry object."""
+    print("MAPPING", result)
     character = get_character_by_name(result.name)
     return {
         "en_name": character["names"]["en"][0],

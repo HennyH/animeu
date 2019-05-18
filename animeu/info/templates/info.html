@@ -55,12 +55,73 @@
             grid-area: 5 / 1 / 6 / 2 !important;
         }
 
+        .card-header {
+            grid-template-columns: max-content 1fr max-content !important;
+        }
+
+        .card-header > .favourite-button {
+            grid-column: -2 / -1 !important;
+        }
+
+        .card-header > .counters {
+            display: flex;
+            justify-content: start;
+            padding-left: calc(2 * var(--base-padding));
+            gap: var(--base-padding);
+            grid-row: 1 / -1;
+        }
+
+        .card-header > .counters > .counter {
+            display: grid;
+            grid-template-columns: 1fr;
+            justify-items: center;
+            padding: 0.2em 0.4em;
+            border-radius: 5px;
+            color: white;
+        }
+
+        .green-counter {
+            background-color: #28a745;
+        }
+
+        .red-counter {
+            background-color: #dc3545;
+        }
+
+        .counter-title {
+            display: inline-block;
+            padding: 0.2em 0.3em;
+            font-size: 0.8em;
+            border-radius: 5px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .green-counter > .counter-title {
+            background-color: #166127;
+        }
+
+        .red-counter > .counter-title {
+            background-color: #771d26;
+        }
     </style>
 {% endblock styles %}
 
 {% block body %}
     <section class="info">
-        {{ character_card("character", character, "picture-view info-view description-view") }}
+        {% call(is_header, is_body, is_footer) character_card("character", character, "picture-view info-view description-view") %}
+            {% if is_header %}
+                {% set max_counter_width = counters | map(attribute="count") | select | map('string') | map('length') | max %}
+                <div class="counters">
+                    {% for counter in counters %}
+                        <span class="counter {{ counter['class'] }}" style="width: {{ max_counter_width + 2 }}ch">
+                            <span class="counter-title">{{ counter["title"] }}</span>
+                            <span class="counter-count">{{ counter["count"] or "U" }}</span>
+                        </span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endcall %}
     </section>
 {% endblock body %}
 

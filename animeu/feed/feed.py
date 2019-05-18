@@ -17,8 +17,9 @@ feed_bp = Blueprint("feed_bp", __name__, template_folder="templates")
 def feed(limit=20):
     """Display a feed of recent waifu battles."""
     leaderboard = request.args.get("leaderboard", "highELO")
+    # pylint: disable=line-too-long
     leaderboard_entries = \
-        get_leaderboard_entries_data(leaderboard=leaderboard, limit=limit)
+        list(get_leaderboard_entries_data(leaderboard=leaderboard, limit=limit))
     battles = get_recent_battles_data(limit=limit)
     return render_template(
         "feed.html",

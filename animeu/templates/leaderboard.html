@@ -9,6 +9,7 @@
         {% if not entries %}
             {{ caller(None, is_header=False, is_no_content=True, is_entry=False) if caller else "" }}
         {% endif %}
+        {% set max_counter_width = entries | map(attribute="counters") | chain | map(attribute="count") | select | map('string') | map('length') | max %}
         {% for entry in entries %}
             <div class="entry">
                 <span class="rank">{{ loop.index }}</span>
@@ -20,9 +21,9 @@
                 </span>
                 <span class="jp-name japanese">{{ entry['jp_name'] }}</span>
                 {% for counter in entry["counters"] %}
-                    <span class="counter {{ counter['class'] }}">
+                    <span class="counter {{ counter['class'] }}" style="width: {{ max_counter_width + 2 }}ch">
                         <span class="counter-title">{{ counter["title"] }}</span>
-                        <span class="counter-count">{{ counter["count"] }}</span>
+                        <span class="counter-count">{{ counter["count"] or "U" }}</span>
                     </span>
                 {% endfor %}
                 {{ caller(entry, is_header=False, is_no_content=False, is_entry=True) if caller else "" }}

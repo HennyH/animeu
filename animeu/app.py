@@ -7,6 +7,7 @@
 import sys
 import os
 import json
+import itertools
 from functools import partial
 
 try:
@@ -38,7 +39,8 @@ app.config["RECAPTCHA_PRIVATE_KEY"] = \
                    "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
 app.config["RECAPTCHA_DATA_ATTRS"] = {"callback": "recaptchaOk"}
 # see https://stackoverflow.com/a/33790196 for more information
-app.config["SQLALCHEMY_ECHO"] = os.environ.get("SQLALCHEMY_ECHO")
+app.config["SQLALCHEMY_ECHO"] = \
+    True if os.environ.get("SQLALCHEMY_ECHO") else False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     os.environ.get("DATABASE",
@@ -88,6 +90,11 @@ app.register_blueprint(info_bp)
 def jinja_utilities():
     """Utilities to expose in jinja2 templates."""
     return {"debug": partial(print, file=sys.stderr), "json": json.dumps}
+
+@app.template_filter('chain')
+def chain_filter(iterable):
+    """Expose the chain.from_iterable function in templates."""
+    return itertools.chain.from_iterable(iterable)
 
 @app.route("/")
 def index():
