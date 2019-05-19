@@ -175,7 +175,7 @@ def main(argv=None):
             if maybe_merged is not None:
                 if is_sensitive_metadata(maybe_merged):
                     print(f"Skipping {maybe_merged['filenames']} "
-                        f"due to sensitive content.",
-                        file=sys.stderr)
+                          f"due to sensitive content.",
+                          file=sys.stderr)
                     continue
                 json_stream.write(maybe_merged)

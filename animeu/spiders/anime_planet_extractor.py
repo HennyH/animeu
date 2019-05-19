@@ -8,7 +8,6 @@ import os
 import sys
 import re
 import urllib.parse
-import json
 from functools import partial
 
 import argparse

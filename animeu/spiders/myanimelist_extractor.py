@@ -18,7 +18,6 @@
 import os
 import sys
 import re
-import json
 from functools import partial
 
 import argparse
@@ -123,6 +122,7 @@ def extract_gallery_pictures(sel):
 
 def extract_metadata_from_file(filename):
     """Extract the metadata from a file."""
+    # pylint: disable=broad-except
     try:
         metadata = {
             "sources": ["myanimelist"],

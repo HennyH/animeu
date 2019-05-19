@@ -40,7 +40,7 @@ def normalize_text_for_search(text):
     text = re.sub(r"\s", "", text)
     return text
 
-
+#pylint: disable=too-many-statements
 def make_mal_spider_cls(manifest_file, pages_directory, search_domain, already_downloaded):
     """Make a MyAnimeListSpider class."""
     os.makedirs(pages_directory, exist_ok=True)
@@ -159,6 +159,7 @@ def make_mal_spider_cls(manifest_file, pages_directory, search_domain, already_d
         def extract_characters(response):
             """Extract all the characters on the page."""
             character_anchors = response.xpath(
+                # pylint: disable=line-too-long
                 "//div[@id = 'content']//a[contains(@href, '/character/') and not(contains(@class, 'fw-n'))]"
             )
             character_metadatas = []
@@ -176,6 +177,7 @@ def make_mal_spider_cls(manifest_file, pages_directory, search_domain, already_d
                 "characters": character_metadatas
             })
 
+        # pylint: disable=no-self-use
         def extract_anime(self, response):
             """Save the anime page write a manifest entry."""
             anime_filename = f"{base64_urlencode(response.url)}.anime.html"
