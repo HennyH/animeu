@@ -8,6 +8,7 @@ import sys
 import os
 import json
 import itertools
+from hashlib import md5
 from functools import partial
 
 try:
@@ -94,6 +95,13 @@ def jinja_utilities():
 def chain_filter(iterable):
     """Expose the chain.from_iterable function in templates."""
     return itertools.chain.from_iterable(iterable)
+
+@app.template_filter('md5')
+def md5_filter(text):
+    """Expose the md5 hashing functionality in templates."""
+    h = md5()
+    h.update(text.encode("utf8"))
+    return h.hexdigest()
 
 @app.route("/")
 def index():
