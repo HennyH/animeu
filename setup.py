@@ -19,6 +19,7 @@ setup(
             "anime-planet-extractor=animeu.spiders.anime_planet_extractor:main",
             "myanimelist-downloader=animeu.spiders.myanimelist_downloader:main",
             "myanimelist-extractor=animeu.spiders.myanimelist_extractor:main",
+            "generate-character-database=animeu.spiders.generate_character_database:main",
             "merge-json=animeu.spiders.json_helpers:merge_json_files_cli",
             "seed-battles=animeu.seed_battles:main",
             "update-elo-rankings=animeu.elo.elo_leaderboard_updater:update_rankings"

@@ -12,7 +12,7 @@
         {% if (entries | map(attribute="counters") | chain | map(attribute="count") | select | list | length) > 0 %}
             {% set max_counter_width = entries | map(attribute="counters") | chain | map(attribute="count") | select | map('string') | map('length') | max %}
         {% else %}
-            {% set max_counter_width = 1 %}
+            {% set max_counter_width = 3 %}
         {% endif %}
         {% for entry in entries %}
             <div class="entry">

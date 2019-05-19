@@ -29,7 +29,7 @@ def get_favourite_waifu_list(user_id, limit=10):
         raise TypeError("limit cannot be None")
     return FavouritedWaifu.query\
         .filter_by(user_id=user_id)\
-        .order_by(FavouritedWaifu.order)\
+        .order_by(FavouritedWaifu.id.desc())\
         .limit(limit)\
         .all()
 
