@@ -130,7 +130,7 @@ All the scraping and extraction code are exposed via CLI programs as defined in 
 
 ## Travis CI
 
-Everyone loves linting - and test are good also. I set up Travis CI so that we could lint all of your python to very strict standards and run our test code at every commit and before every merge. This allowed us to maintain a high quality of code throughout the project, and not leaving it all to the last minute!
+Everyone loves linting - and test are good also. I set up Travis CI so that we could lint all of our python to very strict standards and run our test code at every commit and before every merge. This allowed us to maintain a high quality of code throughout the project, and not leaving it all to the last minute!
 
 The travis set up wasn't too complicated - except that some trickery was required to get a newer version of sqlite3 and compatible versions of chromium and chromium-webdriver installed. We use Xvfb as a virtual framebuffer in order to run our selenium based integration tests.
 
@@ -209,3 +209,63 @@ You may have noticed that the site has a very responsive design - it doesn't jus
 ![battles-small-mode](./docs/feed-responsive-small.PNG)
 
 This allows users to view the two lists side-by-side on a wider range of displays (seeing the picture/name/win/loss is the main information) before laying out the cards one atop the other. To achieve this the whole site was built of CSS Grid. The use of CSS grid was also critical to our template and CSS re-use as we often wanted the same elements to be displayed but in different positions, and/or with additional content added (e.g more counters in the win/loss v.s the ELO leaderboard). We could then override the grid properties to display the content as needed. Awesome!
+
+## Integration Testing
+
+In order to get bonus marks for writing integration tests, but also satisfy the requirement (and it would be good practice anyway) to have code coverage statistics I had to do a bit of work to run browser based tests but record coverage of all the python code that ran on the backend. The most important pieces of code to achieve this is the use of `coverage.process_startup()` in both `app.py` and `test_server.py`, and the polling of the server in `ServerThread.wait_till_server_ready()` which prevented the automated tests from starting until the server was _actually_ ready to process requests. There was also an annoying issue about cached module imports and how these are shared between threads which essentially resulted in the `db` (imported from `app.py`) to keep using the value of `DATABASE` it was initially imported with even after the environment variable was reset (and seeminly even `importlib.reload` didn't help!). The workaround was to use a single temporary file as the database and just `rm` it after each test fixture. The end result is we can test both our frontend code and the backend at the same time! Woohoo!
+
+```
+The command "FLASK_APP=animeu.app python -Wignore -m unittest animeu.testing.integration_tests" exited with 0.
+$ coverage combine
+The command "coverage combine" exited with 0.
+$ coverage report
+Name                                    Stmts   Miss  Cover
+-----------------------------------------------------------
+animeu/about/__init__.py                    2      0   100%
+animeu/about/about.py                       5      1    80%
+animeu/admin/__init__.py                    2      0   100%
+animeu/admin/admin.py                      71      9    87%
+animeu/admin/logic.py                      85     22    74%
+animeu/admin/queries.py                    70     12    83%
+animeu/api/__init__.py                      2      0   100%
+animeu/api/api.py                          67      7    90%
+animeu/api/queries.py                      39      6    85%
+animeu/app.py                              61      3    95%
+animeu/auth/__init__.py                     2      0   100%
+animeu/auth/auth.py                        35      0   100%
+animeu/auth/forms.py                       15      0   100%
+animeu/auth/logic.py                       14      1    93%
+animeu/battle/__init__.py                   2      0   100%
+animeu/battle/battle.py                    30      0   100%
+animeu/battle/forms.py                      6      0   100%
+animeu/common/request_helpers.py           40      8    80%
+animeu/data_loader.py                      35      3    91%
+animeu/elo/elo_algorithim.py               23      0   100%
+animeu/elo/elo_leaderboard_updater.py      45      8    82%
+animeu/feed/__init__.py                     2      0   100%
+animeu/feed/feed.py                        10      0   100%
+animeu/feed/logic.py                       32      2    94%
+animeu/feed/queries.py                     24      2    92%
+animeu/info/__init__.py                     2      0   100%
+animeu/info/info.py                        20      1    95%
+animeu/info/queries.py                     15      2    87%
+animeu/models.py                           40      0   100%
+animeu/profile/__init__.py                  2      0   100%
+animeu/profile/logic.py                    28      2    93%
+animeu/profile/profile.py                  25      2    92%
+animeu/profile/queries.py                  15      1    93%
+animeu/seed_battles.py                     72     10    86%
+-----------------------------------------------------------
+TOTAL                                     938    102    89%
+The command "coverage report" exited with 0.
+```
+
+# The Bonus Marks
+
+In this section I'll enumerate the work done outside the original scope which I beleive can merit bonus marks:
+
+1. Setting up CI with Travis so it ran linters and integration tests in headless mode.
+2. Setting up CD with Heroku and Postgres SQL using a Dockerfile (see the site https://animeu.herokuapp.com/battle/ and http://www.animeu.io (WIP))
+3. Writing comprehensive integration tests while also capturing python code coverage.
+4. The use of mostly custom CSS (grid/flexbox) to layout all the elements rather than using boostraps simple grid system and the development of a custom carousel (the TINY buttons and lag of bootstraps one annoyed me).
+5. Scraping MAL and AP to produce a complete dataset for a production ready site.
