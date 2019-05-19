@@ -24,7 +24,10 @@ def profile():
     """Return the users profile page."""
     best_waifus = []
     for result in get_favourite_waifu_list(current_user.id):
-        character = get_character_by_name(result.character_name)
+        try:
+            character = get_character_by_name(result.character_name)
+        except KeyError:
+            continue
         best_waifus.append({
             "en_name": character["names"]["en"][0],
             "jp_name": character["names"]["jp"][0],
