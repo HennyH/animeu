@@ -3,9 +3,6 @@
 
 {% block styles %}
     {% include "form.css" without context %}
-{% endblock styles %}
-
-{% block body %}
     <style>
         /* Place the 'forgot password?' link at the end of its grid cell. */
         .forgot-password-link {
@@ -17,7 +14,9 @@
             margin-bottom: 1em;
         }
     </style>
+{% endblock styles %}
 
+{% block body %}
     <section class="login-container">
         <form class="login-form" method="POST" action="{{ url_for('auth_bp.login', next=next) }}">
             {{ form.hidden_tag() }}

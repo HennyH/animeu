@@ -1,4 +1,4 @@
-{% macro leaderboard(title, entries=[], class="") %}
+{% macro leaderboard(id, title, entries=[], class="") %}
     <div class="leaderboard {{ class }}">
         <div class="header">
             {% if title %}
@@ -17,7 +17,7 @@
         {% for entry in entries %}
             <div class="entry">
                 <span class="rank">{{ loop.index }}</span>
-                {{ carousel( "%s-carousel-%d" | format(title, loop.index) , entry['gallery'], show_indicators=False) }}
+                {{ carousel( "%s-carousel-%d" | format(id, loop.index) , entry['gallery'], show_indicators=False) }}
                 <span class="en-name">
                     <a href="{{ url_for('info_bp.info', character_name=entry['en_name']) }}">
                         {{ entry['en_name'] }}

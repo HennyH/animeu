@@ -83,10 +83,7 @@
                 indicator.addEventListener("click", onIndicatorClicked);
             }
 
-            setTimeout(
-                () => setInterval(maybeTransitionToNextImage, AUTO_TRANSITION_INTERVAL),
-                Math.floor(Math.random() * 2000)
-            )
+            setInterval(maybeTransitionToNextImage, AUTO_TRANSITION_INTERVAL);
         }
 
         $(document).ready(() => {

@@ -32,7 +32,7 @@
             <div class="progress-bar"
                  role="progressbar"
                  data-start-polling="{{ 'true' if maybe_lock and maybe_lock['progress'] < 100 else 'false' }}"
-                 style="width: {{ maybe_lock['progress'] }}%;"
+                 style="width: {{ maybe_lock['progress'] or 0 }}%;"
             >
             </div>
         </div>

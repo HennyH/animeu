@@ -1,253 +1,97 @@
 {% extends "base.html" %}
 
+{% block title %}About{% endblock %}
+
 {% block styles %}
-
 <style>
-    .about-title{
-        position: relative;
-        padding: 0;
-        margin: 10px;
-        margin-bottom: 40px;
+    h1 {
         text-align: center;
-        justify-items: center;
-        justify-content: center;
-        align-items: center;
-        font-weight: bold;
+        padding-top: var(--base-padding);
     }
 
-    hr{
-        border-top: 1px solid #000000;
-    }
-
-    .title-hr{
-        width: 25vw;
-        transition: width 0.5s ease-in-out;
-    }
-
-    .about-title:hover > .title-hr{
-        width: 80vw;
-    }
-
-    @media screen and (max-width: 340px) {
-        .about-title > .title-hr{
-            width: 80vw;
-        }
-    }
-
-    .vertical-center{
-        display: flex;
-        align-items: center;
-    }
-
-    .sub-titles{
-        position: relative;
-        padding: 0;
-        margin: 10px;
-        text-align: center;
-        justify-items: center;
-        justify-content: center;
-        align-items: center;
-        font-weight: bold;
-    }
-
-    section > p {
-        font-weight: 200;
-        font-size: 1.1em;
-    }
-
-    .container{
-        max-width: 80vw;
-    }
-
-    .team-info{
+    #team {
         display: grid;
-        grid-template-columns: repeat(3, max-content);
-        gap: 2em;
-        width: 100%;
-        justify-content: center;
-        align-content: center;
-        align-items: stretch;
+        grid-template-columns: 1fr 1fr;
         justify-items: center;
-
     }
 
-    .member-box{
-        position: relative;
-        width: 400px;
+    #team > h1 {
+        grid-column: 1 / -1;
+    }
+
+    .team-info {
         display: grid;
-        /* grid-template-columns: minmax(1fr, max-content) minmax(1fr, max-content); */
-        /* grid-template-rows: 4fr 1fr; */
-        justify-content: stretch;
-        align-content: center;
-        align-items: center;
-        justify-items: stretch;
-        gap: 1em;
-        padding: 0.6em;
-        /* background-color: rgba(0,191,255, 0.1); */
-        /* border: 1px solid rgba(0,0,0, 0.5); */
-        /* border-radius: 5px; */
-
-        transition: 0.4s ease-out;
+        grid-template-columns: 1fr;
+        grid-auto-flow: row;
+        gap: calc(0.5 * var(--base-padding));
+        background-color: var(--card-header);
+        border: 1px solid var(--card-border);
+        border-radius: var(--base-border-radius);
+        padding: var(--base-padding);
     }
 
-    .member-box:hover {
-        /* background-color: rgba(0,0,0, 0.5); */
-        box-shadow: 0 0 0.5rem 1px rgba(0,0,0, 0.5);
-    }
-
-    .member-box > hr {
-        position: absolute;
+    .team-info > img {
         justify-self: center;
-        bottom: 0;
-        width: 100%;
-        margin: 0;
-        border-top: 1px solid black;
-    }
-
-    .personal-info{
-        width: 100%;
-        /* padding-top: 10px; */
-        display: grid;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        gap: 0.6em;
-    }
-
-    .personal-picture{
-        justify-self: center;
-        width: 160px;
-        height: 160px;
-        /* box-shadow: 0 0 0 5px white; */
         border-radius: 50%;
+        border: 2px solid var(--seperator-color);
     }
 
-    .name-box {
-        justify-content: center;
-        align-content: center;
-        align-items: center;
-        text-align: center;
+    .name {
+        font-weight: 600;
     }
 
-    bold{
-        font-weight: bold;
-    }
-
-    italic{
+    .degree {
         font-style: italic;
-    }
-
-    @media screen and (max-width: 890px) {
-        .team-info{
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .container{
-        margin-bottom: 1em;
+        text-transform: capitalize;
     }
 </style>
-
 {% endblock styles %}
 
-
 {% block body %}
-<h1 class="capitalize about-title">
-    About us
-    <hr class="title-hr">
-</h1>
-<br><br>
-<section class="container" id="purpose">
-    <section class="what-we-do">
-        <h3 class="capitalize">What we do</h3>
-        <p>
-            With the rise of anime culture in recent years we recognise a greater need for connecting the so called weebs around the world.
-            As such, Animeu was born, created as a tool for weebs to express themselves and the love they have for their waifus.
-        </p>
-        <p>
-            Our mission is to provide a platform for every waifu to receive their love, and for our users to proudly declare their irrefutable truth: Who is Best girl.
-            The platform also helps weebs find their next anime to put on their watch list using a revolutionary babe-first search approach.
-        </p>
-    </section>
-
-    <section class="how-to-use-our-website">
-        <h3 class="capitalize">How to use our website</h3>
-        <p>
-            Top of the screen resides several tabs with different
-            functionality for your enjoyment.
-        </p>
-        <h4>Battle Tab</h4>
-        <p>
-            The battle tab allows you to engage in polls that will results
-            in waifus accross the range to grow or decrease in popularity.
-        </p>
-        <h4>Feed</h4>
-        <p>
-            Feed shows the performance of different waifus, whether it be on
-            leaderboard or in recent battles.
-        </p>
-        <h4>Profile</h4>
-        <p>
-            A place where you can rate your own waifus that you see fit,
-            and it will also diplay your favourite waifus recent battles.
-        </p>
-    </section>
-</section>
-
-<!-- <section class="container" id="partner">
-    <h2 class="sub-titles capitalize">
-        Our partners
-    </h2>
-</section> -->
-
-<hr style="width: 80vw">
-
-<section class="container" id="team">
-    <h2 class="sub-titles capitalize" style="margin-bottom: 20px;">
-        our team
-    </h2>
-
-    <div class="team-info">
-        <div class="member-box">
-            <div class="personal-info">
-                <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" alt="Henry" class="personal-picture">
-                <h4 class="bold">
-                    Henry H.
-                </h4>
-                <h5 class="capitalize position-info">
-                    Founder
-                </h5>
-                <h5 class="capitalize">
-                    <small>
-                        <italic>
-                            bachelor of science: computer science
-                        </italic>
-                    </small>
-                </h5>
+    <div class="container">
+        <section id="about-us">
+            <h1>About us</h1>
+            <h2>What we do</h2>
+            <p>
+                With the rise of anime culture in recent years we recognise a greater need for connecting the so called weebs around the world.
+                As such, Animeu was born, created as a tool for weebs to express themselves and the love they have for their waifus.
+                Our mission is to provide a platform for every waifu to receive their love, and for our users to proudly declare their irrefutabletruth: Who is Best Girl.
+                Our revolutionary babe-first search allows weebs to easily find a new anime to add to their watchlists.
+            </p>
+            <h2>How to use our website</h2>
+            <p>
+                At the top of the screen there are several tabs with take you to different areas of the app.
+            </p>
+            <h3><i class="fas fa-rss-square"></i> Feed</h3>
+            <p>
+                The feed shows the performance of different waifus using a variety of metrics. It also displays summaries
+                of the recent battles.
+            </p>
+            <h3><i class="fas fa-fire-alt"></i> Battle</h3>
+            <p>
+                The battle tab allows you to influence the leaderboards by taking part in battles. Each battle involves chooding
+                which of the two presented characters you would choose to be your waifu. You can also 'favourite' a character in
+                this screen by clicking the love-heart button near their name!
+            </p>
+            <h3><i class="fas fa-id-badge"></i> Profile</h3>
+            <p>
+                Your profile summarizes your recent activity on the site - look back fondly on past battles and look at waifus you've favourited.
+            </p>
+        </section>
+        <section id="team">
+            <h1>Team</h1>
+            <div class="team-info">
+                <img alt="profile-picture" src="https://www.gravatar.com/avatar/{{ 'hollingworth.henry@gmail.com' | md5 }}?d=identicon&s=160" class="profile-picture">
+                <span class="name">Henry H.</span>
+                <span class="role">Founder</span>
+                <span class="degree">bachelor of science: computer science</span>
             </div>
-            <hr class="member-hr">
-        </div>
-
-        <div class="member-box">
-            <div class="personal-info">
-                <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" alt="Henry" class="personal-picture">
-                <h4 class="bold">
-                    Viet N.
-                </h4>
-                <h5 class="capitalize position-info">
-                    co-Founder
-                </h5>
-                <h5 class="capitalize">
-                    <small>
-                        <italic>
-                            bachelor of science: computer science
-                        </italic>
-                    </small>
-                </h5>
+            <div class="team-info">
+                    <img alt="profile-picture" src="https://www.gravatar.com/avatar/{{ 'student@uwa.edu.au' | md5 }}?d=identicon&s=160" class="profile-picture">
+                <span class="name">Viet N.</span>
+                <span class="role">Co-Founder</span>
+                <span class="degree">bachelor of science: computer science</span>
             </div>
-            <hr class="member-hr">
-        </div>
+        </section>
     </div>
-</section>
-
 {% endblock body %}

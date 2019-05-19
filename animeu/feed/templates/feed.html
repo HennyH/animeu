@@ -4,6 +4,8 @@
 
 {% extends "base.html" %}
 
+{% block title %}Feed{% endblock %}
+
 {% block styles %}
     {% include "carousel.css" without context %}
     {% include "leaderboard.css" without context %}
@@ -102,7 +104,7 @@
 
 {% block body %}
     <div class="feed">
-        {% call(entry, is_header, is_no_content, is_entry) leaderboard(None, leaderboard_entries) %}
+        {% call(entry, is_header, is_no_content, is_entry) leaderboard("main-leaderboard", None, leaderboard_entries) %}
             {% if is_header %}
                 <div class="leaderboard-dropdown dropdown">
                     <button class="btn btn-secondary dropdown-toggle"
@@ -127,11 +129,11 @@
                 </span>
             {% endif %}
         {% endcall %}
-        {% call(entry, is_header, is_no_content, is_entry) leaderboard("Recent Battles", class="recent-battles-leaderboard") %}
+        {% call(entry, is_header, is_no_content, is_entry) leaderboard("recent-battles-leaderboard", "Recent Battles", class="recent-battles-leaderboard") %}
             {% if is_no_content %}
                 <div class="battle-list">
                     {% for battle in battles %}
-                        {{ battlecard(battle) }}
+                        {{ battlecard("battle-card-%d" | format(loop.index)  ,battle) }}
                     {% endfor %}
                 </div>
             {% endif %}

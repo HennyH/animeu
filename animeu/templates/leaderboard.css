@@ -26,7 +26,7 @@
     .leaderboard > .entry {
         border-radius: 5px;
         display: grid;
-        grid-template-columns: minmax(2ch, max-content) 4.32em 1fr 1fr;
+        grid-template-columns: minmax(2ch, max-content) max-content 1fr 1fr;
         grid-auto-columns: max-content;
         grid-auto-flow: column;
         gap: 1em;

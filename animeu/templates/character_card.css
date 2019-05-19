@@ -123,7 +123,6 @@
         grid-template-columns: max-content 1fr;
         grid-template-rows: min-content min-content;
         grid-column-gap: 1em;
-        width: minmax(max-content, 100%);
         font-size: var(--detail-font-size);
         line-height: 1.5em;
     }

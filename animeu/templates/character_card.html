@@ -14,7 +14,7 @@
                     {{ en_name }}
                 </a>
             </h5>
-            <h6 class="jp-name font-weight-bold">{{ jp_name }}</h4>
+            <h6 class="jp-name font-weight-bold">{{ jp_name }}</h6>
             <button type="button" class="toggle-picture-view btn btn-outline-secondary">
                 <i class="fas fa-images"></i>
             </button>
@@ -31,7 +31,7 @@
         <div class="card-body">
             <div class="pictures-grid picture-view-visible">
                 {% for url in gallery_urls %}
-                    <img src="{{ url }}" />
+                    <img alt="gallery-picture" src="{{ url }}" />
                 {% endfor %}
             </div>
             <div class="character-picture-carousel description-view-visible info-view-visible">
@@ -41,7 +41,7 @@
                 {% for anime_role in (anime_roles | selectattr("picture") | sort(attribute="role"))[:anime_role_limit] %}
                     {% if "picture" in anime_role %}
                         <div class="anime-role">
-                            <img src="{{ anime_role['picture'] }}" />
+                            <img alt="{{ anime_role['name'] }}" src="{{ anime_role['picture'] }}" />
                             <a href="#" class="anime-name">{{ anime_role["name" ]}}</a>
                             <small class="anime-role-type">{{ anime_role["role"] }}</small>
                         </div>

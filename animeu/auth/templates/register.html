@@ -3,9 +3,6 @@
 
 {% block styles %}
     {% include "form.css" without context %}
-{% endblock styles %}
-
-{% block body %}
     <style>
         .login-link {
             grid-column: 1 / -1;
@@ -38,7 +35,9 @@
             align-self: center;
         }
     </style>
+{% endblock styles %}
 
+{% block body %}
     <section class="login-container">
         <form class="login-form" method="POST" action="{{ url_for('auth_bp.register', next=next) }}">
             {{ form.hidden_tag() }}

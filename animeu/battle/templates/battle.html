@@ -2,6 +2,8 @@
 {% from "character_card.html" import character_card with context %}
 {% extends "base.html" %}
 
+{% block title %}Battle{% endblock %}
+
 {% block styles %}
     {% include "carousel.css" without context %}
     {% include "character_card.css" without context %}
@@ -66,12 +68,12 @@
                         <i class="fas fa-arrow-up"></i>
                     </button>
                     <form method="POST" action="{{ url_for('battle_bp.submit_battle') }}">
-                        {{ form.hidden_tag() }}
-                        {{ form.winner_name() }}
-                        {{ form.loser_name() }}
+                        {{ form.csrf_token(id=id+"csrf") }}
+                        {{ form.winner_name(id=id+"winner", required=False) }}
+                        {{ form.loser_name(id=id+"loser", required=False) }}
                         <button class="btn btn-outline-primary proposal-button">
                             Make <b class="proposal-name">{{ en_name.split() | first }}</b> your waifu!
-                        </input>
+                        </button>
                     </form>
                 </div>
             {% endif %}

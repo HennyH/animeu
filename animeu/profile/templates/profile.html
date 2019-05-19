@@ -4,6 +4,8 @@
 
 {% extends "base.html" %}
 
+{% block title %}Profile{% endblock %}
+
 {% block styles %}
     {% include "carousel.css" without context %}
     {% include "leaderboard.css" without context %}
@@ -32,6 +34,7 @@
         .profile-picture {
             width: 160px;
             height: 160px;
+            border: 2px solid var(--seperator-color);
             border-radius: 50%;
             margin: calc(2 * var(--base-padding));
             margin-bottom: 10px;
@@ -142,7 +145,7 @@
          */
         @media screen and (max-width: 480px) {
             .best-waifus-leaderboard > .entry {
-                grid-template-columns: minmax(2ch, max-content) 4.32em 1fr;
+                grid-template-columns: minmax(2ch, max-content) max-content 1fr;
                 gap: 0em;
             }
 
@@ -164,7 +167,7 @@
 
         @media screen and (max-width: 400px) {
             .best-waifus-leaderboard > .entry {
-                grid-template-columns: 2ch 4.32em 1fr;
+                grid-template-columns: 2ch max-content 1fr;
             }
 
             .best-waifus-leaderboard > .entry > .date-favourited {
@@ -178,13 +181,13 @@
 {% block body %}
     <div class="profile">
         <div class="profile-info">
-            <img src="https://cdn.myanimelist.net/images/characters/6/87123.jpg" class="profile-picture">
+            <img alt="profile-picture" src="https://www.gravatar.com/avatar/{{ current_user.email | md5 }}?d=identicon&s=160" class="profile-picture">
             <h4 class="capitalize user-name">
                 {{ current_user.username }}
             </h4>
         </div>
         <!-- best waifu leaderboard -->
-        {% call(entry, is_header, is_no_content, is_entry) leaderboard("Waifus for Laifu", best_waifus, class="best-waifus-leaderboard") %}
+        {% call(entry, is_header, is_no_content, is_entry) leaderboard("waifu-for-laifu-leaderboard", "Waifus for Laifu", best_waifus, class="best-waifus-leaderboard") %}
             {% if is_no_content %}
                 <span class="no-favourited-waifus-message">
                     It looks like you have no favourite waifus :(
@@ -195,11 +198,11 @@
                 </span>
             {% endif %}
         {% endcall %}
-        {% call(entry, is_header, is_no_content, is_entry) leaderboard("Recent Battles", class="recent-battles-leaderboard") %}
+        {% call(entry, is_header, is_no_content, is_entry) leaderboard("recent-battles-leaderboard", "Recent Battles", class="recent-battles-leaderboard") %}
             {% if is_no_content %}
                 <div class="battle-list">
                     {% for battle in battles %}
-                        {{ battlecard(battle) }}
+                        {{ battlecard("battle-%d" | format(loop.index), battle) }}
                     {% endfor %}
                 </div>
             {% endif %}

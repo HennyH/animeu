@@ -67,7 +67,8 @@
         }
 
         .card-header > .counters {
-            display: flex;
+            display: grid;
+            grid-auto-flow: column;
             justify-content: start;
             padding-left: calc(2 * var(--base-padding));
             gap: var(--base-padding);
