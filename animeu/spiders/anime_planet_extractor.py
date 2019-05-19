@@ -19,10 +19,6 @@ from animeu.spiders.anime_planet_downloader import ANIME_PLANET_URL
 from animeu.spiders.json_helpers import JSONListStream
 from animeu.spiders.xpath_helpers import get_all_text
 
-BLACKLISTED_TAG_RES = [r"child(ren)?", r"elementary\s+school",
-                       r"middle\s+school", r"underage", r"^animals?$",
-                       r"^bab(y|ies)$"]
-
 def strip_field_name(text):
     """Strip the field name section from a piece of text.
 
@@ -166,23 +162,10 @@ def extract_metadata_from_file(filename):
         }
     }
 
-def is_sensitive_metadata(metadata):
-    """Test if a metadata contains sensitive content."""
-    tags = metadata.get("tags", [])
-    for tag in tags:
-        for pattern in BLACKLISTED_TAG_RES:
-            if re.search(pattern, tag, flags=re.IGNORECASE):
-                return True
-    return False
-
 def main(argv=None):
     """Entry point to the anime planet page extractor."""
     argv = argv or sys.argv[1:]
     parser = argparse.ArgumentParser("""Extract content from anime pages.""")
-    parser.add_argument("--manifest",
-                        metavar="MANIFEST",
-                        type=str,
-                        required=True)
     parser.add_argument("--pages-directory",
                         metavar="PAGES",
                         type=str,
@@ -195,22 +178,14 @@ def main(argv=None):
                         action="store_true",
                         help="""Disable parallel processing.""")
     result = parser.parse_args(argv)
-    with open(result.manifest, "r") as manifest_fileobj:
-        manifest = json.load(manifest_fileobj)
-    basenames = [os.path.basename(i["name"]) for i in manifest]
+    basenames = os.listdir(result.pages_directory)
     filenames = \
         list(map(partial(os.path.join, result.pages_directory), basenames))
-    print(filenames)
     with JSONListStream(result.output) as extract_file:
         for metadata in parmap.map(extract_metadata_from_file,
                                    filenames,
                                    pm_pbar=True,
                                    pm_parallel=not result.no_parallel,
                                    pm_chunksize=10):
-            if is_sensitive_metadata(metadata):
-                print(f"Skipping {metadata['filenames']} "
-                      f"due to sensitive content.",
-                      file=sys.stderr)
-                continue
             extract_file.write(metadata)
             result.output.flush()

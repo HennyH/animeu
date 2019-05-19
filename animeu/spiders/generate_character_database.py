@@ -8,6 +8,7 @@ import sys
 import argparse
 import re
 import json
+import traceback
 from functools import partial
 from itertools import chain
 from operator import itemgetter, methodcaller
@@ -16,7 +17,12 @@ import parmap
 from fuzzywuzzy import process
 
 from animeu.common.func_helpers import compose
+from animeu.common.file_helpers import open_transcoded
 from animeu.spiders.json_helpers import JSONListStream
+
+BLACKLISTED_TAG_RES = [r"child(ren)?", r"elementary\s+school",
+                       r"middle\s+school", r"underage", r"^animals?$",
+                       r"^bab(y|ies)$"]
 
 
 def unique(*iterables, key=lambda x: x):
@@ -61,7 +67,7 @@ def merge_character_metadata(left, right):
     }
     metadata["info_fields"] = list(unique(left["info_fields"],
                                           right["info_fields"],
-                                          key=itemgetter("name")))
+                                          key=itemgetter("key")))
     metadata["rankings"] = list(unique(left["rankings"],
                                        right["rankings"],
                                        key=itemgetter("name")))
@@ -89,6 +95,10 @@ def maybe_match_mal_character(mal_character, ap_characters):
     """Try match a MAL character to an AP character."""
     # we only support anime girls!
     if not mal_character["anime_roles"]:
+        return None
+    # there are ~10 or so pages that have no english names... we need those
+    # for the app.
+    if not any(mal_character["names"]["en"]):
         return None
     # pylint: disable=broad-except
     try:
@@ -121,10 +131,19 @@ def maybe_match_mal_character(mal_character, ap_characters):
             return merge_character_metadata(mal_character, best_ap_match)
         return None
     except Exception as error:
+        traceback.print_exc(file=sys.stderr)
         print(f"Error occured matching {mal_character}: {error}",
               file=sys.stderr)
         return None
 
+def is_sensitive_metadata(metadata):
+    """Test if a metadata contains sensitive content."""
+    tags = metadata.get("tags", [])
+    for tag in tags:
+        for pattern in BLACKLISTED_TAG_RES:
+            if re.search(pattern, tag, flags=re.IGNORECASE):
+                return True
+    return False
 
 def main(argv=None):
     """Entry point to the anime planet page extractor."""
@@ -140,17 +159,23 @@ def main(argv=None):
                         required=True)
     parser.add_argument("--output",
                         metavar="OUTPUT",
-                        type=argparse.FileType("w"),
+                        type=argparse.FileType("w", encoding="utf-8"),
                         default=sys.stdout)
     result = parser.parse_args(argv)
-    with open(result.myanimelist_extract, "r") as mal_fileobj:
-        mal_json = json.load(mal_fileobj)
-    with open(result.anime_planet_extract, "r") as ap_fileobj:
-        ap_json = json.load(ap_fileobj)
+    with open_transcoded(result.myanimelist_extract, "r", errors="ignore") as mal_fileobj:
+        mal_json = json.loads(mal_fileobj.read().decode("utf-8"))
+    with open_transcoded(result.anime_planet_extract, "r", errors="ignore") as ap_fileobj:
+        ap_json = json.loads(ap_fileobj.read().decode("utf8"))
     with JSONListStream(result.output) as json_stream:
-        for maybe_match in parmap.map(maybe_match_mal_character,
-                                      mal_json,
-                                      ap_json,
-                                      pm_pbar=True):
-            if maybe_match is not None:
-                json_stream.write(maybe_match)
+        for maybe_merged in parmap.map(maybe_match_mal_character,
+                                       mal_json,
+                                       ap_json,
+                                       pm_pbar=True,
+                                       pm_parallel=False):
+            if maybe_merged is not None:
+                if is_sensitive_metadata(maybe_merged):
+                    print(f"Skipping {maybe_merged['filenames']} "
+                        f"due to sensitive content.",
+                        file=sys.stderr)
+                    continue
+                json_stream.write(maybe_merged)

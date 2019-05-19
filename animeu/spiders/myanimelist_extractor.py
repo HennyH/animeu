@@ -123,53 +123,52 @@ def extract_gallery_pictures(sel):
 
 def extract_metadata_from_file(filename):
     """Extract the metadata from a file."""
-    metadata = {
-        "sources": ["myanimelist"],
-        "filenames": [filename],
-        "names": {"en": [], "jp": []},
-        "descriptions": [],
-        "nicknames": {"en": [], "jp": []},
-        "info_fields": [],
-        "rankings": [],
-        "tags": [],
-        "anime_roles": [],
-        "manga_roles": [],
-        "pictures": {
-            "display": [],
-            "gallery": []
+    try:
+        metadata = {
+            "sources": ["myanimelist"],
+            "filenames": [filename],
+            "names": {"en": [], "jp": []},
+            "descriptions": [],
+            "nicknames": {"en": [], "jp": []},
+            "info_fields": [],
+            "rankings": [],
+            "tags": [],
+            "anime_roles": [],
+            "manga_roles": [],
+            "pictures": {
+                "display": [],
+                "gallery": []
+            }
         }
-    }
-    profile_filename = filename
-    pictures_filename = filename.replace(".html", ".pictures.html")
-    if os.path.exists(profile_filename):
-        with open_transcoded(filename, "r") as file_obj:
-            profile_sel = parsel.Selector(text=file_obj.read().decode("utf8"))
-        metadata["names"] = extract_en_jp_name(profile_sel)
-        metadata["pictures"]["display"].append(
-            extract_main_display_picture(profile_sel)
-        )
-        metadata["anime_roles"].extend(extract_anime_roles(profile_sel))
-        metadata["manga_roles"].extend(extract_manga_roles(profile_sel))
-        info_fields, maybe_description = \
-            extract_info_fields_and_description(profile_sel)
-        metadata["info_fields"].extend(info_fields)
-        if maybe_description:
-            metadata["descriptions"].append(maybe_description)
-    if os.path.exists(pictures_filename):
-        with open_transcoded(pictures_filename, "r") as file_obj:
-            pictures_sel = parsel.Selector(text=file_obj.read().decode("utf8"))
-        metadata["pictures"]["gallery"].extend(
-            extract_gallery_pictures(pictures_sel)
-        )
-    return metadata
-
+        profile_filename = filename
+        pictures_filename = filename.replace(".html", ".pictures.html")
+        if os.path.exists(profile_filename):
+            with open_transcoded(filename, "r") as file_obj:
+                profile_sel = parsel.Selector(text=file_obj.read().decode("utf8"))
+            metadata["names"] = extract_en_jp_name(profile_sel)
+            metadata["pictures"]["display"].append(
+                extract_main_display_picture(profile_sel)
+            )
+            metadata["anime_roles"].extend(extract_anime_roles(profile_sel))
+            metadata["manga_roles"].extend(extract_manga_roles(profile_sel))
+            info_fields, maybe_description = \
+                extract_info_fields_and_description(profile_sel)
+            metadata["info_fields"].extend(info_fields)
+            if maybe_description:
+                metadata["descriptions"].append(maybe_description)
+        if os.path.exists(pictures_filename):
+            with open_transcoded(pictures_filename, "r") as file_obj:
+                pictures_sel = parsel.Selector(text=file_obj.read().decode("utf8"))
+            metadata["pictures"]["gallery"].extend(
+                extract_gallery_pictures(pictures_sel)
+            )
+        return metadata
+    except Exception as ex:
+        print(f"Error occured processing: {filename}: {ex}", file=sys.stderr)
+        return None
 
 def test_is_male_character(metadata):
     """Test if a character is male."""
-    if metadata["descriptions"] and \
-            any(re.search(r"\b(his|he)\b", d, flags=re.I)
-                    for d in metadata["descriptions"]):
-        return True
     # pylint: disable=invalid-name
     for k, v in metadata["info_fields"]:
         if re.search(r"sex", k, flags=re.I) and \
@@ -177,15 +176,10 @@ def test_is_male_character(metadata):
             return True
     return False
 
-
 def main(argv=None):
     """Entry point to the myanimelist extractor."""
     argv = argv or sys.argv[1:]
     parser = argparse.ArgumentParser("""Extract content from anime pages.""")
-    parser.add_argument("--manifest",
-                        metavar="MANIFEST",
-                        type=str,
-                        required=True)
     parser.add_argument("--pages-directory",
                         metavar="PAGES",
                         type=str,
@@ -198,9 +192,9 @@ def main(argv=None):
                         action="store_true",
                         help="""Disable parallel processing.""")
     result = parser.parse_args(argv)
-    with open(result.manifest, "r") as manifest_fileobj:
-        manifest = json.load(manifest_fileobj)
-    basenames = [os.path.basename(i["character_filename"]) for i in manifest]
+    basenames = \
+        set(f for f in os.listdir(result.pages_directory) if
+            not (f.endswith(".anime.html") or f.endswith(".pictures.html")))
     filenames = \
         list(map(partial(os.path.join, result.pages_directory), basenames))
     with JSONListStream(result.output) as extract_file:
@@ -209,6 +203,8 @@ def main(argv=None):
                                    pm_pbar=True,
                                    pm_parallel=not result.no_parallel,
                                    pm_chunksize=10):
+            if not metadata:
+                continue
             if test_is_male_character(metadata):
                 print(f"Skipping {metadata['filenames']} as it is a male "
                       f"character.",
