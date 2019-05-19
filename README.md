@@ -269,3 +269,101 @@ In this section I'll enumerate the work done outside the original scope which I 
 3. Writing comprehensive integration tests while also capturing python code coverage.
 4. The use of mostly custom CSS (grid/flexbox) to layout all the elements rather than using boostraps simple grid system and the development of a custom carousel (the TINY buttons and lag of bootstraps one annoyed me).
 5. Scraping MAL and AP to produce a complete dataset for a production ready site.
+6. REST API with token auth for searching character metadata (w/ paginator)
+
+# Super Explicit Instructions For Markers
+
+One issue with trying to set up a virtual environment with all the dependencies required to run the scrapers, extractors, tests and app you will need ceartin build tools and development headers. On OSX that requires installing the Xcode Command Line Tools and using homebrew to install a new version of python, on windows you need the Visual Studio Command Line Tools and on linux you'll need python development headers, etc... This is messy and everyone has one issue or another setting all that up. That said you can try the following before falling back to using docker:
+
+## To run ONLY the app and integration tests:
+
+```bash
+python -m virtualenv env
+source env/bin/activate
+pip install -r requirements.txt
+pip install -e .
+export FLASK_APP="animeu.app"
+export FLASK_ENV="development"
+# the syntax for this url is explained here https://docs.sqlalchemy.org/en/13/core/engines.html#sqlite you should use the app.db bundled in the submission OR use a new one but populate the database using the admin tools - use the seed battles functionality AND THEN GENERATE TEH ELO RANKINGS! THIS IS NOT AUTOMATED!!
+export DATABASE="sqlite:///<absolute-path-to-database | /relative-path-to-database>"
+# this is a path to the JSON file you download from google drive (look in the Setup section for the link, it should also be in the submission zip).
+export DATA_FILE="characters.json"
+flask run
+
+# The app will now be running... if you want to run the tests just shut it down (or leave it running it works either way)
+python -Wignore -m unittest animeu.testing.integration_tests
+# wait for the tests to finish then run
+coverage report
+# you should now see the coverage results
+```
+
+## To run EXTRACTOR/DOWNLOADERS:
+
+These scripts have additional dependencies which you can install by following the steps to run the app only and then the following command:
+
+```bash
+pip install -r requirements.dev.linux.txt # or .dev.windows.txt if you're on windows
+```
+
+You can now invoke the CLI programs as detailed in `setup.py`:
+
+```py
+setup(...,
+      entry_points={
+        "console_scripts": [
+            "anime-planet-downloader=animeu.spiders.anime_planet_downloader:main",
+            ...
+        ]
+      ])
+```
+
+just like any other program like so:
+
+```bash
+$ anime-planet-downloader -h
+usage: Scrape anime character profiles. [-h] [--manifest OUTPUT]
+                                        --pages-directory PAGES
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --manifest OUTPUT
+  --pages-directory PAGES
+```
+
+## Running everything if you can't install the dependencies
+
+As a last resort we can use docker to run the app - this is what's used in production so if production is working and you have master it should almost ceartinly work! It doesn't automatically set the `DATA_FILE` for you but we can instead use the `DATA_GOOGLE_DRIVE_ID` to point it to a file on google drive (used to avoid needing to set up S3 and keeping character data in the repository). This should let you run the app in the most simple way.
+
+```bash
+docker build -t animeu .
+docker run -p 5000:5000 \
+           -e DATA_GOOGLE_DRIVE_ID="1ua7-Jb2RVaTDgjmuQZneGMz102GjthVc" \
+           -e DATABASE_URL="sqlite:////home/app.db" \
+           -it animeu
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 48155c59684d, empty message
+INFO  [alembic.runtime.migration] Running upgrade 48155c59684d -> 8b86a6fbc0a6, empty message
+INFO  [alembic.runtime.migration] Running upgrade 8b86a6fbc0a6 -> b400e1a221ed, empty message
+INFO  [alembic.runtime.migration] Running upgrade b400e1a221ed -> 4746d5353df9, empty message
+INFO  [alembic.runtime.migration] Running upgrade 4746d5353df9 -> 2893736abf82, empty message
+INFO  [alembic.runtime.migration] Running upgrade 2893736abf82 -> f416a60b44df, empty message
+/home/virtualenv/lib/python3.6/site-packages/alembic/util/messaging.py:73: UserWarning: Skipping unsupported ALTER for creation of implicit constraint
+  warnings.warn(msg)
+INFO  [alembic.runtime.migration] Running upgrade f416a60b44df -> dbd25bb3e82b, empty message
+INFO  [alembic.runtime.migration] Running upgrade dbd25bb3e82b -> bfadd4ebe86d, empty message
+INFO  [alembic.runtime.migration] Running upgrade bfadd4ebe86d -> de7e464a7b7f, empty message
+INFO  [alembic.runtime.migration] Running upgrade de7e464a7b7f -> 4a29fc6a553c, empty message
+ * Serving Flask app "animeu.app"
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+172.17.0.1 - - [19/May/2019 12:29:08] "GET /battle/ HTTP/1.1" 302 -
+172.17.0.1 - - [19/May/2019 12:29:08] "GET /login?next=%2Fbattle%2F HTTP/1.1" 200 -
+```
+
+You can now at least run the app! If you wanted to run the extractors/downloaders you could in theory you could simply edit the dockerfile to install the development dependencies and then `docker run -it animeu /bin/sh` and run the commands from inside the container...
+
+Running the tests I'm not sure about, you may be able to install chromium and chromium-webdriver using the package manager and run Xvfb like on the CI server but I don't know if that will work. If worst comes to worse just look at the travis log in the submission to see the tests passing and the coverage and then look at the code in `integration_tests.py`, the `self.subTest(...)` are pretty short and self explanatory.
