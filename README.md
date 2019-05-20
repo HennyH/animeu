@@ -291,8 +291,17 @@ export DATA_FILE="characters.json"
 flask run
 
 # The app will now be running... if you want to run the tests just shut it down (or leave it running it works either way)
-python -Wignore -m unittest animeu.testing.integration_tests
+mkdir drivers
+cd drivers
+# adjust for your version of chrome and OS
+curl https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_mac64.zip > chromedriver.zip
+unzip chromedriver.zip
+chmod +x chromedriver
+cd ..
+export PATH="$PATH:./drivers"
+NO_HEADLESS=1 python -Wignore -m unittest animeu.testing.integration_tests
 # wait for the tests to finish then run
+coverage combine
 coverage report
 # you should now see the coverage results
 ```
