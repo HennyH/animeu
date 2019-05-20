@@ -25,7 +25,7 @@
                 </span>
                 <span class="jp-name japanese">{{ entry['jp_name'] }}</span>
                 {% for counter in entry["counters"] %}
-                    <span class="counter {{ counter['class'] }}" style="width: {{ max_counter_width + 2 }}ch">
+                    <span class="counter {{ counter['class'] }}" style="width: {{ max_counter_width + 3 }}ch">
                         <span class="counter-title">{{ counter["title"] }}</span>
                         <span class="counter-count">{{ counter["count"] or "U" }}</span>
                     </span>

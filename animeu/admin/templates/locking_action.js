@@ -27,16 +27,16 @@
                     ...(pollOptsFactory() || {})
                 }).then((data, textStatus, xhr) => {
                     if (xhr.status === 200) {
-                        progressBar.style = `width: ${escape(data)}%`
-                        if (data >= 98) {
-                            clearInterval(interval);
-                            progressBar.style = `width: 100%`;
-                            performActionBtn.textContent = "Complete";
-                            status.textContent = "Completed just now.";
-                            progressBar.classList.remove("progress-bar-animated");
-                            progressBar.classList.remove("progress-bar-striped ");
-                            IS_POLLING = false;
-                        }
+                        progressBar.style = `width: ${escape(data)}%`;
+                    }
+                    if ((xhr.status === 200 && data >= 98) || xhr.status === 204) {
+                        clearInterval(interval);
+                        progressBar.style = `width: 100%`;
+                        performActionBtn.textContent = "Complete";
+                        status.textContent = "Completed just now.";
+                        progressBar.classList.remove("progress-bar-animated");
+                        progressBar.classList.remove("progress-bar-striped ");
+                        IS_POLLING = false;
                     }
                 });
             }, pollingInterval);
