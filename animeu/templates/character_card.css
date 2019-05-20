@@ -139,7 +139,6 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        width: 100%;
     }
 
     .card.character-card.info-view .anime-role > .anime-role-type {
