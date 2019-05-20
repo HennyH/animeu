@@ -367,3 +367,42 @@ INFO  [alembic.runtime.migration] Running upgrade de7e464a7b7f -> 4a29fc6a553c, 
 You can now at least run the app! If you wanted to run the extractors/downloaders you could in theory you could simply edit the dockerfile to install the development dependencies and then `docker run -it animeu /bin/sh` and run the commands from inside the container...
 
 Running the tests I'm not sure about, you may be able to install chromium and chromium-webdriver using the package manager and run Xvfb like on the CI server but I don't know if that will work. If worst comes to worse just look at the travis log in the submission to see the tests passing and the coverage and then look at the code in `integration_tests.py`, the `self.subTest(...)` are pretty short and self explanatory.
+
+## A suggested test script:
+
+1. Go to the register page and sign up and try the following a) enter short/long usernames and passwords, b) use the recaptcha to prove you're human, c) try register again using the same email.
+2. If you're already signed in from step 1 sign out and then use the sign in page to sign back in using the admin account `henry@gmail.com` and `password123`.
+3. Go to the admin tools and do the following a) use the 'Battles' tab to seed some extra battles in the database, b) try delete a battle, c) go to the users and favourited waifu tabs and use the search boxes and column sorting options, d) use the ELO tab to upate the rankings based on your new battles.
+4. Go to the battle page and have some fun doing a couple of battles - use the info and gallery images to toggle different modes on the card.
+5. Try favourite / unfavourite a character by clicking the love heart button on the battle page.
+6. Go to you profile and check that your favourited waifus and recent battles match up.
+7. Go to the feed and try the different leaderboard types.
+8. Start re-sizing the browser, perhaps turning on dev tools and choosing devices like iPhone X, iPad Pro, etc... to test the responsiveness of the site.
+9. Click on a charcters name to view their info page.
+10. Go the the about page to learn more.
+
+# References
+
+|Name | Type | Description | Useage |
+|-----|------|-------------|--------|
+pylint|tool|Advanced linter for python|Used to lint the python code
+pydocstyle|tool|Linter for comments in python|Used to ensure the codedocs are well written
+scrapy|library|A scraping framework|Used to scrape MAL/AP
+parmap|library|Parallel processing library to easily scale out workloads|Used to parallelize the extraction code
+fuzzywuzzy[speedup]|library|Fuzzy matching library for python|Used to help match up MAL characters with AP characters
+cchardet|library|Detects file encodings|Used to help transcode downloaded files in the extractors
+youtube-dl|tool|Helps download things from various sites|Used to download files from google drive
+regex|library|Alternative regex library for python|Used to allow for timeouts in character API which uses regexes
+tqdm|library|Simple progress bars|Used in the extractor to show task progress
+coverage|tool|Reports python test coverage|Used with in the tests to detect line coverage and display results
+cheroot|library|WSGI server|Used to start up the app in a safe way for our tests
+selenium|libray|Browser automation tool|Used to drive the automation tests
+requests|library|Web request simplifier|Used to test the character search API
+Flask|||
+Flask-SQLAlchemy|||
+Flask-Migrate|||
+Flask-Login|||
+Flask-WTF|||
+Flask-HTTPAuth|||
+MAL Characters|dataset|MAL's collection of character data|Providing characters to battle with
+AP Characters|dataset|AP's collection of character data|Providing characters to battle with
