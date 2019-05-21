@@ -59,14 +59,6 @@
             e.stopPropagation();
         });
 
-        $(".pictures-grid > img").click(e => {
-            $("#fullscreen-modal .modal-dialog").empty()
-            var picFull = e.target;
-            picFull = picFull.cloneNode(true);
-            $("#fullscreen-modal .modal-dialog").append(picFull);
-            $("#fullscreen-modal").modal("show")
-        });
-
         $(".jump-to-top").click(e => {
             const yOffset = Math.max(0, $(e.target).closest(".character-card").offset().top - 20);
             window.scroll({ top: yOffset });
