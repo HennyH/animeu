@@ -12,10 +12,11 @@ EXPOSE 5000
 COPY requirements.txt .
 RUN /bin/sh -c '\
     source virtualenv/bin/activate \
-    && pip install -r requirements.txt'
+    && pip install -r requirements.txt \
+    && pip install gunicorn'
 COPY . .
 RUN /bin/sh -c 'pip install -e .'
 CMD /bin/sh -c '\
     source virtualenv/bin/activate && \
     flask db upgrade && \
-    flask run --host 0.0.0.0 --port "${PORT:-5000}"'
+    gunicorn -w 4 -b "0.0.0.0:${PORT:-5000}" animeu.app:app'

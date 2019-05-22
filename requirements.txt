@@ -4,6 +4,7 @@ Flask-Migrate
 Flask-Login
 Flask-WTF
 Flask-HTTPAuth
+flask-talisman
 youtube-dl
 regex
 tqdm
