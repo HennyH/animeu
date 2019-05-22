@@ -23,9 +23,10 @@ from flask_login import LoginManager
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_talisman import Talisman
 
-
 # pylint: disable=invalid-name
 app = Flask(__name__)
+if not app.debug:
+    os.environ['wsgi.url_scheme'] = "https"
 app.config['SECRET_KEY'] = \
     os.environ.get("SECRET_KEY",
                    "a_secret_at_least_32_bytes_long_for_security")
