@@ -23,10 +23,15 @@ from flask_login import LoginManager
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_talisman import Talisman
 
+def force_https(wsgi_app):
+    """Force the use of HTTPS."""
+    def wrapper(environ, start_response):
+        environ['wsgi.url_scheme'] = "https"
+        return wsgi_app(environ, start_response)
+    return wrapper
+
 # pylint: disable=invalid-name
 app = Flask(__name__)
-if not app.debug:
-    os.environ['wsgi.url_scheme'] = "https"
 app.config['SECRET_KEY'] = \
     os.environ.get("SECRET_KEY",
                    "a_secret_at_least_32_bytes_long_for_security")
@@ -109,3 +114,6 @@ def md5_filter(text):
 def index():
     """Root of the site."""
     return redirect(url_for("battle_bp.battle"))
+
+if not app.debug:
+    app = force_https(app)
