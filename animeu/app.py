@@ -32,6 +32,7 @@ def force_https(wsgi_app):
 
 # pylint: disable=invalid-name
 app = Flask(__name__)
+https_app = force_https(app)
 app.config['SECRET_KEY'] = \
     os.environ.get("SECRET_KEY",
                    "a_secret_at_least_32_bytes_long_for_security")
@@ -114,6 +115,3 @@ def md5_filter(text):
 def index():
     """Root of the site."""
     return redirect(url_for("battle_bp.battle"))
-
-if not app.debug:
-    app = force_https(app)

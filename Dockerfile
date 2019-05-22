@@ -19,4 +19,4 @@ RUN /bin/sh -c 'pip install -e .'
 CMD /bin/sh -c '\
     source virtualenv/bin/activate && \
     flask db upgrade && \
-    gunicorn -w 4 -b "0.0.0.0:${PORT:-5000}" animeu.app:app'
+    gunicorn -w 4 -b "0.0.0.0:${PORT:-5000}" animeu.app:https_app'
