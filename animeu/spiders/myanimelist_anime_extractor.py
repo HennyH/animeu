@@ -22,6 +22,7 @@ from animeu.spiders.xpath_helpers import \
     xpath_slice_between, get_all_text, normalize_whitespace
 
 AnimeName = namedtuple("AnimeName", ["name", "is_primary"])
+AnimeCharacter = namedtuple("AnimeCharacter", ["name", "role", "url"])
 KeyValuesPair = namedtuple("KeyValuesPair", ["key", "values"])
 
 def select_sidebar(sel: Selector) -> Selector:
@@ -73,8 +74,9 @@ def extract_anime_info_fields(sel: Selector) -> Iterable[KeyValuesPair]:
             .strip()\
             .rstrip(":")
         # pylint: disable=line-too-long
-        value_text = \
-            re.sub(r"\s+", " ", get_all_text(stat_sel).replace(key, "", 1)).strip()
+        value_text = re.sub(r"\s+", " ", get_all_text(stat_sel).replace(key, "", 1))\
+            .lstrip(":")\
+            .strip()
         values = re.split(r"\b\s+,\s+\b", value_text)
         yield KeyValuesPair(key=key, values=values)
 
@@ -82,17 +84,39 @@ def extract_anime_picture_url(sel: Selector) -> str:
     """Extract the URL of the anime's main picture."""
     return select_sidebar(sel).xpath("//img[@class='ac']").attrib.get("src")
 
+def extract_character_names(sel: Selector) -> Iterable[AnimeCharacter]:
+    """Extact the names of the anime characters."""
+    # pylint: disable=line-too-long
+    maybe_name_anchors = \
+        sel.xpath("(//h2[contains(., 'Characters')]/following-sibling::div)[1]//a[not(./img)]")
+    for maybe_name_anchor in maybe_name_anchors:
+        href = maybe_name_anchor.attrib["href"]
+        match = re.search(r"/character/\d+/(?P<name>[^/]+)$", href)
+        if not match:
+            continue
+        name = re.sub(r"_+|\s+", " ", match.group("name")).strip()
+        # pylint: disable=line-too-long
+        role = get_all_text(maybe_name_anchor.xpath("./following-sibling::div/small"))
+        if re.search(r"main", role, flags=re.IGNORECASE):
+            role = "main"
+        elif re.search(r"support(ing)?|secondary", role, flags=re.IGNORECASE):
+            role = "secondary"
+        yield AnimeCharacter(name=name, url=href, role=role)
+
 def extract_anime_metadata(sel: Selector) -> dict:
     """Extract all the metadata of an anime into a dict."""
     names = extract_anime_names(sel)
     description = extract_anime_description(sel)
     info_fields = extract_anime_info_fields(sel)
     picture_url = extract_anime_picture_url(sel)
+    characters = extract_character_names(sel)
     return {
         "names": [{"name": n.name, "is_primary": n.is_primary} for n in names],
         "description": description,
         "info_fields":
             [{"name": f.key, "values": f.values} for f in info_fields],
+        "characters":
+            [{"name": c.name, "url": c.url} for c in characters],
         "picture": picture_url
     }
 
