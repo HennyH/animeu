@@ -56,13 +56,13 @@ def map_name_win_loss_result_to_leaderboard_entries(result):
     }
 
 LEADERBOARD_TO_QUERY_FACTORY = {
-    "winners": compose(
-        partial(map, map_name_win_loss_result_to_leaderboard_entries),
-        query_most_winning_waifus
+    "winners": lambda *args, **kwargs: (
+        map(map_name_win_loss_result_to_leaderboard_entries,
+            query_most_winning_waifus(*args, **kwargs))
     ),
-    "active": compose(
-        partial(map, map_name_win_loss_result_to_leaderboard_entries),
-        query_most_battled_waifus
+    "active": lambda *args, **kwargs: (
+        map(map_name_win_loss_result_to_leaderboard_entries,
+            query_most_battled_waifus(*args, **kwargs))
     ),
     "highELO": get_elo_rankings,
     "lowELO": partial(get_elo_rankings, reverse=False)
