@@ -20,10 +20,10 @@ setup(
             "myanimelist-downloader=animeu.spiders.myanimelist_downloader:main",
             "myanimelist-extractor=animeu.spiders.myanimelist_extractor:main",
             "myanimelist-anime-extractor=animeu.spiders.myanimelist_anime_extractor:main",
-            "generate-character-database=animeu.spiders.generate_character_database:main",
-            "merge-json=animeu.spiders.json_helpers:merge_json_files_cli",
+            "anime-db-create=animeu.spiders.anime_db_generator:create_anime_db_cli",
+            "anime-db-match=animeu.spiders.anime_db_generator:match_characters_cli",
             "seed-battles=animeu.seed_battles:main",
-            "update-elo-rankings=animeu.elo.elo_leaderboard_updater:update_rankings"
+            "update-elo-rankings=animeu.elo.elo_leaderboard_updater:update_rankings",
         ]
     }
 )

@@ -10,10 +10,9 @@ import re
 import argparse
 from fnmatch import filter as fnfilter
 from typing import Iterable
-from functools import partial
+from collections import namedtuple
 
 from tqdm import tqdm
-from collections import namedtuple
 from parsel import Selector
 
 from animeu.common.iter_helpers import lookahead

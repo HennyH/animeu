@@ -14,8 +14,8 @@ import argparse
 import parmap
 import parsel
 
+from animeu.common.file_helpers import JSONListStream
 from animeu.spiders.anime_planet_downloader import ANIME_PLANET_URL
-from animeu.spiders.json_helpers import JSONListStream
 from animeu.spiders.xpath_helpers import get_all_text
 
 def strip_field_name(text):

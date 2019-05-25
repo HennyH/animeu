@@ -13,13 +13,8 @@ def compose(*functions):
 
     f, g, k, ... => x -> f(g(k(...(x))))
     """
-    # pylint: disable=undefined-variable,invalid-name
-    def wrapper(f, g):
-        def _inner(*args, **kwargs):
-            return f(g(*args, **kwargs))
-        return _inner
-
-    return reduce(wrapper, functions)
+    # pylint: disable=undefined-variable
+    return reduce(lambda f, g: lambda x: f(g(x)), functions, lambda x: x)
 
 
 def identity(arg):
@@ -47,6 +42,13 @@ def starcall(func):
     def _inner(destructable):
         return func(*destructable)
     return _inner
+
+def pipeline(*funcs, arg):
+    """Construct a pipeline of composed funcs and invoke it with an arg.
+
+    pipeline(f, g, x) -> f(g(x))
+    """
+    return compose(*funcs)(arg)
 
 
 _FALLBACK_NO_DEFAULT = object()
