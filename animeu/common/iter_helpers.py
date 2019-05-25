@@ -4,6 +4,7 @@
 #
 # See /LICENCE.md for Copyright information
 """Helper iterator functions built on itertools."""
+# pylint: disable=no-name-in-module
 from collections import Hashable
 from functools import partial
 from itertools import islice

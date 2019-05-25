@@ -20,11 +20,14 @@ import os
 import sys
 import re
 from functools import partial
+from operator import methodcaller
+from collections import defaultdict
 
 import argparse
 import parsel
 import parmap
 
+from animeu.common.func_helpers import compose
 from animeu.common.file_helpers import JSONListStream, open_transcoded
 from animeu.spiders.xpath_helpers import get_all_text
 
@@ -55,29 +58,41 @@ def extract_info_fields_and_description(sel):
     """Extract the name-value info fields of the character."""
     name_sel = select_name(sel)
     # pylint: disable=line-too-long
-    description_text = \
-        get_all_text(name_sel.xpath("following-sibling::p/text() | "
-                                    "following-sibling::span/text() | "
-                                    "following-sibling::i/text() | "
-                                    "following-sibling::b/text() | "
-                                    "following-sibling::text()"),
-                     element_seperator="",
-                     element_filter=lambda e: e.strip())
-    lines = list(reversed(description_text.splitlines()))
-    info_fields = []
-    while lines:
-        line = lines.pop()
-        match = re.match(r"^(?P<key>[^:]{1,30}):\s*(?P<value>.*$)", line)
+    text_fragments = list(map(compose(methodcaller("strip"), methodcaller("get")),
+                              name_sel.xpath("following-sibling::text() | "
+                                             "following-sibling::b/text()")))
+    text_fragments = list(filter(bool, text_fragments))
+    info_key_to_fragments = defaultdict(list)
+    current_key = None
+    description_fragments = []
+    # pylint: disable=invalid-name
+    MAX_INFO_FIELD_FRAGMENT_LENGTH = 40
+    MAX_WRITTEN_BY_LENGTH = 40
+    for text_fragment in text_fragments:
+        # pylint: disable=line-too-long
+        if re.search(r"\b(written|from|source|author)\b", text_fragment, flags=re.I) and \
+                len(text_fragment) <= MAX_WRITTEN_BY_LENGTH:
+            continue
+        if description_fragments:
+            if len(text_fragment) > MAX_INFO_FIELD_FRAGMENT_LENGTH:
+                description_fragments.append(text_fragment.strip())
+                continue
+            else:
+                break
+        match = re.match(r"^(?P<key>[^:]{1,30}):\s*(?P<value>.*$)",
+                         text_fragment)
+        if not match and len(text_fragment) > MAX_INFO_FIELD_FRAGMENT_LENGTH:
+            description_fragments.append(text_fragment.strip())
+            continue
         if match:
-            info_fields.append({"key": match.group("key"),
-                                "value": match.group("value")})
-        else:
-            break
-    if lines:
-        description = lines.pop()
-    else:
-        description = None
-    return (info_fields, description)
+            current_key = match.group("key").strip()
+        if current_key:
+            info_key_to_fragments[current_key].append(text_fragment.strip())
+    return (
+        [{"key": k, "value": "\n".join(v).strip()}
+         for k, v in info_key_to_fragments.items()],
+        "\n".join(description_fragments).strip() or None
+    )
 
 def extract_main_display_picture(sel):
     """Extract the main display picture URL of the character."""
@@ -171,9 +186,9 @@ def extract_metadata_from_file(filename):
 def test_is_male_character(metadata):
     """Test if a character is male."""
     # pylint: disable=invalid-name
-    for k, v in metadata["info_fields"]:
-        if re.search(r"sex", k, flags=re.I) and \
-                re.search(r"\b(male|men|man)\b", v, flags=re.I):
+    for info_field in metadata["info_fields"]:
+        if re.search(r"sex", info_field["key"], flags=re.I) and \
+                re.search(r"\b(male|men|man)\b", info_field["value"], flags=re.I):
             return True
     return False
 

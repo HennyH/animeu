@@ -34,6 +34,10 @@
         padding-bottom: 1em;
     }
 
+    .battlecard .carousel-backdrop {
+        padding: calc(0.5 * var(--base-padding));
+    }
+
     .battlecard .carousel {
         height: 136px;
         width: 96px;

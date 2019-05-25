@@ -28,7 +28,10 @@ def get_elo_rankings(limit=20, reverse=True, **kwargs):
                                     reverse=reverse)
     entries = []
     for name, elo in ordered_name_elo_pairs[:limit]:
-        character = get_character_by_name(name)
+        try:
+            character = get_character_by_name(name)
+        except KeyError:
+            continue
         entries.append({
             "en_name": character["names"]["en"][0],
             "jp_name": character["names"]["jp"][0],
@@ -83,11 +86,14 @@ def get_leaderboard_entries_data(leaderboard=None, from_date=None, limit=20):
 
 def get_recent_battles_data(limit=20):
     """Get the data for the most recent battles."""
-    return [
-        {
-            "date": b.date,
-            "winner": get_character_by_name(b.winner_name),
-            "loser": get_character_by_name(b.loser_name)
-        }
-        for b in query_most_recent_battles(limit)
-    ]
+    entries = []
+    for result in query_most_recent_battles(limit):
+        try:
+            entries.append({
+                "date": result.date,
+                "winner": get_character_by_name(result.winner_name),
+                "loser": get_character_by_name(result.loser_name)
+            })
+        except KeyError:
+            continue
+    return entries
