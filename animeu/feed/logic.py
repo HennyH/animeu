@@ -8,7 +8,6 @@ import json
 from operator import itemgetter
 from functools import partial
 
-from animeu.common.func_helpers import compose
 from animeu.data_loader import get_character_by_name
 from animeu.models import ELORankingCalculation
 from .queries import (query_most_battled_waifus,
