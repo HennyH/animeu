@@ -79,100 +79,13 @@
                 TRANSITION_DELAY = 5000;
             }
 
-            function toggleFullscreen(imgClickedEvent) {
-                requestAnimationFrame(() => {
-                    /* insert an overlay to capture any dismissing clicks */
-                    const overlay = document.createElement("div");
-                    overlay.style = "position: absolute; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 999";
-                    document.body.append(overlay);
-
-                    /* we're going to use another image to do the 'scale up' transition because
-                    * if we keep this one here (but not visible) we won't cause the other images
-                    * in the gallery to jump around.
-                    */
-                    const img =  imgClickedEvent.target;
-                    const imgSrc = img.getAttribute("src");
-                    const imgRect = img.getBoundingClientRect();
-
-                    const animationName = `gallery-expand`;
-                    const scaleFactor = 2;
-                    const animationCss = `
-                        @keyframes ${animationName} {
-                            0% {
-                                transform:
-                                    translate(calc(${imgRect.left}px - 0 * ${imgRect.width}px),
-                                              calc(${imgRect.top}px - 0 * ${imgRect.height}px))
-                                    scale(1);
-                            }
-                            100% {
-                                transform:
-                                    translate(calc(50vw - 0.5 * ${imgRect.width}px),
-                                              calc(50vh - 0.5 * ${imgRect.height}px))
-                                    scale(${scaleFactor});
-                            }
-                        }
-                    `;
-                    const undoAnimationName = `gallery-collapse`;
-                    const undoAnimationCss = `
-                        @keyframes ${undoAnimationName} {
-                            0% {
-                                transform:
-                                    scale(${scaleFactor});
-                                    translate(calc(50vw - 0.5 * ${imgRect.width}px),
-                                              calc(50vh - 0.5 * ${imgRect.height}px))
-
-                            }
-                            100% {
-                                transform:
-                                    scale(1);
-                                    translate(calc(${imgRect.left}px - 0.5 * ${imgRect.width}px),
-                                            calc(${imgRect.top}px - 0.5 * ${imgRect.height}px))
-
-                            }
-                        }
-                    `
-
-                    const style = document.createElement("style");
-                    style.innerHTML = animationCss + undoAnimationCss;
-                    document.head.append(style);
-
-                    const imgCopy = document.createElement("img");
-                    imgCopy.src = imgSrc;
-                    imgCopy.style = `
-                        position: absolute;
-                        animation: 10s ${animationName};
-                        animation-fill-mode: forwards;
-                    `;
-                    overlay.appendChild(imgCopy);
-
-                    function untoggleFullscreen() {
-                        overlay.removeEventListener("click", untoggleFullscreen);
-                        imgCopy.style = `
-                            position: absolute;
-                            animation: 10s ${undoAnimationName};
-                            animation-fill-mode: forwards;
-                        `;
-                        setTimeout(() => {
-                            img.style = "";
-                            // style.remove();
-                            overlay.remove();
-                        }, 10000)
-                    }
-
-                    overlay.addEventListener("click", untoggleFullscreen);
-                })
-
-            }
-
             for (const indicator of el.querySelectorAll(".indicator")) {
                 indicator.addEventListener("click", onIndicatorClicked);
             }
 
-            for (const img of document.querySelectorAll("img")) {
-                img.addEventListener("click", toggleFullscreen)
+            if (el.querySelectorAll("img").length > 1) {
+                setInterval(maybeTransitionToNextImage, AUTO_TRANSITION_INTERVAL);
             }
-
-            setInterval(maybeTransitionToNextImage, AUTO_TRANSITION_INTERVAL);
         }
 
         $(document).ready(() => {

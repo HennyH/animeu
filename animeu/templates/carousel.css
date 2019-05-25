@@ -24,6 +24,12 @@
         object-fit: contain;
     }
 
+    .carousel-backdrop:not(.expanded) {
+        padding: var(--base-padding);
+        border: 1px solid var(--card-border);
+        background-color: var(--card-header);
+    }
+
     .carousel:not(.expanded) {
         overflow: hidden;
         display: flex;
