@@ -7,9 +7,10 @@
 from collections import Hashable
 from functools import partial
 from itertools import islice
-from typing import Iterable, Tuple, Generic, TypeVar
+from typing import Iterable, Tuple, TypeVar
 from types import GeneratorType
 
+# pylint: disable=invalid-name
 T = TypeVar("T")
 
 def chunk(iterable, chunk_size):

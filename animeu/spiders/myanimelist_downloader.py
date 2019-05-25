@@ -19,7 +19,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.linkextractors import LinkExtractor
 from scrapy.settings.default_settings import RETRY_HTTP_CODES
 
-from animeu.spiders.json_helpers import JSONListStream
+from animeu.common.file_helpers import JSONListStream
 from animeu.spiders.base64_helpers import base64_urlencode
 
 try:

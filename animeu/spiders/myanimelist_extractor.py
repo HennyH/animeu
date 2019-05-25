@@ -3,7 +3,8 @@
 # Extractor for the myanimelist pages.
 #
 # Pages to fix:
-#
+# https://myanimelist.net/character/70/Riza_Hawkeye?q=Riza%20Hawkeye
+# (no descrption but simple case)
 # https://myanimelist.net/character/38538/Eucliwood_Hellscythe
 # (description)
 # https://myanimelist.net/character/503/Illyasviel_von_Einzbern
@@ -24,9 +25,7 @@ import argparse
 import parsel
 import parmap
 
-from animeu.spiders.json_helpers import JSONListStream
-from animeu.common.func_helpers import compose
-from animeu.common.file_helpers import open_transcoded
+from animeu.common.file_helpers import JSONListStream, open_transcoded
 from animeu.spiders.xpath_helpers import get_all_text
 
 MALE_PATTERNS = [r"\bhe\b", r"\bhis\b"]
@@ -63,19 +62,21 @@ def extract_info_fields_and_description(sel):
                                     "following-sibling::b/text() | "
                                     "following-sibling::text()"),
                      element_seperator="",
-                     element_filter=compose(bool))
-    maybe_info_fields_text, *other_text_blocks = \
-        re.split(r"\n\s*\n[\s\n]*", description_text)
+                     element_filter=lambda e: e.strip())
+    lines = list(reversed(description_text.splitlines()))
     info_fields = []
-    for line in maybe_info_fields_text.splitlines():
+    while lines:
+        line = lines.pop()
         match = re.match(r"^(?P<key>[^:]{1,30}):\s*(?P<value>.*$)", line)
         if match:
             info_fields.append({"key": match.group("key"),
                                 "value": match.group("value")})
-        elif info_fields:
-            info_fields[-1]["value"] += f"\n {line}"
-
-    description = other_text_blocks[0] if other_text_blocks else None
+        else:
+            break
+    if lines:
+        description = lines.pop()
+    else:
+        description = None
     return (info_fields, description)
 
 def extract_main_display_picture(sel):
