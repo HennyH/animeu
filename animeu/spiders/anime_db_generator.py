@@ -8,7 +8,7 @@ import sys
 import argparse
 import json
 import re
-from string import punctuation
+from string import punctuation, ascii_lowercase
 from itertools import chain, product
 from operator import itemgetter, methodcaller
 from functools import reduce, partial
@@ -27,20 +27,23 @@ BLACKLISTED_TAG_RES = [r"child(ren)?", r"elementary\s+school",
                        r"underage", r"^animals?$", r"^elderly$",
                        r"^bab(y|ies)$", r"^fairies$"]
 
-def unique(*iterables, key=lambda x: x):
+def unique(*iterables, key=lambda x: x, tie_func=len):
     """Merge iterables together keeping only the unique items."""
     seen_key_to_item = {}
     items = chain.from_iterable(iterables)
+    tie = lambda k, x: bool(tie_func(x) < tie_func(seen_key_to_item.get(k)))
     for item in items:
         if item is None:
             continue
         item_key = key(item)
-        if item_key in seen_key_to_item and \
-                len(item) < len(seen_key_to_item.get(item_key)):
+        if item_key in seen_key_to_item and tie(item_key, item):
             continue
         seen_key_to_item[item_key] = item
     return seen_key_to_item.values()
 
+def number_of_lowercase_chars(text):
+    """Get the number of lowercase characters in a text."""
+    return len([c for c in text if c in ascii_lowercase])
 
 def merge_character_metadata(left, right):
     """Merge together two anime character profiles."""
@@ -52,7 +55,8 @@ def merge_character_metadata(left, right):
     metadata["names"] = {
         "en": list(unique(left["names"]["en"],
                           right["names"]["en"],
-                          key=case_insensitive)),
+                          key=case_insensitive,
+                          tie_func=number_of_lowercase_chars)),
         "jp": list(unique(left["names"]["jp"],
                           right["names"]["jp"],
                           key=case_insensitive))
@@ -110,6 +114,14 @@ def normalize_character_name(character_name):
 def is_sensitive_metadata(metadata):
     """Test if a metadata contains sensitive content."""
     tags = metadata.get("tags", [])
+    info_fields = metadata["info_fields"]
+    for info_field in info_fields:
+        key, value = info_field["name"], info_fields["values"]
+        if re.search(r"genre", key, flags=re.IGNORECASE) and \
+                any(re.match(r"^\s*kids\s*$", g, flags=re.I) for g in value):
+            return True
+    if not tags:
+        return True
     for tag in tags:
         for pattern in BLACKLISTED_TAG_RES:
             if re.search(pattern, tag, flags=re.IGNORECASE):

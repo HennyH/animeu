@@ -48,7 +48,11 @@
         display: inline-block;
     }
 
-    .leaderboard > .entry > .carousel {
+    .leaderboard > .entry .carousel-backdrop {
+        padding: calc(0.5 * var(--base-padding));
+    }
+
+    .leaderboard > .entry .carousel {
         height: 4.32em;
         width: 3.12em;
     }

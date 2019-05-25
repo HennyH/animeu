@@ -24,6 +24,7 @@ setup(
             "anime-db-match=animeu.spiders.anime_db_generator:match_characters_cli",
             "seed-battles=animeu.seed_battles:main",
             "update-elo-rankings=animeu.elo.elo_leaderboard_updater:update_rankings",
+            "b64e=animeu.spiders.base64_helpers:base64_encode_cli"
         ]
     }
 )
