@@ -8,6 +8,7 @@ import sys
 import os
 import json
 import itertools
+import re
 from hashlib import md5
 from functools import partial
 
@@ -21,7 +22,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
-from flask_talisman import Talisman
 
 def force_https(wsgi_app):
     """Force the use of HTTPS."""
@@ -55,6 +55,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
                    os.environ.get("DATABASE_URL", "sqlite:///../app.db"))
 if app.debug:
     print(f"USING DATABASE = {app.config['SQLALCHEMY_DATABASE_URI']}",
+          file=sys.stderr)
+    print(f"USING DATA FILE = {os.environ['DATA_FILE']}",
           file=sys.stderr)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -110,6 +112,11 @@ def md5_filter(text):
     h = md5()
     h.update(text.encode("utf8"))
     return h.hexdigest()
+
+@app.template_test("search")
+def search_test(text, pattern):
+    """Test if the text matches a pattern."""
+    return bool(re.search(pattern, text))
 
 @app.route("/")
 def index():

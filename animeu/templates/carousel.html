@@ -1,18 +1,20 @@
 {% macro carousel(name, gallery_urls, class="", show_indicators=True) %}
-    <div id="{{ name }}" class="carousel {{class}}">
-        {% for gallery_url in gallery_urls %}
-            <div class="{{ 'carousel-item-container slide-in visible initial-image' if loop.first else 'carousel-item-container' }}"
-                 data-index="{{ loop.index }}"
-            >
-                <img alt="{{ name + ' image 1'}}" src="{{ gallery_url }}" />
-            </div>
-        {% endfor %}
-        {% if show_indicators %}
-            <div class="indicators">
-                {% for gallery_url in gallery_urls %}
-                    <div data-index="{{ loop.index }}" class="{{ 'selected' if loop.first else '' }} indicator"></div>
-                {% endfor %}
-            </div>
-        {% endif %}
+    <div class="carousel-backdrop {{ class }}">
+        <div id="{{ name }}" class="carousel {{class}}">
+            {% for gallery_url in gallery_urls %}
+                <div class="{{ 'carousel-item-container slide-in visible initial-image' if loop.first else 'carousel-item-container' }}"
+                    data-index="{{ loop.index }}"
+                >
+                    <img alt="{{ name + ' image 1'}}" src="{{ gallery_url }}" />
+                </div>
+            {% endfor %}
+            {% if show_indicators and (gallery_urls | length) > 1 %}
+                <div class="indicators">
+                    {% for gallery_url in gallery_urls %}
+                        <div data-index="{{ loop.index }}" class="{{ 'selected' if loop.first else '' }} indicator"></div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
     </div>
 {%- endmacro %}
