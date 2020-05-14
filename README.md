@@ -8,7 +8,7 @@ Battle of the anime babes!
 To set up a development environment fro the project you're encouraged to create a virtual environment and activate it during development. Regardless you will perform the following steps:
 
 ```bash
-pip install -r requirements.<linux | windows>.dev.txt
+pip install -r requirements.dev.<linux | windows>.txt
 pip install -e .
 export FLASK_APP="animeu.app"
 export FLASK_ENV="development"
