@@ -12,3 +12,4 @@ coverage
 cheroot
 selenium
 requests
+email_validator
