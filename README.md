@@ -101,9 +101,6 @@ The available ranking types are avaliable from the leaderboard dropdown:
 
 Don't worry, we understand how a waifu displayed in the feed may capture your heart at first sight. If you want to know more just click on their name and you'll be taken to their info page.
 
-![link to profile](./docs/link-to-profile.PNG)
-
-
 ## How do I favourite a waifu?
 
 You may have noticed on the profile page there is a 'Waifus for Laifu' list, this is a list of the waifus you have favourited. If you're wondering how to favourite a waifu simply click the love-heart shaped button near their name in either battle mode, or on their info card which is accessible by clicking a link with their name. To unfavourite them (meanie!) just press the button again.
