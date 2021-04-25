@@ -7,6 +7,8 @@
 from flask import Blueprint, render_template, request
 from flask_login import login_user, logout_user, current_user
 
+
+# pylint: disable=no-name-in-module
 from animeu.models import User
 from animeu.app import db
 from animeu.common.request_helpers import arg_redirect

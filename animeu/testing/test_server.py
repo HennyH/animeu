@@ -26,9 +26,11 @@ class ServerThread(threading.Thread):
 
     def run(self):
         """Start up the server."""
-        subprocess.run(["flask", "db", "upgrade"])
+        subprocess.run(["flask", "db", "upgrade"], check=True)
+        # pylint: disable=import-outside-toplevel
         import coverage
         coverage.process_startup()
+        # pylint: disable=import-outside-toplevel
         from animeu.app import app
         self.app = app
         self.app.config["SERVER_NAME"] = f"{self.host}:{self.port}"
@@ -41,6 +43,7 @@ class ServerThread(threading.Thread):
 
     def url_for(self, *args, **kwargs):
         """Generate a URL for a given route."""
+        # pylint: disable=import-outside-toplevel
         from flask import url_for
         with self.app.app_context():
             return url_for(*args, **kwargs)
@@ -64,7 +67,7 @@ class ServerThread(threading.Thread):
                                 timeout=poll_timeout)
                 self.started_event.set()
                 return
-            except (TimeoutError, URLError) as ex:
+            except (TimeoutError, URLError):
                 time.sleep(sleep_time)
                 wait_time += poll_timeout + sleep_time
         raise TimeoutError("""Server was not ready in time.""")

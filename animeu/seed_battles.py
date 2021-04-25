@@ -8,7 +8,6 @@ import sys
 import os
 import argparse
 import random
-import json
 from datetime import datetime
 from functools import partial
 

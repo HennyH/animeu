@@ -14,6 +14,7 @@ from operator import itemgetter, methodcaller
 from functools import reduce, partial
 
 from pkg_resources import resource_string
+# pylint: disable=import-error
 from apsw import Connection
 from Levenshtein import jaro
 from tqdm import tqdm

@@ -31,6 +31,7 @@ def make_anime_planet_spider_cls(previously_scraped_urls):
             return None
         return href
 
+    # pylint: disable=abstract-method
     class AnimePlanetSpider(CrawlSpider):
         """Scraper for anime-planet."""
 

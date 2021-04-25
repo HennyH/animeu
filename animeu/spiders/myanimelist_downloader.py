@@ -83,6 +83,7 @@ def make_mal_spider_cls(manifest_file, pages_directory, search_domain, already_d
             return None
         return anchor.attrib["href"]
 
+    # pylint: disable=abstract-method
     class MyAnimeListSpider(CrawlSpider):
         """Scraper for myanimelist."""
 

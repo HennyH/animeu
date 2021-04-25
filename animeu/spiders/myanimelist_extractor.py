@@ -73,12 +73,10 @@ def extract_info_fields_and_description(sel):
         if re.search(r"\b(written|from|source|author)\b", text_fragment, flags=re.I) and \
                 len(text_fragment) <= MAX_WRITTEN_BY_LENGTH:
             continue
-        if description_fragments:
-            if len(text_fragment) > MAX_INFO_FIELD_FRAGMENT_LENGTH:
-                description_fragments.append(text_fragment.strip())
-                continue
-            else:
-                break
+        if description_fragments and \
+                len(text_fragment) > MAX_INFO_FIELD_FRAGMENT_LENGTH:
+            description_fragments.append(text_fragment.strip())
+            continue
         match = re.match(r"^(?P<key>[^:]{1,30}):\s*(?P<value>.*$)",
                          text_fragment)
         if not match and len(text_fragment) > MAX_INFO_FIELD_FRAGMENT_LENGTH:

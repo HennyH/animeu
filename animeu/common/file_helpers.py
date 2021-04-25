@@ -54,6 +54,7 @@ class JSONListStream():
 
     def __init__(self, fileobj):
         """Initialize this JSONListStream with fileobj."""
+        # pylint: disable=super-with-arguments
         super(JSONListStream, self).__init__()
         self._printed_first_entry = False
         self._fileobj = fileobj
