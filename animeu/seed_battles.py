@@ -8,6 +8,7 @@ import sys
 import os
 import argparse
 import random
+import json
 from datetime import datetime
 from functools import partial
 
@@ -34,7 +35,10 @@ def get_seeding_user():
 def get_character_ranking(character, name):
     """Get a particular ranking of a character."""
     value = [r for r in character["rankings"] if r["name"] == name][0]["value"]
-    return float(value)
+    try:
+        return float(value)
+    except ValueError:
+        return 1
 
 def get_character_ratio_ranking(character, numerator, denominator):
     """Get a particular ratio base ranking of a character."""

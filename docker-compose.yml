@@ -1,0 +1,24 @@
+services:
+  app:
+    image: animeu
+    build:
+      context: .
+    ports:
+      - 80:80
+    depends_on:
+      - db
+    environment:
+      FLASK_ENV: production
+      FLASK_APP: animeu.app
+      DATA_FILE: characters.json
+      DATABASE: postgresql+psycopg2://postgres:pw@db:5432/animeu
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: pw
+      POSTGRES_DB: animeu
+    volumes:
+      - "${PG_DATA_DIR:-~/databaes/animeu}:/var/lib/postgresql/data"

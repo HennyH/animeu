@@ -1,10 +1,11 @@
-characters.json
 *.db
 *.db-journal
 drivers
 .coverage
 .coverage.*
 htmlcov
+chromedriver
+
 
 # vs code
 .vscode

@@ -42,7 +42,7 @@ def load_character_data():
         )
         with open(temp_filename, "rb") as fileobj:
             json_bytes = fileobj.read()
-    characters = json.loads(json_bytes, encoding="utf8")
+    characters = json.loads(json_bytes)
     for character in characters:
         temp_fix_picutres(character)
     return characters

@@ -56,9 +56,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
 if app.debug:
     print(f"USING DATABASE = {app.config['SQLALCHEMY_DATABASE_URI']}",
           file=sys.stderr)
-    print(f"USING DATA FILE = {os.environ['DATA_FILE']}",
-          file=sys.stderr)
 db = SQLAlchemy(app)
+db.create_all()
 migrate = Migrate(app, db)
 
 # configre session management

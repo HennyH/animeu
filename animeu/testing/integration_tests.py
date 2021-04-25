@@ -427,7 +427,7 @@ class AdminToolsTests(AnimeuIntegrationTestCase):
         completed_progress_bar = wait_for_visible(
             self.browser,
             xpath_selector="//div[contains(@class, 'progress-bar') and contains(@style, '100%')]",
-            timeout=30
+            timeout=90
         )
         self.assertIsNotNone(
             completed_progress_bar,
