@@ -25,5 +25,4 @@ script:
  - pydocstyle animeu
  - pip list
  - DATA_FILE=characters.json FLASK_APP=animeu.app python -Wignore -m unittest animeu.testing.integration_tests
- - coverage combine
  - coverage report
