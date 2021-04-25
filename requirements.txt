@@ -13,3 +13,4 @@ cheroot
 selenium
 requests
 email_validator
+SQLAlchemy==1.3.4
