@@ -4,7 +4,7 @@ services:
     build:
       context: .
     ports:
-      - 80:80
+      - 8090:80
     depends_on:
       - db
     environment:
