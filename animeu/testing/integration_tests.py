@@ -380,6 +380,10 @@ class AdminToolsTests(AnimeuIntegrationTestCase):
     def maybe_get_number_of_entries_in_table(browser):
         """Try get the number of entries in the currently visible table."""
         try:
+            wait_for_visible(
+                browser,
+                xpath_selector="//div[contains(@class, 'dataTables_info')]"
+            )
             maybe_pagination_info = \
                 browser.find_element_by_css_selector("div.dataTables_info")
             if not maybe_pagination_info:
