@@ -14,7 +14,7 @@ RUN /bin/sh -c 'pip install -e .'
 ENV FLASK_ENV="production"
 ENV FLASK_APP="animeu.app"
 ENV DATA_FILE="characters.json"
-ENV DATABASE="postgresql+psycopg2://user:password@db:5432/animeu"
+ENV DATABASE="sqlite:///usr/src/app/app.db"
 EXPOSE 80
 
 CMD /bin/sh -c '\
