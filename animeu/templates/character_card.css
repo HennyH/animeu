@@ -106,7 +106,6 @@
     }
 
     .card.character-card.info-view .character-picture-carousel {
-        align-self: center;
         grid-row: 1 / 3;
     }
 
