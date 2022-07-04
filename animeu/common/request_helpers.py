@@ -62,8 +62,8 @@ def get_query_parameter(request,
             except Exception as error:
                 if issubclass(expected_cls, int):
                     # pylint: disable=line-too-long
-                    raise InvalidQueryParameter(f"{name} must be a number not: {arg}")
-                raise InvalidQueryParameter(str(error))
+                    raise InvalidQueryParameter(f"{name} must be a number not: {arg}") from error
+                raise InvalidQueryParameter(str(error)) from error
     if unpack_single and len(parsed_args) == 1:
         return parsed_args[0]
     return parsed_args

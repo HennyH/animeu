@@ -27,20 +27,18 @@ def open_transcoded(filename,
     if source_enc is None:
         # pylint: disable=broad-except
         try:
+            # pylint: disable=unspecified-encoding
             with open(filename, "rb") as file_obj:
                 data = file_obj.read(detect_buffer_size)
             source_enc = chardet.detect(data)["encoding"]
             del data
         except Exception as error:
             print("""Warning: an error occured while trying to guess the """
-                  """encoding of the file '{filename}', will assume """
-                  """{fallback} encoding: {message}.""".format(
-                      filename=filename,
-                      fallback=fallback_enc,
-                      message=str(error)
-                  ),
+                  f"""encoding of the file '{filename}', will assume """
+                  f"""{fallback_enc} encoding: {error}.""",
                   file=sys.stderr)
             source_enc = fallback_enc
+    # pylint: disable=unspecified-encoding
     with open(filename, binary_mode) as stream:
         with codecs.EncodedFile(stream,
                                 target_enc,

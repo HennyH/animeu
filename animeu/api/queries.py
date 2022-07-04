@@ -17,6 +17,7 @@ def query_characters(name=None, anime=None, tags=None, description=None):
         if maybe_pattern is None:
             return None
         try:
+            # pylint: disable=no-member
             return re.compile(maybe_pattern, flags=re.IGNORECASE)
         except re.error:
             return re.compile(re.escape(maybe_pattern))

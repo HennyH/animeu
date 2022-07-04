@@ -32,7 +32,8 @@ def unique(*iterables, key=lambda x: x, tie_func=len):
     """Merge iterables together keeping only the unique items."""
     seen_key_to_item = {}
     items = chain.from_iterable(iterables)
-    tie = lambda k, x: bool(tie_func(x) < tie_func(seen_key_to_item.get(k)))
+    def tie(item_key, item):
+        return bool(tie_func(item) < tie_func(seen_key_to_item.get(item_key)))
     for item in items:
         if item is None:
             continue

@@ -178,7 +178,6 @@ def make_mal_spider_cls(manifest_file, pages_directory, search_domain, already_d
                 "characters": character_metadatas
             })
 
-        # pylint: disable=no-self-use
         def extract_anime(self, response):
             """Save the anime page write a manifest entry."""
             anime_filename = f"{base64_urlencode(response.url)}.anime.html"
@@ -206,7 +205,7 @@ def make_mal_spider_cls(manifest_file, pages_directory, search_domain, already_d
 def load_search_domain(anime_planet_extract):
     """Load the search domain (characters & animes) from the AP extract."""
     def iter_items():
-        with open(anime_planet_extract, "r") as extract_fileobj:
+        with open(anime_planet_extract, "r", encoding="utf8") as extract_fileobj:
             extract = json.load(extract_fileobj)
         for character in extract:
             if not any(ar["role"] in ("Main", "Secondary")

@@ -9,13 +9,13 @@ import hashlib
 import json
 from datetime import datetime
 
-import animeu.elo.elo_algorithim as elo_algorithim
+from animeu.elo import elo_algorithim
 from animeu.app import db
 from animeu.models import ELORankingCalculation, WaifuPickBattle
 
 def get_elo_algorithim_hash():
     """Get the hash of the algorithim file."""
-    with open(elo_algorithim.__file__, "r") as fileobj:
+    with open(elo_algorithim.__file__, "r", encoding="utf8") as fileobj:
         md5 = hashlib.md5()
         md5.update(fileobj.read().encode("utf8"))
     return md5.hexdigest()

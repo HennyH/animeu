@@ -4,7 +4,7 @@
 #
 # See /LICENCE.md for Copyright information
 """Helper iterator functions built on itertools."""
-# pylint: disable=no-name-in-module
+# pylint: disable=no-name-in-module,deprecated-class
 from collections import Hashable
 from functools import partial
 from itertools import islice
@@ -129,10 +129,7 @@ def deep_set(indexable, indexes, value):
 
         if not _collection_supports_index(curr, now_index):
             raise ValueError(
-                """Unsupported index {} for collection {}""".format(
-                    now_index,
-                    curr
-                )
+                f"""Unsupported index {now_index} for collection {curr}"""
             )
 
         if next_index is not None:

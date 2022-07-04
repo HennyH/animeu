@@ -6,7 +6,7 @@
 """Utilities for launching a server for testing purposes."""
 import subprocess
 import threading
-import urllib.request as request
+from urllib import request
 from urllib.error import URLError
 import time
 
@@ -63,9 +63,9 @@ class ServerThread(threading.Thread):
         wait_time = 0
         while wait_time < wait_timeout:
             try:
-                request.urlopen(f"http://{self.host}:{self.port}",
-                                timeout=poll_timeout)
-                self.started_event.set()
+                with request.urlopen(f"http://{self.host}:{self.port}",
+                                     timeout=poll_timeout):
+                    self.started_event.set()
                 return
             except (TimeoutError, URLError):
                 time.sleep(sleep_time)

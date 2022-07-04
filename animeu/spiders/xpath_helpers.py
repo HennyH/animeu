@@ -22,7 +22,7 @@ def _remove_newlines(text):
 
 def xpath_count(selector, xpath):
     """Return the number of elements selected by an xpath expression."""
-    results = selector.xpath("count({})".format(xpath)).extract()
+    results = selector.xpath(f"count({xpath})").extract()
     if not results:
         return 0
     count = results[0]
@@ -78,10 +78,9 @@ def xpath_slice_between(selector, lower_xpath, upper_xpath, inclusive=False):
     if any(not re.match(r"\./(?:\w+|\*)(\[.*?\])?$", xpath)
            for xpath in (lower_xpath, upper_xpath)):
         raise ValueError(
-            """One or more of {} are a nested or non-relative xpath """
+            f"""One or more of {[lower_xpath, upper_xpath]} are a nested or non-relative xpath """
             """expressions which are not supported. All boundary paths must """
-            """be of the form ```./e[...]```.""".format([lower_xpath,
-                                                         upper_xpath])
+            """be of the form ```./e[...]```."""
         )
     max_lower_position = xpath_position_of(
         selector,
@@ -189,9 +188,9 @@ def xpath_split_inner(selector,
     if any(not re.match(r"\./(?:\w+|\*)(\[.*?\])?$", xpath)
            for xpath in boundary_xpaths):
         raise ValueError(
-            """One or more of {} are a nested or non-relative xpath """
+            f"""One or more of {boundary_xpaths} are a nested or non-relative xpath """
             """expressions which are not supported. All boundary paths must """
-            """be of the form ```./e[...]```.""".format(boundary_xpaths)
+            """be of the form ```./e[...]```."""
         )
 
     if isinstance(selector, SelectorList):
@@ -254,10 +253,7 @@ def xpath_split_inner(selector,
     for boundary_xpath in boundary_xpaths:
         number_of_boundaries = xpath_count(selector, boundary_xpath)
         for boundary_number in range(1, number_of_boundaries + 1):
-            boundary_element_xpath = "({xpath})[{n}]".format(
-                xpath=boundary_xpath,
-                n=boundary_number
-            )
+            boundary_element_xpath = f"({boundary_xpath})[{boundary_number}]"
             position_relative_to_parent = xpath_position_of(
                 selector,
                 boundary_element_xpath
@@ -319,7 +315,7 @@ def xpath_split_inner(selector,
         if not isinstance(mapped_elements, SelectorList):
             raise TypeError("""Expected the supplied `map_group` function """
                             """to return a ```parsel.SelectorList``` not """
-                            """a {}.""".format(type(mapped_elements)))
+                            f"""a {type(mapped_elements)}.""")
         element_htmls = list(
             chain.from_iterable(e.getall() for e in mapped_elements)
         )
@@ -334,9 +330,9 @@ def xpath_split_inner(selector,
 def normalize_whitespace(text, translate_nbsp=True, only_single_spaces=True):
     """Normalize whitespace and change ```&nbsp;``` to a normal space."""
     if translate_nbsp:
-        text = text.replace(u"\xa0", u" ")
-    text = text.replace(u"\u2019", u"'")
-    text = text.replace(u"\u00c2", u" ")
+        text = text.replace("\xa0", " ")
+    text = text.replace("\u2019", "'")
+    text = text.replace("\u00c2", " ")
     if only_single_spaces:
         if translate_nbsp:
             text = re.sub(r"[^\S\n]+", " ", text)

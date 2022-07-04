@@ -127,6 +127,7 @@ def optional(func, filename=None, default=None):
 
 def extract_metadata_from_file(filename):
     """Extract the metadata from a file."""
+    # pylint: disable=unspecified-encoding
     with open(filename, "r", errors="ignore") as file_obj:
         text = file_obj.read()
     sel = parsel.Selector(text=text)

@@ -4,6 +4,7 @@
 #
 # See /LICENCE.md for Copyright information
 # pylint: disable=import-outside-toplevel
+# pylint: disable=no-member
 """Integration tests for the animeu site."""
 import os
 import unittest

@@ -106,12 +106,12 @@ def main(argv=None):
     # maybe get the previous manifest entries (to write back out into the new
     # manifest).
     if result.manifest and os.path.exists(result.manifest):
-        with open(result.manifest, "r") as fileobj:
+        with open(result.manifest, "r", encoding="utf8") as fileobj:
             previous_manifest = json.load(fileobj)
     else:
         previous_manifest = []
 
-    with open(result.manifest or sys.stdout, "w") as manifest_fileobj, \
+    with open(result.manifest or sys.stdout, "w", encoding="utf8") as manifest_fileobj, \
              JSONListStream(manifest_fileobj) as json_stream:
         previously_scraped_urls = set()
         for item in previous_manifest:
