@@ -6,8 +6,7 @@
 """Forms for the auth module."""
 from flask_wtf import FlaskForm, RecaptchaField
 from wtforms import BooleanField, StringField, PasswordField, validators
-# pylint: disable=import-error,no-name-in-module
-from wtforms.fields.html5 import EmailField
+from wtforms.fields import EmailField
 
 _EMAIL_FIELD = EmailField("Email", validators=[validators.Email(),
                                                validators.DataRequired()])
